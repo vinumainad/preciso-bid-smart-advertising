@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Preciso_Adminhtml::admin" title="Admin">
+                <resource id="Preciso_PrecisoBidSmartAdvertising::precisobidsmartadvertising" title="PrecisoBidSmartAdvertising" sortOrder="40">
+                    <resource id="Preciso_PrecisoBidSmartAdvertising::manage" title="PrecisoBidSmartAdvertising Module" sortOrder="10">
+						<resource id="Preciso_PrecisoBidSmartAdvertising::save" title="Save PrecisoBidSmartAdvertising" sortOrder="10" />
+                        <resource id="Preciso_PrecisoBidSmartAdvertising::news_delete" title="Delete PrecisoBidSmartAdvertising" sortOrder="20" />
+					</resource>
+                </resource>
+                <resource id="Preciso_Adminhtml::stores" title="PrecisoBidSmartAdvertising Stores">
+                    <resource id="Preciso_Adminhtml::stores_settings" title="PrecisoBidSmartAdvertising Store Settings">
+                        <resource id="Preciso_Adminhtml::config" title="Admin">
+                            <resource id="Preciso_PrecisoBidSmartAdvertising::config_precisobidsmartadvertising" title="PrecisoBidSmartAdvertising Section" sortOrder="50" />
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

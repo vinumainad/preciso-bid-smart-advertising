@@ -1,0 +1,428 @@
+h3.deposit_money_rebate {
+    display: none;
+}
+#deposit_money_rebate {
+    display: none;
+}
+.bannerStaticwrp a, .bannerInfo a, .footer-Wrp a {
+    color: #007bff !important;
+}
+.registration_wrp {
+    padding: 50px;
+}
+.messageHiderefresh {
+    position: absolute;
+    top: 23%;
+    right: 23%;
+    background: #000;
+    padding: 5px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: 15px;
+    display: none;
+    z-index: 9999;
+}
+.messageHiderefreshicon {
+    display: none;
+    position: absolute;
+    top: 24%;
+    right: 5%;
+    background: #000;
+    padding: 5px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: 15px;
+    display: none;
+    z-index: 9999;
+}
+.registration_wrp h2 {
+    text-align: center;
+}
+form {
+    padding: 5px 25px;
+}
+.form-control {
+    border: 1px solid #e9eaec;
+    background-color: #eaeef1;
+    color: #000;
+}
+.submit_wrp {
+    text-align: center;
+}
+input#regisnSubmit {
+    width: 100%;
+    background-color: #00c18b;
+    color: #fff;
+    font-size: 18px;
+    border: 1px solid #01b085;
+    font-weight: 500;
+}
+.l-header .logo {
+    height: 90px;
+}
+.l-header .logo {
+    width: 100% !important;
+    height: 95px;
+    float: left;
+    background-image: url(../images/logico.png) !important;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.clear {
+    clear: both;
+}
+.login-wrap {
+    width: 100%;
+    margin: 0 auto;
+    height: 82%;
+    position: relative;
+}
+.login-box {
+    background-color: #fff;
+    margin: 0 auto;
+    color: #fff;
+    max-width: 320px;
+    width: 92%;
+    position: relative;
+    margin-left: auto;
+    max-width: 880px!important;
+    padding: 52px 30px 10px 30px!important;
+}
+.login-box .main-icon {
+    background-image: url(../images/kiaro.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+}
+.main-icon {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 6px solid #fff;
+    border-radius: 50%;
+    background-color: #eaeef1;
+    font-size: 140px;
+    color: #01a8df;
+    top: -44px;
+    left: 53%;
+    margin-left: -70px;
+    text-align: center;
+    padding-top: 12px;
+    overflow: hidden;
+}
+label {
+    color: #000;
+}
+.login-box .main-icon .fa {
+    display: none;
+}
+span.star {
+    color: red;
+    font-size: 13px;
+}
+.loader {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-image: url(../images/loader.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: 99999999999!important;
+    background-size: 120px 120px;
+}
+.api-loader {
+    background-color: rgba(255, 255, 255, 0.9);
+    display: block;
+}
+.form-group p {
+    color: red;
+}
+.emailerror,.domainerror,.programerror,.storeerror,.contacterror,.regionerror,.lanuageerror,.currencyerror,.channelerror,.maxcpmerror,.dailylBudget,.fcaperror,.pcerror,.pverror,.totalbudegeterror,.durationerror,.strategyerror,.campaignerror,.budegeterror {
+    color: red;
+    position: absolute;
+    font-size: 12px;
+    display: none;
+}
+.failedalert {
+    background-color: rgba(48, 48, 48, 0.95);
+}
+.successalert {
+    background-color: rgba(48, 48, 48, 0.95);
+}
+.green-box {
+    background-color: #3CA5E5!important;
+    overflow: hidden;
+    position: relative;
+}
+.customalert {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 99999999;
+    display: none;
+}
+.customalert-inner {
+    position: fixed;
+    top: 0px;
+    width: 50%;
+    height: 100%;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+    left: 25%;
+}
+.customalert-inner-div {
+    -webkit-box-shadow: 0 0 30px 0 rgba(0, 0, 0, .5);
+    box-shadow: 0 0 30px 0 rgba(0, 0, 0, .5);
+    background-color: #fff;
+    padding-bottom: 15px;
+}
+.customalertheader {
+    background-color: #00c18b;
+    color: #fff;
+    font-size: 90px;
+    padding: 0px 0px;
+}
+.red-box {
+    background-color: #b3152c!important;
+}
+.customalert-inner p {
+    color: #1f1f1f;
+    font-weight: 500;
+    padding: 15px;
+    font-size: 20px;
+}
+.customalert-inner p span {
+    color: #000;
+    font-weight: 400;
+    font-size: 14px;
+}
+.btn {
+    padding: 5px 10px;
+}
+.btn-red {
+    background-color: #b3152c;
+    color: #fff;
+    font-weight: 300;
+}
+.btn-green {
+    background-color: #00c18b;
+    color: #fff;
+    font-weight: 300;
+    font-size: 12px;
+    border: 1px solid #01b085;
+}
+.appError {
+    text-align: center;
+    max-width: 580px;
+    margin: 120px auto;
+}
+.error_Wrp .fa.fa-times-circle {
+    color: red;
+    font-size: 80px;
+}
+.copy-block .copied {
+    position: absolute;
+    color: #6dab3c;
+    font-weight: bold;
+    z-index: 99;
+    width: auto;
+    display: none;
+    left: 115px;
+}
+.copy-block .inside-text-copy {
+    padding: 30px;
+    margin-top: 30px;
+    border: 2px solid rgba(234, 198, 19, 0.25098039215686274);
+    background: #dcdcdc;
+    color: red;
+}
+.notice p {
+    line-height: 1.5625rem;
+    color: #4c4b58;
+    font-size: 15px;
+}
+h4#access, .notice h4 {
+    margin-bottom: 25px;
+    letter-spacing: .3px;
+    font-family: 'source_sans_prosemibold',Arial,sans-serif;
+    color: #6d6e7a;
+    margin-top: 25px;
+}
+.notice a {
+    color: #007bff;
+    text-decoration: underline !important;
+}
+.notice img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.notice strong {
+    font-weight: 600;
+}
+button.btn.btn-green.deletebanner {
+    background: #ff0000ab;
+    margin-left: 10px;
+}
+.btn-greenalt {
+    background-color: #00c18b;
+    color: #fff;
+    font-weight: 300;
+    font-size: 12px;
+    border: 1px solid #01b085;
+}
+.failedalertbanner, .successalertbanner {
+    background-color: rgba(48, 48, 48, 0.95);
+}
+.customalert {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 99999999;
+    display: none;
+}
+form#updateSettings {
+    padding: 0px !important;
+}
+.hover_bkgr_fricc {
+    background: rgba(0,0,0,.4);
+    cursor: pointer;
+    display: none;
+    height: 100%;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10000;
+}
+.hover_bkgr_fricc .helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+.hover_bkgr_fricc > div {
+    background-color: #fff;
+    box-shadow: 10px 10px 60px #555;
+    display: inline-block;
+    height: 550px;
+    max-width: 768px;
+    min-height: 100px;
+    vertical-align: middle;
+    width: 76%;
+    position: relative;
+    border-radius: 8px;
+    padding: 40px 5%;
+}
+.popupCloseButton {
+    background-color: #fff;
+    border: 3px solid #999;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: arial;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 25px;
+    line-height: 30px;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+}
+.popupCloseButton:hover {
+    background-color: #ccc;
+}
+.trigger_popup_fricc {
+    cursor: pointer;
+    font-size: 12px;
+    margin: 0;
+    display: inline-block;
+    font-weight: 400;
+}
+.productImg {
+    display: inline-block;
+    float: left;
+    width: 25%;
+}
+.productImg img {
+    height: 50px;
+}
+.productTitle {
+    display: inline-block;
+    float: left;
+    width: 75%;
+}
+.productTitle h3 {
+    display: inline-block;
+    float: left;
+    margin-left: 20px;
+    margin-top: 14px;
+    font-size: 19px;
+}
+.banner-wrp-top {
+    height: 225px;
+    overflow-y: scroll;
+}
+.form-wrp {
+    display: flex;
+    padding: 10px 0 0 0;
+}
+.form-wrp label {
+    width: 25%;
+    margin: 3px 8px;
+    text-align: right;
+}
+.form-wrp .form-control {
+    height: 25px;
+    width: 75%;
+}
+.dynamicbannercreate {
+    margin-top: 10px;
+}
+button.btn.btn-green.deletebanner {
+    background: #ff0000ab;
+    margin-left: 10px;
+}
+.failedalertbanner,.successalertbanner {
+    background-color: rgba(48, 48, 48, 0.95);
+}
+textarea#contactAddress {
+    height: 90px !important;
+}
+.page-footer-content.row {
+    display: block;
+}
+body {
+    font-size: 1.4rem !important;
+}
+.form-group {
+    margin-bottom: 3rem !important;
+}
+
+.login-wrp {
+    margin-bottom: 4%;
+    margin-top: 4%;
+}
+.page-footer {
+    padding: 2.6rem 2rem 5rem 11rem !important;
+}
+tr.data-show.active td {
+    background-color: #00a8e1 !important;
+    color: #fff;
+    padding-bottom: 20px !important;
+}
+
+.data-show td {
+    padding-bottom: 20px !important;
+}

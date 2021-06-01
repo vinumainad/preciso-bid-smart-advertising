@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <link src="Preciso_PrecisoBidSmartAdvertising::js/customcodes.js"/>
+    </head>
+    <body>
+        <referenceBlock name="footer_links">
+            <block class="Magento\Framework\View\Element\Template" 
+                before="-" 
+                template="Preciso_PrecisoBidSmartAdvertising::html/custom.phtml"
+            />
+            <block class="Magento\Framework\View\Element\Html\Link\Current" name="precisobidsmartadvertising-link">
+                <arguments>
+                    <argument name="label" xsi:type="string">PrecisoBidSmartAdvertising</argument>
+                    <argument name="path" xsi:type="string">precisobidsmartadvertising</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>
