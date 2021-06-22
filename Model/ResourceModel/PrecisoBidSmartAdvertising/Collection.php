@@ -15,8 +15,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     protected function _construct()
     {
         $this->_init(
-            Preciso\PrecisoBidSmartAdvertising\Model\PrecisoBidSmartAdvertising::class,
-            Preciso\PrecisoBidSmartAdvertising\Model\ResourceModel\PrecisoBidSmartAdvertising::class
+            \Preciso\PrecisoBidSmartAdvertising\Model\PrecisoBidSmartAdvertising::class,
+            \Preciso\PrecisoBidSmartAdvertising\Model\ResourceModel\PrecisoBidSmartAdvertising::class
         );
     }
 }

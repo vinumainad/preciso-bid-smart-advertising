@@ -18,7 +18,7 @@ class PrecisoBidSmartAdvertising extends \Magento\Framework\Model\AbstractModel
     protected function _construct()
     {
         $this->_init(
-            Preciso\PrecisoBidSmartAdvertising\Model\ResourceModel\PrecisoBidSmartAdvertising::class
+            \Preciso\PrecisoBidSmartAdvertising\Model\ResourceModel\PrecisoBidSmartAdvertising::class
         );
     }
 }
