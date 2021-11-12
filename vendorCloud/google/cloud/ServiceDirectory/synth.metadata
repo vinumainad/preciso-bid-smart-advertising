@@ -1,0 +1,39 @@
+{
+  "sources": [
+    {
+      "git": {
+        "name": ".",
+        "remote": "https://github.com/googleapis/google-cloud-php",
+        "sha": "d32dd378956c0aab0f32af73238f99ff863aa0ba"
+      }
+    },
+    {
+      "git": {
+        "name": "googleapis",
+        "remote": "https://github.com/googleapis/googleapis.git",
+        "sha": "3f938c669f8c64cfb72ac3dc10d5ae81382452b9",
+        "internalRef": "378203812"
+      }
+    }
+  ],
+  "destinations": [
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "servicedirectory",
+        "apiVersion": "v1",
+        "language": "php",
+        "generator": "bazel"
+      }
+    },
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "servicedirectory",
+        "apiVersion": "v1beta1",
+        "language": "php",
+        "generator": "bazel"
+      }
+    }
+  ]
+}

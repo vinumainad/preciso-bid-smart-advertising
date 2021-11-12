@@ -34,6 +34,10 @@ class Index extends \Magento\Backend\App\Action
             // plugin_set
             $currentOptionName = $this->getRequest()->getParam('optionname');
             $currentOptionValue = $this->getRequest()->getParam('optionvalue');
+            $username = $this->getRequest()->getParam('email');
+            $userpass = $this->getRequest()->getParam('password');
+            $passdecode = base64_decode($userpass);
+            $passdecd = base64_decode($passdecode);
                 $this->_resources = \Magento\Framework\App\ObjectManager::getInstance()
                     ->get('Magento\Framework\App\ResourceConnection');
                 $connection= $this->_resources->getConnection();
@@ -43,16 +47,71 @@ class Index extends \Magento\Backend\App\Action
                 token='',
                 campaignId='0',
                 userId='0',
-                username='',
-                userpass='' 
+                username='$username',
+                userpass='$passdecd' 
                 WHERE id='1'";
-                $connection->query($insert_sql);
+                 if ($connection->query($insert_sql)) {
+                    $objectManager->setUsername($username);
+                    $objectManager->setUserpass($passdecd);
+                }
+
+               // $connection->query($insert_sql);
             }
 
             // set term page
             $term_page = $this->getRequest()->getParam('term_page');
+            $cmpId = $this->getRequest()->getParam('campaignId1');
+
+           
             if ($term_page == '1') {
                 $objectManager->setMyName('term_page');
+                $objectManager->setCampaignId($cmpId);
+            }
+
+            $is205 = $this->getRequest()->getParam('is205');
+           
+            if ($is205 == 'blank_page') {
+  
+                $campaignId = $this->getRequest()->getParam('campaignId');
+                $token = $this->getRequest()->getParam('token');
+                $userId = $this->getRequest()->getParam('userId');
+                $username = $this->getRequest()->getParam('username');
+                $userpass = $this->getRequest()->getParam('userpass');
+
+                $update_sql = "UPDATE ".$tableName." SET 
+                token='$token',
+                campaignId='$campaignId',
+                userId='$userId',
+                username='$username',
+                userpass='$userpass' 
+                WHERE id='1'";
+                if ($connection->query($update_sql)) {
+                    $objectManager->setToken($token);
+                    $objectManager->setCampaignId($campaignId);
+                    $objectManager->setUserId($userId);
+                    $objectManager->setUsername($username);
+                    $objectManager->setUserpass($userpass);
+                    $objectManager->setBlankPage('blank_page');
+                }
+            }
+
+
+            $userDelete = $this->getRequest()->getParam('userDelete');
+
+            if ($userDelete == '1') {
+               
+                $insert_sql = "UPDATE ".$tableName." SET
+                plugin_set='0',
+                token='0',
+                campaignId='0',
+                userId='0',
+                username='0',
+                userpass='0' 
+                WHERE id='1'";
+                 if ($connection->query($insert_sql)) {
+                    $objectManager->setUsername($username);
+                    $objectManager->setUserpass($passdecd);
+                }
             }
 
             // term_page Submit
@@ -64,12 +123,19 @@ class Index extends \Magento\Backend\App\Action
                 $userId = $this->getRequest()->getParam('userId');
                 $username = $this->getRequest()->getParam('username');
                 $userpass = $this->getRequest()->getParam('userpass');
-                $update_sql = "UPDATE ".$tableName." SET 
+             
+               /* $update_sql = "UPDATE ".$tableName." SET 
                 token='$token',
                 campaignId='$campaignId',
                 userId='$userId',
                 username='$username',
                 userpass='$userpass' 
+                WHERE id='1'";
+                */
+                $update_sql = "UPDATE ".$tableName." SET 
+                token='$token',
+                campaignId='$campaignId',
+                userId='$userId'
                 WHERE id='1'";
                 if ($connection->query($update_sql)) {
                     $objectManager->setToken($token);
@@ -88,6 +154,7 @@ class Index extends \Magento\Backend\App\Action
                 $userId = $this->getRequest()->getParam('userId');
                 $username = $this->getRequest()->getParam('username');
                 $userpass = $this->getRequest()->getParam('userpass');
+
                 $update_sql = "UPDATE ".$tableName." SET 
                 token='$token',
                 campaignId='$campaignId',

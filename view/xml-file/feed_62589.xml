@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<product id="Default Store View">
+  <details/>
+  <details id="1">
+    <id>1</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product1.html</landing_page>
+    <title>Canvas Shoe</title>
+    <brand>Shoe-Canvas Shoe</brand>
+    <category>Shoe</category>
+    <handle>https://appsmagneto.mainadv.com/product1.html</handle>
+    <price>55</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/s/h/shoe3.jpg</images>
+  </details>
+  <details id="2">
+    <id>2</id>
+    <quantity>88</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product2.html</landing_page>
+    <title>Florescent T-Shirt</title>
+    <brand>T-Shirt-Florescent T-Shirt</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product2.html</handle>
+    <price>30</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/t/s/tshirt.jpeg</images>
+  </details>
+  <details id="3">
+    <id>3</id>
+    <quantity>60</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-3.html</landing_page>
+    <title>Half Tee</title>
+    <brand>T-Shirt-Half Tee</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-3.html</handle>
+    <price>60</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/r/preview.jpeg</images>
+  </details>
+  <details id="4">
+    <id>4</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/buzz-t-shirt-to-see-how-long-isnn-t-shirt.html</landing_page>
+    <title>Buzz T-Shirt</title>
+    <brand>T-Shirt-Buzz T-Shirt</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/buzz-t-shirt-to-see-how-long-isnn-t-shirt.html</handle>
+    <price>20</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/b/u/buzz_t-shirt.jpg</images>
+  </details>
+  <details id="5">
+    <id>5</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-4.html</landing_page>
+    <title>Churidhar</title>
+    <brand>Gown-Churidhar</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-4.html</handle>
+    <price>20</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/c/h/churidhar.jpg</images>
+  </details>
+  <details id="6">
+    <id>6</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-5.html</landing_page>
+    <title>Embroidered Silk Blend Semi Stitched Anarkali Gown  (Purple)</title>
+    <brand>Gown-Embroidered Silk Blend Semi Stitched Anarkali Gown  (Purple)</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-5.html</handle>
+    <price>10</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/a/n/anarkali_gown.jpeg</images>
+  </details>
+  <details id="7">
+    <id>7</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-6.html</landing_page>
+    <title>Sneakers For Men  (Multicolor)</title>
+    <brand>Shoe-Sneakers For Men  (Multicolor)</brand>
+    <category>Shoe</category>
+    <handle>https://appsmagneto.mainadv.com/product-6.html</handle>
+    <price>12</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/s/n/sneakers_for_men.jpeg</images>
+  </details>
+  <details id="8">
+    <id>8</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-7.html</landing_page>
+    <title>Color Block Men Round Neck Dark Blue, Grey T-Shirt</title>
+    <brand>T-Shirt-Color Block Men Round Neck Dark Blue, Grey T-Shirt</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-7.html</handle>
+    <price>30</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/r/o/roundneck_men.jpeg</images>
+  </details>
+  <details id="9">
+    <id>9</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-8.html</landing_page>
+    <title>Checkered Printed Shirt</title>
+    <brand>Shirt-Checkered Printed Shirt</brand>
+    <category>Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-8.html</handle>
+    <price>30</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/r/printedshirts_men.jpeg</images>
+  </details>
+  <details id="10">
+    <id>10</id>
+    <quantity>15</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-9.html</landing_page>
+    <title>Solid Men Hooded Neck Black T-Shirt</title>
+    <brand>T-Shirt-Solid Men Hooded Neck Black T-Shirt</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-9.html</handle>
+    <price>65</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/h/o/hoodedt-shirt.jpeg</images>
+  </details>
+  <details id="11">
+    <id>11</id>
+    <quantity>20</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-10.html</landing_page>
+    <title>Full Sleeve Striped Men Jacket</title>
+    <brand>T-Shirt-Full Sleeve Striped Men Jacket</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-10.html</handle>
+    <price>15</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/f/u/full_sleeve_striped_men_jacket.jpeg</images>
+  </details>
+  <details id="12">
+    <id>12</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-11.html</landing_page>
+    <title>Rayon Solid, Printed Shirt Fabric  (Unstitched)</title>
+    <brand>Shirt-Rayon Solid, Printed Shirt Fabric  (Unstitched)</brand>
+    <category>Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-11.html</handle>
+    <price>16</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/r/printed_shirt_fabric.jpeg</images>
+  </details>
+  <details id="13">
+    <id>13</id>
+    <quantity>60</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-12.html</landing_page>
+    <title>Front Cross-Shirt</title>
+    <brand>Shirt-Front Cross-Shirt</brand>
+    <category>Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-12.html</handle>
+    <price>10</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/c/r/crossshirt.jpeg</images>
+  </details>
+  <details id="14">
+    <id>14</id>
+    <quantity>12</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-13.html</landing_page>
+    <title>Printed Men Hooded Neck Yellow T-Shirt</title>
+    <brand>T-Shirt-Printed Men Hooded Neck Yellow T-Shirt</brand>
+    <category>T-Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-13.html</handle>
+    <price>10</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/f/a/fastcolorst-shirt.jpeg</images>
+  </details>
+  <details id="15">
+    <id>15</id>
+    <quantity>12</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-14.html</landing_page>
+    <title>Check Shirt</title>
+    <brand>Shirt-Check Shirt</brand>
+    <category>Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-14.html</handle>
+    <price>13</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/c/h/checkshirt.jpeg</images>
+  </details>
+  <details id="16">
+    <id>16</id>
+    <quantity>14</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-15.html</landing_page>
+    <title>Printed Men Hooded Neck White, Red T-Shirt</title>
+    <brand>Shirt-Printed Men Hooded Neck White, Red T-Shirt</brand>
+    <category>Shirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-15.html</handle>
+    <price>18</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/h/o/hoodedneck.jpeg</images>
+  </details>
+  <details id="17">
+    <id>17</id>
+    <quantity>14</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-16.html</landing_page>
+    <title>Women Fit and Flare Multicolor Dress</title>
+    <brand>Gown-Women Fit and Flare Multicolor Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-16.html</handle>
+    <price>10</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/f/l/flare_dress.jpeg</images>
+  </details>
+  <details id="18">
+    <id>18</id>
+    <quantity>56</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-17.html</landing_page>
+    <title>Women Wrap Yellow Dress</title>
+    <brand>Gown-Women Wrap Yellow Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-17.html</handle>
+    <price>10</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/w/r/wrapyellowdress.jpeg</images>
+  </details>
+  <details id="19">
+    <id>19</id>
+    <quantity>13</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-18.html</landing_page>
+    <title>Women Gown Beige Dress</title>
+    <brand>Gown-Women Gown Beige Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-18.html</handle>
+    <price>12</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/w/o/women_gown_beige_dress.jpeg</images>
+  </details>
+  <details id="20">
+    <id>20</id>
+    <quantity>15</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-19.html</landing_page>
+    <title>Maxi Dark Blue Dress</title>
+    <brand>Gown-Maxi Dark Blue Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-19.html</handle>
+    <price>10</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/m/a/maxidarkblue.jpeg</images>
+  </details>
+  <details id="21">
+    <id>21</id>
+    <quantity>15</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-20.html</landing_page>
+    <title>Maxi MultiColor Dress</title>
+    <brand>Gown-Maxi MultiColor Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-20.html</handle>
+    <price>20</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/m/u/multicolordress.jpeg</images>
+  </details>
+  <details id="22">
+    <id>22</id>
+    <quantity>67</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-21.html</landing_page>
+    <title>Gathered Black Dress</title>
+    <brand>Gown-Gathered Black Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-21.html</handle>
+    <price>20</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/g/a/gathered_black_dress.jpeg</images>
+  </details>
+  <details id="23">
+    <id>23</id>
+    <quantity>16</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-22.html</landing_page>
+    <title>Designer Dress</title>
+    <brand>Gown-Designer Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-22.html</handle>
+    <price>20</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/d/e/designer_dress.jpeg</images>
+  </details>
+  <details id="24">
+    <id>24</id>
+    <quantity>16</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-23.html</landing_page>
+    <title>Party Wear</title>
+    <brand/>
+    <category/>
+    <handle>https://appsmagneto.mainadv.com/product-23.html</handle>
+    <price>12</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/a/party_wear.jpeg</images>
+  </details>
+  <details id="25">
+    <id>25</id>
+    <quantity>16</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-24.html</landing_page>
+    <title>Western Dress</title>
+    <brand>Gown-Western Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-24.html</handle>
+    <price>5</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/w/e/western_dress.jpg</images>
+  </details>
+  <details id="26">
+    <id>26</id>
+    <quantity>19</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-25.html</landing_page>
+    <title>Ethinic Gown</title>
+    <brand>Gown-Ethinic Gown</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-25.html</handle>
+    <price>60</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/e/t/ethinic_gown.jpeg</images>
+  </details>
+  <details id="27">
+    <id>27</id>
+    <quantity>18</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-26.html</landing_page>
+    <title>Free Flowing Dress</title>
+    <brand>Gown-Free Flowing Dress</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-26.html</handle>
+    <price>20</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/f/r/free_flowing_dress.jpg</images>
+  </details>
+  <details id="28">
+    <id>28</id>
+    <quantity>220</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-27.html</landing_page>
+    <title>Printed Kurta</title>
+    <brand>Gown-Printed Kurta</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-27.html</handle>
+    <price>45</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/r/printed_kurta.jpg</images>
+  </details>
+  <details id="29">
+    <id>29</id>
+    <quantity>12</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-28.html</landing_page>
+    <title>Jump Suit</title>
+    <brand>Gown-Jump Suit</brand>
+    <category>Gown</category>
+    <handle>https://appsmagneto.mainadv.com/product-28.html</handle>
+    <price>15</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/j/u/jump_suit.jpg</images>
+  </details>
+  <details id="30">
+    <id>30</id>
+    <quantity>13</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-29.html</landing_page>
+    <title>Pleated Skirts</title>
+    <brand>Skirt-Pleated Skirts</brand>
+    <category>Skirt</category>
+    <handle>https://appsmagneto.mainadv.com/product-29.html</handle>
+    <price>100</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/l/pleated_skirts.jpg</images>
+  </details>
+  <details id="31">
+    <id>31</id>
+    <quantity>12</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-30.html</landing_page>
+    <title>Printed Kurta and Kurtis</title>
+    <brand>Churidhar-Printed Kurta and Kurtis</brand>
+    <category>Churidhar</category>
+    <handle>https://appsmagneto.mainadv.com/product-30.html</handle>
+    <price>16</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/p/r/printed_kurta_and_kurtis.jpg</images>
+  </details>
+</product>

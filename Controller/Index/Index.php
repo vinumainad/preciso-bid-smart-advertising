@@ -36,7 +36,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $listBlock = $this->_view->getLayout()->getBlock('precisobidsmartadvertising.list');
 
         if ($listBlock) {
-            $currentPage = abs(intval($this->getRequest()->getParam('p')));
+            $currentPage = abs(int($this->getRequest()->getParam('p')));
             if ($currentPage < 1) {
                 $currentPage = 1;
             }

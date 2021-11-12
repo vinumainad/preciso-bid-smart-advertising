@@ -5,7 +5,7 @@ jQuery("a.messageDisplaylogin").hover(function(){
 
 jQuery(document).ready(function () {
 	var login = sessionStorage.getItem("login");
-	console.log(login);
+	// console.log(login);
 	if (login === null) {
 		jQuery('.api-loader').hide();
 		jQuery('.login-wrp').show();
@@ -42,7 +42,7 @@ jQuery(document).ready(function () {
 			url: form.attr('action'),
 			data: form.serialize(),
 			success: function (data) {
-				console.log(data);
+				// console.log(data);
 
 				if (data.status.statusCode == 'F_200') {
 					jQuery('.api-loader').css('display', 'none');
@@ -56,7 +56,7 @@ jQuery(document).ready(function () {
 					var token = data.token;
 					var userId = data.userId;
 					var termpage = data.tc;
-					console.log(data.tc);
+					// console.log(data.tc);
 
 					if (typeof (Storage) !== "undefined") {
 
@@ -70,7 +70,7 @@ jQuery(document).ready(function () {
 						// 				userpass: pass.trim()
 						// 			},
 						// 			success: function (response) {
-						// 				console.log(response);
+										console.log(response);
 						// 			}
 						// 		});
 
@@ -117,7 +117,7 @@ jQuery(document).ready(function () {
 									storeUserId: jQuery("#storeUserId").val()
 								},
 								success: function (response) {
-									console.log(response);
+									// console.log(response);
 									if( termpage == false){
 										// alert('termpage');
 										var bodyData = jQuery("#logico-body").attr("data-signed_payload");
@@ -146,7 +146,7 @@ jQuery(document).ready(function () {
 					// 			optionValue:0,
 					// 		},
 					// 		success: function (response) {
-					// 			console.log(response);
+								console.log(response);
 					// 			//location.reload();
 					// 		}
 					// 	});
@@ -161,7 +161,7 @@ jQuery(document).ready(function () {
 					// 			optionValue:1,
 					// 		},
 					// 		success: function (response) {
-					// 			console.log(response);
+								console.log(response);
 					// 			location.reload();
 					// 		}
 					// 	});

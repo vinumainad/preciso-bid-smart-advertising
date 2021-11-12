@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<product id="Default Store View">
+  <details/>
+  <details id="1">
+    <id>1</id>
+    <quantity>10</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product1.html</landing_page>
+    <title>product1</title>
+    <brand/>
+    <handle>https://appsmagneto.mainadv.com/product1.html</handle>
+    <price>55</price>
+    <images>/s/h/shoe3.jpg</images>
+  </details>
+  <details id="2">
+    <id>2</id>
+    <quantity>88</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product2.html</landing_page>
+    <title>product2</title>
+    <brand/>
+    <handle>https://appsmagneto.mainadv.com/product2.html</handle>
+    <price>30</price>
+    <images>/t/s/tshirt.jpeg</images>
+  </details>
+  <details id="3">
+    <id>3</id>
+    <quantity>60</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product-3.html</landing_page>
+    <title>product 3</title>
+    <brand/>
+    <handle>https://appsmagneto.mainadv.com/product-3.html</handle>
+    <price>60</price>
+    <images>/p/r/preview.jpeg</images>
+  </details>
+</product>

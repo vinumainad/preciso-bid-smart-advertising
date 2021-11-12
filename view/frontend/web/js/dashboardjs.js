@@ -114,7 +114,7 @@ function sortDropDownListByText() {
       jQuery.ajax({
         url: "https://api.logico3c.com/api/plugin/masters ",
          success: function(result){
-            console.log(result);
+            // console.log(result);
             var strategyLen = result.strategyList.length;
             var channelLen =result.channelMasters.length;
 
@@ -143,7 +143,7 @@ function sortDropDownListByText() {
               sessionId: 'removeAll',
             },
             success: function (response) {
-              console.log(response);
+              // console.log(response);
               location.reload();
             }
           });
@@ -186,13 +186,13 @@ function sortDropDownListByText() {
 
         setTimeout(function(){
         var formSet= jQuery("#getsettings");
-        console.log(formSet.serialize());
+        // console.log(formSet.serialize());
         jQuery.ajax({
             type: formSet.attr('method'),
             url: formSet.attr('action'),
             data: formSet.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                // window.location.href = 'https://apppartner.logico3c.com/brd-pixel/login.php';
@@ -270,7 +270,7 @@ function sortDropDownListByText() {
                 var pv = data.campaignDetails[0].pv;
                 jQuery('#cokvTime').val(pv);
                var selectedOption = jQuery('#chanelNm').children("option:selected").text();
-               console.log(selectedOption);
+               // console.log(selectedOption);
                if (selectedOption =='Branding' || selectedOption =='Prospecting') {
                 jQuery('#stragName option').each(function(index){
                   if(jQuery(this).text() == 'MainAd Private Audience' || jQuery(this).text() == 'Public Audience'){
@@ -289,7 +289,7 @@ function sortDropDownListByText() {
              }
             }
         });
-        }, 1500);
+        }, 1000);
 
 
 
@@ -300,7 +300,7 @@ function sortDropDownListByText() {
             url: form.attr('action'),
             data: form.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                 jQuery(".destroyCookie").trigger("click");
@@ -336,16 +336,16 @@ function sortDropDownListByText() {
             var sizeCODE = $(this).attr('sizecode');
             $('.creaativeID').val(creativeCode);
             $('.sizeCCode').val(sizeCODE);
-            console.log(creativeCode+sizeCODE);
+            // console.log(creativeCode+sizeCODE);
 
               var formcr= $("#deletebanner");
-              console.log(formcr.serialize());
+              // console.log(formcr.serialize());
               $.ajax({
                   type: formcr.attr('method'),
                   url: formcr.attr('action'),
                   data: formcr.serialize(),
                   success: function (data) {
-                  console.log(data);
+                  // console.log(data);
                   if(data.status.statusCode =='F_200')
                    {
                     $('.api-loader').hide(); 
@@ -356,7 +356,7 @@ function sortDropDownListByText() {
                    {
                      $('.api-loader').hide(); 
                      $('.successalertbanner').show();
-                     console.log('Created Successfully');
+                     // console.log('Created Successfully');
                      // location.reload();
                    }
                   }
@@ -372,7 +372,7 @@ function sortDropDownListByText() {
             url: form.attr('action'),
             data: form.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                
@@ -409,7 +409,7 @@ function sortDropDownListByText() {
             url: form.attr('action'),
             data: form.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                 jQuery(".destroyCookie").trigger("click"); 
@@ -432,19 +432,19 @@ function sortDropDownListByText() {
                 }
                 jQuery('.totalSpentBud').html(totalSpend);
                }
-               console.log('https://api.logico3c.com/api/plugin/getrebate?userId=' + jQuery('.userid').val() + '&token=' + jQuery('.token').val());
+               // console.log('https://api.logico3c.com/api/plugin/getrebate?userId=' + jQuery('.userid').val() + '&token=' + jQuery('.token').val());
                jQuery.ajax({
                 type: 'GET',
                 url: 'https://api.logico3c.com/api/plugin/getrebate?userId=' + jQuery('.userid').val() + '&token=' + jQuery('.token').val(),
                 success: function (data) {
-                  console.log('rebate');
-                  console.log(data);
+                  // console.log('rebate');
+                  // console.log(data);
                   if(data.status.statusCode =='S_200') {
                     var rebateDetails = data.rebateDetails;
                     var count_rebateDetails = rebateDetails.length;
                     var rebateHTML = '';
                     jQuery.each(rebateDetails, function(key,value) {
-                      // console.log("key = " + key +" value = " + JSON.stringify(value) );
+                      console.log("key = " + key +" value = " + JSON.stringify(value) );
                       // if( value.rebate != '' ) {
                       // rebateHTML += '<div class="col-3 offset-right10 "><div class="content-box mr-b0"><span>Deposit</span><h4 class="dayImp">' + value.slabFrom + '</h4><span>' + value.rebate + ' Rebate</span></div></div>'; 
                       // } else {
@@ -471,8 +471,8 @@ function sortDropDownListByText() {
               url: remainBal.attr('action'),
               data: remainBal.serialize(),
               success: function (data) {
-                console.log('remainBalance');
-                console.log(data);
+                // console.log('remainBalance');
+                // console.log(data);
               if(data.status.statusCode =='F_200')
                {
                 jQuery(".destroyCookie").trigger("click"); 
@@ -509,13 +509,13 @@ function sortDropDownListByText() {
         }, 300000);
 
         var dailyReport= jQuery("#dailyreport");
-        console.log(dailyReport.serialize());
+        // console.log(dailyReport.serialize());
       jQuery.ajax({
             type: dailyReport.attr('method'),
             url: dailyReport.attr('action'),
             data: dailyReport.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                 jQuery(".destroyCookie").trigger("click");
@@ -539,7 +539,7 @@ function sortDropDownListByText() {
                var totalmediaCost = 0;
                var convesrionSumPCPV = [];
               
-               console.log(weeklyLen);
+               // console.log(weeklyLen);
                if(weeklyLen >= 1) {
                                
                 for (i = 0; i < weeklyLen; i++) {
@@ -662,7 +662,7 @@ function sortDropDownListByText() {
                 });  
 
                 }else{
-                console.log('no');
+                // console.log('no');
                }       
               }
              }
@@ -676,8 +676,8 @@ function sortDropDownListByText() {
               url: remainBal.attr('action'),
               data: remainBal.serialize(),
               success: function (data) {
-                console.log('remainBalance');
-                console.log(data);
+                // console.log('remainBalance');
+                // console.log(data);
               if(data.status.statusCode =='F_200')
                {
                 jQuery(".destroyCookie").trigger("click"); 
@@ -702,7 +702,7 @@ function sortDropDownListByText() {
             url: form.attr('action'),
             data: form.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                 jQuery(".destroyCookie").trigger("click");
@@ -725,7 +725,7 @@ function sortDropDownListByText() {
                  totalSpend = data.totalBudget - data.remainingBudget;
                 }
                 jQuery('.totalSpentBud').html(totalSpend);
-                console.log(totalSpend);
+                // console.log(totalSpend);
                }
              }
             }
@@ -756,7 +756,7 @@ function sortDropDownListByText() {
           });
          } 
        });
-     }, 1500);
+     }, 1000);
 
 
      jQuery('#updatesettingSubmit').click(function(){
@@ -794,7 +794,7 @@ function sortDropDownListByText() {
 
       }else{
         if (freqcp > 255 || pc>255 || pv >255 || dailybud < 0 || monthbud < 0 || pv<0 ||pc<0 ||freqcp<0 ) {
-          console.log('1');
+          // console.log('1');
             jQuery('.freqerror').hide();
             jQuery('.pcerror').hide();
             jQuery('.pverror').hide();
@@ -815,8 +815,8 @@ function sortDropDownListByText() {
           }else{
 
     if( parseInt(dailybud) > parseInt(monthbud)){
-      console.log(dailybud);
-      console.log(monthbud);
+      // console.log(dailybud);
+      // console.log(monthbud);
       jQuery('.dailybuderror').show();
       jQuery('.totalBUDGETMore').hide();
       jQuery('.totalbuderror').show();
@@ -832,7 +832,7 @@ function sortDropDownListByText() {
               jQuery('.landignerror').hide(); 
               jQuery('.dailybuderror').hide();
               jQuery('.totalbuderror').hide();
-              console.log(form.serialize());
+              // console.log(form.serialize());
 
               // jQuery('.api-loader').css('display','block');
               jQuery.ajax({
@@ -840,7 +840,7 @@ function sortDropDownListByText() {
                   url: form.attr('action'),
                   data: form.serialize(),
                   success: function (data) {
-                  console.log(data);
+                  // console.log(data);
                   if(data.status.statusCode =='F_200')
                    {
                      jQuery('.failedalert').show();
@@ -909,14 +909,14 @@ function sortDropDownListByText() {
             url: formcr.attr('action'),
             data: formcr.serialize(),
             success: function (data) {
-            console.log(data);
+            // console.log(data);
             if(data.status.statusCode =='F_200')
              {
                
              }
              if(data.status.statusCode =='S_200')
              {
-               console.log('Created Successfully');
+               // console.log('Created Successfully');
                location.reload();
              }
             }

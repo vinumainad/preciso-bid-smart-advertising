@@ -39,19 +39,49 @@ define([
               }
           });
 
-          setTimeout(function () {
-              sortDropDownListByText();
-              jQuery('#ddlCurrency option[value="empty"]').insertBefore('#ddlCurrency option[value="AFN"]');
-              jQuery('#ddlRegion option[value="All"]').insertBefore('#ddlRegion option[value="AF"]');
-              
-              jQuery('#ddlCurrency option').each(function (index) {
-                  if (jQuery(this).text() == 'Euro Member Countries') {
-                      jQuery(this).prop('selected', true);
-                  } else {}
-              });
-              jQuery('.api-loader').hide();
+            setTimeout(function() {
+            sortDropDownListByText();
+            $('#ddlCurrency option[value="empty"]').insertBefore('#ddlCurrency option[value="AFN"]');
+            $('#ddlRegion option[value="All"]').insertBefore('#ddlRegion option[value="AF"]');
+            $('#ddlLanguage option[value="default"]').insertBefore('#ddlLanguage option[value="AB"]');
+            $('#ChanelID option[value="empty"]').insertBefore('#ChanelID option[value="3"]');
+            $('#ddldeviceId option[value="empty"]').insertBefore('#ddldeviceId option[value="1"]');
+            $('#ddlStrategy option[value="empty"]').insertBefore('#ddlStrategy option[value="23"]');
+            $('#ddlStrategy option').each(function(index) {
+                if ($(this).val() == '19') {
+                    $(this).prop('selected', true);
+                } else {}
+            });
+            $('#ddldeviceId option').each(function(index) {
+                if ($(this).text() == 'All') {
+                    $(this).prop('selected', true);
+                } else {}
+            });
+            $('#ddlLanguage option').each(function(index) {
+                if ($(this).text() == 'English') {
+                    $(this).prop('selected', true);
+                } else {}
+            });
+            $('#ddlCurrency option').each(function(index) {
+                if ($(this).text() == 'Euro Member Countries') {
+                    $(this).prop('selected', true);
+                } else {}
+            });
+            $('#ChanelID option').each(function(index) {
+                if ($(this).text() == 'Retargeting') {
+                    $(this).prop('selected', true);
+                } else {}
+            });
+            $('#ChanelID option').each(function(index) {
+                if ($(this).text() == 'Retargeting') {
+                    $(this).prop('selected', true);
+                } else {}
+            });
+            $('.api-loader').hide();
+            // $('#rawa-box').css('opacity','1');
+            // $('#rawa-box').css('visibility', 'visible');
 
-          }, 3000);
+        }, 100);
 
           jQuery('.btn-green').click(function () {
               jQuery('.api-loader').show();
@@ -125,12 +155,41 @@ define([
               });
           }
 
+           function checkImage(url) {
+              var request = new XMLHttpRequest();
+              request.open("GET", url, true);
+              request.send();
+              request.onload = function() {
+                status = request.status;
+                if (request.status == 200) //if(statusText == OK)
+                { 
+                  return true;
+                  // console.log("image exists");
+                } else {
+                  return false;
+                  // console.log("image doesn't exist");
+                }
+              }
+            }
+
+
           jQuery("#regisnSubmit").click(function (event) {
+           
               jQuery('.fcaperror').hide();
               jQuery('.pcerror').hide();
               jQuery('.pverror').hide();
               jQuery('.maxcpmerror').hide();
-
+              
+              var storeLogo = jQuery('#inputStoreLogo').val();
+              if (storeLogo == ''){
+                 jQuery('#inputStoreLogo').val('https://apppartner.preciso.net/assets/logo-preciso.png');
+              }
+              else {
+                 if( ! checkImage(storeLogo) ) {
+                    jQuery('#inputStoreLogo').val('https://apppartner.preciso.net/assets/logo-preciso.png');
+                 }
+              }
+            
               var email = jQuery('#inputEmail').val();
               var domainUrl = jQuery('#inputWebsiteURL').val();
               var programNm = jQuery('#ddlProgramName').val();
@@ -169,6 +228,7 @@ define([
               // console.log();
 
               if (email == '' || domainUrl == '' || programNm == '' || storeLogo == '' || cnctNum == '' || ddlReg == '' || ddllang == '' || ddlcurr == '' || chnllId == '' || inputCpm == '' || deviceId == '' || freqcp == '' || pc == '' || pv == '' || budget == '' || spendDur == '' || stragey == '' || camptype == '' || storeUrl == 1 || websiteUrl == 1) {
+                 
                   if (email == '') {
                       jQuery('.emailerror').show();
                   } else {
@@ -261,6 +321,7 @@ define([
                   }
 
               } else {
+
                   if (freqcp > 255 || pc > 255 || pv > 255 || inputCpm > 51 || ddlReg == 'All') {
                       if (freqcp > 255) {
                       jQuery('.fcaperror').text('You Enter Wrong Value' + freqcp + '. Please Enter Number Between 0-255');
@@ -320,37 +381,37 @@ define([
                       jQuery('.api-loader').show();
                       var form = jQuery("#target");
                       // console.log(form.serialize());
-                      var BigcommerceUserID = jQuery('#BigcommerceUserID').val();
+                    //  var BigcommerceUserID = jQuery('#BigcommerceUserID').val();
                       jQuery.ajax({
                       type: form.attr('method'),
                       url: form.attr('action'),
                       data: form.serialize(),
                       success: function (data) {
+                       
                           // console.log(data.status.statusCode);
                           if (data.status.statusCode == 'F_200') {
                               jQuery('.api-loader').css('display', 'none');
                               jQuery('.failedalert').show();
                           }
                           if (data.status.statusCode == 'S_200') {                              
-                              
-                              jQuery.ajax({
+                              var password = data.UserDetails.password;
+                              var email = data.UserDetails.userName;
+                               jQuery.ajax({
                                   url : customurl,
                                   type: 'post',
                                   data: {
                                   form_key: window.FORM_KEY,
                                   optionname: 'plugin_set',
-                                  optionvalue: 1
+                                  optionvalue: 1,
+                                   email:email,
+                                   password:password
                                   },
                                   success: function (response) {
                                     jQuery('.api-loader').hide();
                                     jQuery('.successalert').show();
-                                  // console.log(response);
-                                  // var url = window.location.href;
-                                  // console.log(url);
-                                  // window.location.href = 'https://appbigcommercetest.mainad.com/'; //Will take you to Google.
-                                  // location.reload();
+                                 
                                   }
-                              });
+                              });                            
                           }
                       }
                       });

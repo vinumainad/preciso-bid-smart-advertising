@@ -17,10 +17,10 @@ define([
 
 			if (!filter.test(email.value)) {
 			  jQuery('.emailerror').show();
-			  jQuery('input#inputEmail').css({
+			/*  jQuery('input#inputEmail').css({
 			  'border': '1px solid red',
 			  'background': '#ff000021'
-			  });
+			  });*/
 			  email.focus;
 			  return false;
 			} else {

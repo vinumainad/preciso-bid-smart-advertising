@@ -1,6 +1,7 @@
 <?php
 // Get shop url
 // phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod
+
 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 $storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
 $shop_url = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
@@ -9,6 +10,10 @@ $admin_name = $objectManager->create(Magento\Backend\Helper\Data::class)->getAre
 $admin_base_url = $shop_url.''.$admin_name;//dirname($admin_base_url);
 $shop_name = $storeManager->getStore()->getName();
 $url = $objectManager->get(\Magento\Backend\Model\UrlInterface::class);
+if($shop_name=="" || $shop_name==null )
+{
+ $shop_name=="Magento Shop";   
+}
 
 try {
     $_cacheTypeList = $objectManager->create(Magento\Framework\App\Cache\TypeListInterface::class);
@@ -53,9 +58,54 @@ $_resources = \Magento\Framework\App\ObjectManager::getInstance()
 $connection = $_resources->getConnection();
 $isTableExist = $connection->isTableExists('Preciso_plugin_set');
 $tableName = $_resources->getTableName('Preciso_plugin_set');
-if ($isTableExist) {
+
+
+$objectManager =  \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Catalog\Model\Session::class);
+$termPage = $objectManager->getMyName();
+$GetUserToken = $objectManager->getToken();
+$GetUserCampaignId = $objectManager->getCampaignId();
+$GetUserId = $objectManager->getUserId();
+$GetUserName = $objectManager->getUsername();
+$GetUserPass = $objectManager->getUserpass();
+
+
+$blank_page = $objectManager->getBlankPage();
+
+if ($isTableExist) {   
     $select_plugin_data = $connection->fetchAll("SELECT * FROM ".$tableName." WHERE id='1'");
     $plugin_set = $select_plugin_data[0]['plugin_set'];
+    $user_set = $select_plugin_data[0]['username'];
+    
+    $updated_at = $select_plugin_data[0]['updated_at']; 
+    $currentDate = date("Y-m-d");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    
+    $days = 0;
+    if( $updated_at != "" ){
+
+        $diff = abs(strtotime($currentDate) - strtotime($updated_at));
+        $years = floor($diff / (365*60*60*24));
+        $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+    }
+    
+    if( $updated_at == "" && $GetUserCampaignId !="" ) {
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+    }
+    else if( $days > 0 && $GetUserCampaignId !="" ){
+  
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+
+    }
+   
 } else {
     $table = $connection->newTable($tableName)
             ->addColumn(
@@ -106,6 +156,13 @@ if ($isTableExist) {
                 ['nullable'=> false, 'default'=> ''],
                 'User Pass'
             )
+            ->addColumn(
+                'updated_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                 ['nullable'=> false, 'default'=> ''],
+                'Updated At'
+            )
             ->setOption('charset', 'utf8');
     $connection->createTable($table);
 
@@ -114,21 +171,15 @@ if ($isTableExist) {
             'campaignId' => '0',
             'userId' => '0',
             'username' => '',
-            'userpass' => ''
+            'userpass' => '',
+            'updated_at' => ''
         ];
     $connection->insert($tableName, $data);
 
     $plugin_set = 0;
 }
-// termpage
-$objectManager =  \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Catalog\Model\Session::class);
-$termPage = $objectManager->getMyName();
-$GetUserToken = $objectManager->getToken();
-$GetUserCampaignId = $objectManager->getCampaignId();
-$GetUserId = $objectManager->getUserId();
-$GetUserName = $objectManager->getUsername();
-$GetUserPass = $objectManager->getUserpass();
 
+// termpage
 // $objectManager->unsToken();
 // $objectManager->unsCampaignId();
 // $objectManager->unsUserId();
@@ -155,7 +206,8 @@ if ($productsCount >= '0') {
     }
 }
 </script>
-    <?php if ($plugin_set == '0') { ?>
+    <?php if ($plugin_set == '0') {
+     ?>
 <!-- Registration Form html Start -->
 <script type="text/x-magento-init">
 {
@@ -178,6 +230,7 @@ if ($productsCount >= '0') {
     }
 }
 </script>
+
 <div class="loader api-loader" ></div>
 <div class="registration_wrp">
     <div class="l-header" style="padding-bottom: 2%;">
@@ -206,18 +259,18 @@ if ($productsCount >= '0') {
                         class="form-control" 
                         id="inputEmail"  
                         
-                        name="UserEmail" required> <!-- onfocusout='Javascript:checkEmail();'  -->
+                        name="UserEmail" required> 
                         <p class="emailerror">Please Enter Valid Email</p>
                     </div>
-                    <div class="form-group col-sm-4">
+                    <div class="form-group col-sm-4" style="display: none;">
                         <label for="ddlProgramName">Shop Name<span class="star">*</span></label>
                         <input type="text" 
                         class="form-control"
                         id="ddlProgramName" 
                         name="ProgramName" 
                         placeholder="Store Name" 
-                        title="Brand name or product name being promoted">
-                        <p class="programerror">Please Enter Valid Value</p>
+                        title="Brand name or product name being promoted" value="<?php echo $shop_name;?>">
+                        <p class="programerror" >Please Enter Valid Value</p>
                     </div>
                     <div class="form-group col-sm-4">
                         <label for="contactNumber">Contact Number<span class="star">*</span></label>
@@ -228,51 +281,47 @@ if ($productsCount >= '0') {
                         placeholder="Contact Number" required>
                         <p class="contacterror">Please Enter Valid Value</p>
                     </div>
-                    <div class="form-group col-sm-4">
-                        <label for="ddlRegion">Select Regions<span class="star">*</span></label>
-                        <select id="ddlRegion" class="form-control" name="RegionCode">
-                            <option selected value="All" class="regionOpt">Select Regions</option>
-                        </select>
-                        <p class="regionerror">Please Select Regions</p>
-                    </div>
-                    <div class="form-group col-sm-4">
+                     <div class="form-group col-sm-4">
                         <label for="inputWebsiteURL">Website Domain URL<span class="star">*</span></label>
                         <input type="text" class="form-control" 
                         id="inputWebsiteURL" name="DomainName" 
-                        placeholder="https://xxxxxxxx.com" 
-                        > <!-- onfocusout='Javascript:validatedomain();' -->
-                        <p class="domainerror">Please Enter Website URL</p>
+                        placeholder="https://xxxxxxxx.com"> 
+                        <p class="domainerror">Please Enter Valid Value</p>
                     </div>
-                    <div class="form-group col-sm-4">
-                        <label for="inputStoreLogo">Store Logo URL<span class="star">*</span></label>
-                        <input type="text" class="form-control" 
-                        id="inputStoreLogo" 
-                        name="CompanyLogo" 
-                        placeholder="https://xxxxxxxx.com/logo.png" 
-                        > <!-- onfocusout='Javascript:validImage();' -->
-                        <p class="storeerror">Please Enter Logo URL</p>
-                    </div>
-                    <div class="form-group col-sm-4">
-                        <label for="ddlCurrency">Select Currency<span class="star">*</span></label>
-                        <select id="ddlCurrency" class="form-control" name="Currency">
-                            <option value="empty" class="currencyOpt">Select Currency</option>
-                        </select>
-                        <p class="currencyerror">Please Select Currency</p>
-                    </div> 
-                    <div class="form-group col-sm-4">
+                
+
+                <div class="form-group col-sm-4" style="max-width: 100%;width: 33.33%;"> 
+                <label for="inputStoreLogo">Store Logo URL</label>
+                <input type="text" class="form-control" id="inputStoreLogo" name="CompanyLogo" placeholder="https://xxxxxxxx.com/logo.png" style="width: 100%">
+                <p class="storeerror">Please Enter Valid Value</p>
+                </div>
+                             
+                   
+                   <div class="form-group col-sm-4" style="max-width: 100%;width: 33.33%;" >
+                <label for="ddlRegion">Select Campaign's Region<span class="star">*</span></label>
+                <select id="ddlRegion" class="form-control" name="RegionCode" style="width: 100%"><option selected="" value="All" class="regionOpt">Select Regions</option><option value="AF">AFGHANISTAN</option><option value="AL">ALBANIA</option><option value="DZ">ALGERIA</option><option value="AS">AMERICAN SAMOA</option><option value="AD">ANDORRA</option><option value="AO">ANGOLA</option><option value="AI">ANGUILLA</option><option value="AQ">ANTARCTICA</option><option value="AG">ANTIGUA AND BARBUDA</option><option value="AR">ARGENTINA</option><option value="AM">ARMENIA</option><option value="AW">ARUBA</option><option value="AU">AUSTRALIA</option><option value="AT">AUSTRIA</option><option value="AZ">AZERBAIJAN</option><option value="BS">BAHAMAS</option><option value="BH">BAHRAIN</option><option value="BD">BANGLADESH</option><option value="BB">BARBADOS</option><option value="BY">BELARUS</option><option value="BE">BELGIUM</option><option value="BZ">BELIZE</option><option value="BJ">BENIN</option><option value="BM">BERMUDA</option><option value="BT">BHUTAN</option><option value="BO">BOLIVIA</option><option value="BA">BOSNIA AND HERZEGOWINA</option><option value="BW">BOTSWANA</option><option value="BV">BOUVET ISLAND</option><option value="BR">BRAZIL</option><option value="IO">BRITISH INDIAN OCEAN TERRITORY</option><option value="BN">BRUNEI DARUSSALAM</option><option value="BG">BULGARIA</option><option value="BF">BURKINA FASO</option><option value="BI">BURUNDI</option><option value="KH">CAMBODIA</option><option value="CM">CAMEROON</option><option value="CA">CANADA</option><option value="CV">CAPE VERDE</option><option value="KY">CAYMAN ISLANDS</option><option value="CF">CENTRAL AFRICAN REPUBLIC</option><option value="TD">CHAD</option><option value="CL">CHILE</option><option value="CN">CHINA</option><option value="CX">CHRISTMAS ISLAND</option><option value="CC">COCOS (KEELING) ISLANDS</option><option value="CO">COLOMBIA</option><option value="KM">COMOROS</option><option value="CG">CONGO</option><option value="CD">CONGO, THE DRC</option><option value="CK">COOK ISLANDS</option><option value="CR">COSTA RICA</option><option value="CI">COTE D'IVOIRE</option><option value="HR">CROATIA (LOCAL NAME: HRVATSKA)</option><option value="CU">CUBA</option><option value="CY">CYPRUS</option><option value="CZ">CZECH REPUBLIC</option><option value="DK">DENMARK</option><option value="DJ">DJIBOUTI</option><option value="DM">DOMINICA</option><option value="DO">DOMINICAN REPUBLIC</option><option value="TP">EAST TIMOR</option><option value="EC">ECUADOR</option><option value="EG">EGYPT</option><option value="SV">EL SALVADOR</option><option value="GQ">EQUATORIAL GUINEA</option><option value="ER">ERITREA</option><option value="EE">ESTONIA</option><option value="ET">ETHIOPIA</option><option value="FK">FALKLAND ISLANDS (MALVINAS)</option><option value="FO">FAROE ISLANDS</option><option value="FJ">FIJI</option><option value="FI">FINLAND</option><option value="FR">FRANCE</option><option value="FX">FRANCE, METROPOLITAN</option><option value="GF">FRENCH GUIANA</option><option value="PF">FRENCH POLYNESIA</option><option value="TF">FRENCH SOUTHERN TERRITORIES</option><option value="GA">GABON</option><option value="GM">GAMBIA</option><option value="GE">GEORGIA</option><option value="DE">GERMANY</option><option value="GH">GHANA</option><option value="GI">GIBRALTAR</option><option value="GLB">GLOBAL</option><option value="GR">GREECE</option><option value="GL">GREENLAND</option><option value="GD">GRENADA</option><option value="GP">GUADELOUPE</option><option value="GU">GUAM</option><option value="GT">GUATEMALA</option><option value="GN">GUINEA</option><option value="GW">GUINEA-BISSAU</option><option value="GY">GUYANA</option><option value="GG">Guernsey</option><option value="HT">HAITI</option><option value="HM">HEARD AND MC DONALD ISLANDS</option><option value="HN">HONDURAS</option><option value="HK">HONG KONG</option><option value="HU">HUNGARY</option><option value="IS">ICELAND</option><option value="IN">INDIA</option><option value="ID">INDONESIA</option><option value="IR">IRAN (ISLAMIC REPUBLIC OF)</option><option value="IQ">IRAQ</option><option value="IE">IRELAND</option><option value="IL">ISRAEL</option><option value="IT">ITALY</option><option value="JM">JAMAICA</option><option value="JP">JAPAN</option><option value="JO">JORDAN</option><option value="JE">Jersey</option><option value="KZ">KAZAKHSTAN</option><option value="KE">KENYA</option><option value="KI">KIRIBATI</option><option value="KP">KOREA, D.P.R.O.</option><option value="KR">KOREA, REPUBLIC OF</option><option value="KW">KUWAIT</option><option value="KG">KYRGYZSTAN</option><option value="LA">LAOS&nbsp;</option><option value="LV">LATVIA</option><option value="LB">LEBANON</option><option value="LS">LESOTHO</option><option value="LR">LIBERIA</option><option value="LY">LIBYAN ARAB JAMAHIRIYA</option><option value="LI">LIECHTENSTEIN</option><option value="LT">LITHUANIA</option><option value="LU">LUXEMBOURG</option><option value="MO">MACAU</option><option value="MK">MACEDONIA</option><option value="MG">MADAGASCAR</option><option value="MW">MALAWI</option><option value="MY">MALAYSIA</option><option value="MV">MALDIVES</option><option value="ML">MALI</option><option value="MT">MALTA</option><option value="MH">MARSHALL ISLANDS</option><option value="MQ">MARTINIQUE</option><option value="MR">MAURITANIA</option><option value="MU">MAURITIUS</option><option value="YT">MAYOTTE</option><option value="MX">MEXICO</option><option value="FM">MICRONESIA, FEDERATED STATES OF</option><option value="MD">MOLDOVA, REPUBLIC OF</option><option value="MC">MONACO</option><option value="MN">MONGOLIA</option><option value="ME">MONTENEGRO</option><option value="MS">MONTSERRAT</option><option value="MA">MOROCCO</option><option value="MZ">MOZAMBIQUE</option><option value="MM">MYANMAR (BURMA)&nbsp;</option><option value="NA">NAMIBIA</option><option value="NR">NAURU</option><option value="NP">NEPAL</option><option value="NL">NETHERLAND</option><option value="AN">NETHERLANDS ANTILLES</option><option value="NC">NEW CALEDONIA</option><option value="NZ">NEW ZEALAND</option><option value="NI">NICARAGUA</option><option value="NE">NIGER</option><option value="NG">NIGERIA</option><option value="NU">NIUE</option><option value="NF">NORFOLK ISLAND</option><option value="MP">NORTHERN MARIANA ISLANDS</option><option value="NO">NORWAY</option><option value="OM">OMAN</option><option value="PK">PAKISTAN</option><option value="PW">PALAU</option><option value="PA">PANAMA</option><option value="PG">PAPUA NEW GUINEA</option><option value="PY">PARAGUAY</option><option value="PE">PERU</option><option value="PH">PHILIPPINES</option><option value="PN">PITCAIRN</option><option value="PL">POLAND</option><option value="PT">PORTUGAL</option><option value="PR">PUERTO RICO</option><option value="QA">QATAR</option><option value="RE">REUNION</option><option value="RO">ROMANIA</option><option value="RU">RUSSIA</option><option value="RW">RWANDA</option><option value="KN">SAINT KITTS AND NEVIS</option><option value="LC">SAINT LUCIA</option><option value="VC">SAINT VINCENT AND THE GRENADINES</option><option value="WS">SAMOA</option><option value="SM">SAN MARINO</option><option value="ST">SAO TOME AND PRINCIPE</option><option value="SA">SAUDI ARABIA</option><option value="SN">SENEGAL</option><option value="RS">SERBIA</option><option value="SC">SEYCHELLES</option><option value="SL">SIERRA LEONE</option><option value="SG">SINGAPORE</option><option value="SK">SLOVAKIA (SLOVAK REPUBLIC)</option><option value="SI">SLOVENIA</option><option value="SB">SOLOMON ISLANDS</option><option value="SO">SOMALIA</option><option value="ZA">SOUTH AFRICA</option><option value="GS">SOUTH GEORGIA AND SOUTH S.S.</option><option value="SS">SOUTH SUDAN</option><option value="ES">SPAIN</option><option value="LK">SRI LANKA</option><option value="SH">ST. HELENA</option><option value="PM">ST. PIERRE AND MIQUELON</option><option value="SD">SUDAN</option><option value="SR">SURINAME</option><option value="SJ">SVALBARD AND JAN MAYEN ISLANDS</option><option value="SZ">SWAZILAND</option><option value="SE">SWEDEN</option><option value="CH">SWITZERLAND</option><option value="SY">SYRIAN ARAB REPUBLIC</option><option value="TW">TAIWAN, PROVINCE OF CHINA</option><option value="TJ">TAJIKISTAN</option><option value="TZ">TANZANIA, UNITED REPUBLIC OF</option><option value="TH">THAILAND</option><option value="TG">TOGO</option><option value="TK">TOKELAU</option><option value="TO">TONGA</option><option value="TT">TRINIDAD AND TOBAGO</option><option value="TN">TUNISIA</option><option value="TR">TURKEY</option><option value="TM">TURKMENISTAN</option><option value="TC">TURKS AND CAICOS ISLANDS</option><option value="TV">TUVALU</option><option value="UM">U.S. MINOR ISLANDS</option><option value="UG">UGANDA</option><option value="UA">UKRAINE</option><option value="AE">UNITED ARAB EMIRATES</option><option value="UK">UNITED KINGDOM</option><option value="GB">UNITED KINGDOM, GB</option><option value="US" selected="selected">UNITED STATES</option><option value="UY">URUGUAY</option><option value="UZ">UZBEKISTAN</option><option value="VU">VANUATU</option><option value="VE">VENEZUELA</option><option value="VN">VIETNAM</option><option value="VG">VIRGIN ISLANDS (BRITISH)</option><option value="VI">VIRGIN ISLANDS (U.S.)</option><option value="WF">WALLIS AND FUTUNA ISLANDS</option><option value="EH">WESTERN SAHARA</option><option value="YE">YEMEN</option><option value="ZM">ZAMBIA</option><option value="ZW">ZIMBABWE&nbsp;</option></select>
+                <p class="regionerror">Please Select Value</p>
+            </div>
+
+            <div class="form-group col-sm-4" style="">
+                <label for="ddlCurrency">Banner Currency<span class="star">*</span></label>
+                    <select id="ddlCurrency" class="form-control" name="Currency"><option value="empty" class="currencyOpt">Select Currency</option><option value="AFN">Afghanistan Afghani</option><option value="ALL">Albania Lek</option><option value="DZD">Algeria Dinar</option><option value="AOA">Angola Kwanza</option><option value="ARS">Argentina Peso</option><option value="AMD">Armenia Dram</option><option value="AWG">Aruba Guilder</option><option value="AUD">Australia Dollar</option><option value="AZN">Azerbaijan Manat</option><option value="BSD">Bahamas Dollar</option><option value="BHD">Bahrain Dinar</option><option value="BDT">Bangladesh Taka</option><option value="BBD">Barbados Dollar</option><option value="BYN">Belarus Ruble</option><option value="BZD">Belize Dollar</option><option value="BMD">Bermuda Dollar</option><option value="BTN">Bhutan Ngultrum</option><option value="BOB">Bolivia Bolíviano</option><option value="BAM">Bosnia and Herzegovina Convertible Marka</option><option value="BWP">Botswana Pula</option><option value="BRL">Brazil Real</option><option value="BND">Brunei Darussalam Dollar</option><option value="BGN">Bulgaria Lev</option><option value="BIF">Burundi Franc</option><option value="KHR">Cambodia Riel</option><option value="CAD">Canada Dollar</option><option value="CVE">Cape Verde Escudo</option><option value="KYD">Cayman Islands Dollar</option><option value="CLP">Chile Peso</option><option value="CNY">China Yuan Renminbi</option><option value="COP">Colombia Peso</option><option value="XOF">Communauté Financière Africaine (BCEAO) Franc</option><option value="XAF">Communauté Financière Africaine (BEAC) CFA Franc BEAC</option><option value="KMF">Comorian Franc</option><option value="XPF">Comptoirs Français du Pacifique (CFP) Franc</option><option value="CDF">Congo/Kinshasa Franc</option><option value="CRC">Costa Rica Colon</option><option value="HRK">Croatia Kuna</option><option value="CUC">Cuba Convertible Peso</option><option value="CUP">Cuba Peso</option><option value="CZK">Czech Republic Koruna</option><option value="DKK">Denmark Krone</option><option value="DJF">Djibouti Franc</option><option value="DOP">Dominican Republic Peso</option><option value="XCD">East Caribbean Dollar</option><option value="EGP">Egypt Pound</option><option value="SVC">El Salvador Colon</option><option value="ERN">Eritrea Nakfa</option><option value="ETB">Ethiopia Birr</option><option value="EUR">Euro Member Countries</option><option value="FKP">Falkland Islands (Malvinas) Pound</option><option value="FJD">Fiji Dollar</option><option value="GMD">Gambia Dalasi</option><option value="GEL">Georgia Lari</option><option value="GHS">Ghana Cedi</option><option value="GIP">Gibraltar Pound</option><option value="XAU">Gold ounce</option><option value="GTQ">Guatemala Quetzal</option><option value="GGP">Guernsey Pound</option><option value="GNF">Guinea Franc</option><option value="GYD">Guyana Dollar</option><option value="HTG">Haiti Gourde</option><option value="HNL">Honduras Lempira</option><option value="HKD">Hong Kong Dollar</option><option value="HUF">Hungary Forint</option><option value="ISK">Iceland Krona</option><option value="INR">India Rupee</option><option value="IDR">Indonesia Rupiah</option><option value="XDR">International Monetary Fund (IMF) Special Drawing Rights</option><option value="IRR">Iran Rial</option><option value="IQD">Iraq Dinar</option><option value="IMP">Isle of Man Pound</option><option value="ILS">Israel Shekel</option><option value="JMD">Jamaica Dollar</option><option value="JPY">Japan Yen</option><option value="JEP">Jersey Pound</option><option value="JOD">Jordan Dinar</option><option value="KZT">Kazakhstan Tenge</option><option value="KES">Kenya Shilling</option><option value="KPW">Korea (North) Won</option><option value="KRW">Korea (South) Won</option><option value="KWD">Kuwait Dinar</option><option value="KGS">Kyrgyzstan Som</option><option value="LAK">Laos Kip</option><option value="LBP">Lebanon Pound</option><option value="LSL">Lesotho Loti</option><option value="LRD">Liberia Dollar</option><option value="LYD">Libya Dinar</option><option value="MOP">Macau Pataca</option><option value="MKD">Macedonia Denar</option><option value="MGA">Madagascar Ariary</option><option value="MWK">Malawi Kwacha</option><option value="MYR">Malaysia Ringgit</option><option value="MVR">Maldives (Maldive Islands) Rufiyaa</option><option value="MRO">Mauritania, Ouguiya</option><option value="MUR">Mauritius Rupee</option><option value="MXN">Mexico Peso</option><option value="MDL">Moldova Leu</option><option value="MNT">Mongolia Tughrik</option><option value="MAD">Morocco Dirham</option><option value="MZN">Mozambique Metical</option><option value="MMK">Myanmar (Burma) Kyat</option><option value="NAD">Namibia Dollar</option><option value="NPR">Nepal Rupee</option><option value="ANG">Netherlands Antilles Guilder</option><option value="NZD">New Zealand Dollar</option><option value="NIO">Nicaragua Cordoba</option><option value="NGN">Nigeria Naira</option><option value="NOK">Norway Krone</option><option value="OMR">Oman Rial</option><option value="PKR">Pakistan Rupee</option><option value="XPD">Palladium Ounce</option><option value="PAB">Panama Balboa</option><option value="PGK">Papua New Guinea Kina</option><option value="PYG">Paraguay Guarani</option><option value="PEN">Peru Sol</option><option value="PHP">Philippines Peso</option><option value="XPT">Platinum</option><option value="PLN">Poland Zloty</option><option value="QAR">Qatar Riyal</option><option value="RON">Romania Leu</option><option value="RUB">Russia Ruble</option><option value="RWF">Rwanda Franc</option><option value="SHP">Saint Helena Pound</option><option value="WST">Samoa Tala</option><option value="STD">Sao Tomean Dobra</option><option value="SAR">Saudi Arabia Riyal</option><option value="SPL">Seborgan Luigino</option><option value="RSD">Serbia Dinar</option><option value="SCR">Seychelles Rupee</option><option value="SLL">Sierra Leone Leone</option><option value="XAG">Silver Ounce</option><option value="SGD">Singapore Dollar</option><option value="SBD">Solomon Islands Dollar</option><option value="SOS">Somalia Shilling</option><option value="ZAR">South Africa Rand</option><option value="LKR">Sri Lanka Rupee</option><option value="SDG">Sudan Pound</option><option value="SRD">Suriname Dollar</option><option value="SEK">Sweden Krona</option><option value="CHF">Switzerland Franc</option><option value="SYP">Syria Pound</option><option value="TWD">Taiwan New Dollar</option><option value="TJS">Tajikistan Somoni</option><option value="TZS">Tanzania Shilling</option><option value="THB">Thailand Baht</option><option value="TOP">Tonga Paanga</option><option value="TTD">Trinidad and Tobago Dollar</option><option value="TND">Tunisia Dinar</option><option value="TRY">Turkey Lira</option><option value="TMT">Turkmenistan Manat</option><option value="TVD">Tuvalu Dollar</option><option value="UGX">Uganda Shilling</option><option value="UAH">Ukraine Hryvnia</option><option value="AED">United Arab Emirates Dirham</option><option value="GBP">United Kingdom Pound</option><option value="USD">United States Dollar</option><option value="UYU">Uruguay Peso</option><option value="UZS">Uzbekistan Som</option><option value="VUV">Vanuatu Vatu</option><option value="VEF">Venezuela Bolívar</option><option value="VND">Viet Nam Dong</option><option value="YER">Yemen Rial</option><option value="ZMW">Zambia Kwacha</option><option value="ZWD">Zimbabwe Dollar</option><option value="SZL">eSwatini Lilangeni</option></select>
+                <p class="currencyerror">Please Select Value</p>
+            </div>
+                    <div class="form-group col-sm-4" style="display: none;">
                         <label for="dailylBudget">Daily Budget(€)<span class="star">*</span></label>
                         <input type="number" class="form-control" 
                         id="dailylBudget" 
                          
                         name="DailyBudget" 
-                        placeholder="100"> <!-- onfocusout='Javascript:validdailylBudget();' -->
+                        placeholder="100" value="2"> <!-- onfocusout='Javascript:validdailylBudget();' -->
                         <p class="budegeterror">Please Enter Valid Value</p>
                     </div>
-                    <div class="form-group col-sm-4">
+                    <div class="form-group col-sm-4" style="display: none;">
                         <label for="ddlBudget">Total Budget(€)<span class="star">*</span></label>
                         <input type="number" class="form-control"
                          id="ddlBudget" 
-                         
+                         value="5"
                          name="Budget" placeholder="3000"> <!-- onfocusout='Javascript:validddlBudget();' -->
                         <p class="totalbudegeterror">Please Enter Valid Value</p>
                     </div>
@@ -300,6 +349,8 @@ if ($productsCount >= '0') {
                         <input type="hidden" name="store" 
                         value="<?= /* @noEscape */ str_replace(' ', '.', $shop_url); ?>">                
                     </div>
+                      <br>
+            <span class="alert_note">Note : After Registration, You would receive an email with login credentials in the registered email</span>
                     <div class="submit_wrp"> <!-- disabled="disabled" -->
                     <input type="button" id="regisnSubmit" name="submit" value="Sign Up" required>
                     </div>
@@ -331,9 +382,14 @@ if ($productsCount >= '0') {
 </div>
 
 <!-- Registration Form html End -->
-<?php } else { ?>
+
+    <?php } else { 
+    ?>
 <!-- Term Page html Start -->
-        <?php if ($termPage == 'term_page') { ?>
+<?php if ($termPage == 'term_page') { 
+$root = $_SERVER["DOCUMENT_ROOT"];
+include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+            ?>
 <div class="terms">
     <div class="loader api-loader" ></div>
 <div class="l-header">
@@ -346,9 +402,9 @@ if ($productsCount >= '0') {
    </div>
    <input type="hidden" id='shop' value="<?= /* @noEscape */ $shop_url?>">
    <div class="terms-inner content-box"
-    style="background-image: url(https://www.mainad.com/wp-content/themes/mainad/assets/images/logo.svg);
-           background-size: 300%;
-           background-position: 600px 20%;
+    style="background-image: url(https://apppartner.preciso.net/assets/favicon.png);
+           background-size: 65%;
+           background-position: 580px 20%;
            background-repeat: no-repeat;">
       <div style="background-color: rgba(255,255,255,.85);
        max-width: 100%; padding:30px;
@@ -1263,14 +1319,65 @@ if ($productsCount >= '0') {
     }
 }
 </script>
-        <?php } else { ?>
+        <?php } 
+
+else if( true ){
+  
+  // echo $tableName;
+
+    $select_plugin_data = $connection->fetchAll("SELECT * FROM ".$tableName." WHERE id='1'");
+    $plugin_set = $select_plugin_data[0]['plugin_set'];
+    
+    $updated_at = $select_plugin_data[0]['updated_at']; 
+    $currentDate = date("Y-m-d");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    
+    $days = 0;
+    if( $updated_at != "" ){
+
+        $diff = abs(strtotime($currentDate) - strtotime($updated_at));
+        $years = floor($diff / (365*60*60*24));
+        $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+    }
+    
+    if( $updated_at == "" ) {
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+    }
+    else if( $days > 0  ){
+  
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+
+    }
+
+?>
+      <div class="customalert1 successalert">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+           <p><br><span class="ng-binding">Feed Update Triggered but Login is Restricted!</span></p>
+        </div>
+     </div>
+    </div>
+<?php  $objectManager->setBlankPage(''); }
+        else { ?>
 <!-- Term Page html End -->
             <?php if ($GetUserToken !='' && $GetUserCampaignId !=''
             && $GetUserId !='' && $GetUserName !=''
             && $GetUserPass !='') { ?>
 <!-- Dashboard Page html Start -->
 <div class="dashboard_wrp">
-<div class="loader api-loader" ></div>
+<div class="loader api-loader" >
+    <p style="position: relative;top: 53%;font-weight: bold;text-align: center;">Note : Fetching and syncing in progress and can take several minutes. Please do not close the window.</p>
+</div>
 <div class="header">
       <div class="leftHeader">
          <div class="header-wrp">
@@ -1280,21 +1387,20 @@ if ($productsCount >= '0') {
       </div>
       <div class="rightHeader">
          <div class="logButton">
+            <span class="biddingstatus"></span><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
             <a href="javascript:void(0);" class="remainingBalance messageDisplayrefresh" 
-            style="color:#22d022 !important;">Balance : 0</a>
-            <a href="javascript:void(0);" class="messageHiderefresh"></a>
+            style="color:green;">Fund/Budget Balance : 0</a>
+            <a href="javascript:void(0);" class="messageHiderefresh"></a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
             <!-- https://smartbid.preciso.net/#/login
             ?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?> -->
-            <a href="https://smartbid.preciso.net/#/login
-            ?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" class="messageDisplay" 
-            target="_blank">Click to Add Funds</a>
+            <a href="https://smartbid.preciso.net/#/login?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" class="messageDisplay" 
+            target="_blank">Add Funds</a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
             <!-- <a href="https://smartbid.preciso.net/#/login
             ?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" 
             class="messageHide">Add Funds</a> -->
             <!-- <a href="javascript:void(0);" class="destroyCookie">Logout</a> -->
-            <a href="https://smartbid.preciso.net/#/login
-            ?ref=shopify&token=<?= /* @noEscape */ $GetUserToken;?>" 
-            class="pageRedr" target="_blank">Login to Preciso</a>
+            <a href="https://smartbid.preciso.net/#/login?ref=shopify&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="pageRedr" target="_blank">Login to Preciso</a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
             <a href="javascript:void(0);" class="pageRefresh messageDisplayrefreshicon" >
               <img src="<?= /* @noEscape */
                 $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/refresh.png'); ?>">
@@ -1304,10 +1410,133 @@ if ($productsCount >= '0') {
       </div>
    </div>
 </div>
-<div class="skypeBtn">
+
+
+<div class="customalert failedalert">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Campaign Settings Not Updated!</span></p>
+             <button class="btn btn-red">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert successalert">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Campaign Settings Updated Successfully!</span></p>
+           <button class="btn udatesettingssuccess">Got it!</button>
+        </div>
+     </div>
+    </div>
+    <div class="customalert failedpausebanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Banners in Pending Approval Status, Can't be Activated till it is Reviewed & Manually Approved by Preciso Operations Team;  Trying to Edit Image URL/Landing Page URL will put your banner to Pending Approval Status!</span></p>
+             <button class="btn btn-red closepausedbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+
+   <div class="customalert failedpauseotherbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Banners in Pending Approval Status, Can't be Activated till it is Reviewed & Manually Approved by Preciso Operations Team!</span></p>
+             <button class="btn btn-red closepausedotherbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+   <div class="customalert failedpauseohundredbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Forced Pause Banners can't be Activated/Paused, This must have been bought to this state due to lack of performance, Contact Preciso Support !</span></p>
+             <button class="btn btn-red closepauseohundredbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+       <div class="customalert failedcmapaignpaused">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Campaign Bidding Status is Pause in Settings(Bidding Status) field; Change that to Active before Activating Banner Bidding Status individually!</span></p>
+             <button class="btn btn-red closecmapaignpaused">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert statusupdatebanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Status Successfully Updated!</span></p>
+           <button class="btn btn-greenalt statusupdatesuccess ">Got it!</button>
+        </div>
+     </div>
+    </div> 
+
+    <div class="customalert failedalertbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Unable to Delete the Banner!</span></p>
+             <button class="btn btn-red">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert successalertbanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Deleted Successfully!</span></p>
+           <button class="btn btn-greenalt bannerdeletesuccess ">Got it!</button>
+        </div>
+     </div>
+    </div>   
+
+
+    <div class="customalert successcreatebanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Created Successfully!</span></p>
+           <button class="btn btn-greenalt successcreatebtnbanner ">Got it!</button>
+        </div>
+     </div>
+    </div>  
+
+
+    <div class="customalert successupdatebanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Updated Successfully!</span></p>
+           <button class="btn btn-greenalt successupdatebtnbanner ">Got it!</button>
+        </div>
+     </div>
+    </div>     
+
+        <div class="customalert failedcreatebanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Banner Already Exist!</span></p>
+             <button class="btn btn-red closefailbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+<!--<div class="skypeBtn">
     <i class="skypeChat fa fa-skype" aria-hidden="true"></i>
 </div>
-
+-->
 
 <div id="rawa-box" style="width:376px;bottom:170px;border-radius:0px;right: 20px;">
     <div class="rawa-box-container">
@@ -1364,9 +1593,11 @@ if ($productsCount >= '0') {
 <!-- Tabs Start -->
 <section id="tabs">
 <div class="section-wrp">
-    <h6 class="section-title h1">
-      <span>Welcome <?= /* @noEscape */ $shop_name;?></span>
-      <br> Preciso Programmatic Dashboard</h6>
+        <div class="headinggWrp">
+      <span style="display: none;">Welcome <?= /* @noEscape */ $shop_name;?></span>
+    <h6 class="section-title h1">  
+      Preciso Programmatic Dashboard</h6>
+  </div>
     <div class="row">
     <div class="col-xs-12" style="width: 100%;">
     <nav>
@@ -1387,20 +1618,24 @@ if ($productsCount >= '0') {
     <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
     <div class="tab-pane active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
         <div class="bannerStaticwrp">
-            <a href="https://smartbid.preciso.net/#/login
-            ?ref=createstatic&token=<?= /* @noEscape */ $GetUserToken;?>" 
-            class="bannerstaticCreate" 
-            target="_blank" style='font-weight: 500;font-size: 14px;'>Create a Static Banner</a>
-            <span class="seprate" style='font-weight: 500;font-size: 14px;'> | </span>
+            
             <a href="javascript:void(0);" 
             class="bannerdynamicCreate trigger_popup_fricc" 
             style='font-weight: 500;font-size: 14px;'>Create a Static Product Banner</a>
+              <span class="seprate" style='font-weight: 500;font-size: 14px;'> | </span>
+            <a href="https://smartbid.preciso.net/#/login
+            ?ref=createstatic&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="bannerstaticCreate" 
+            target="_blank" style='font-weight: 500;font-size: 14px;'>Upload a Static Banner</a>
+          <span>(Creatives are reviewed during Monday-Friday 6AM to 6PM CET timings!)</span>
+            
 
             <div class="hover_bkgr_fricc">
                 <span class="helper"></span>
                 <div>
 
                     <div class="popupCloseButton">&times;</div>
+                    <p style="font-size: 16px;margin-bottom: 2%;text-transform: capitalize;">Select the Product to see the Product Details below:</p>
                     <div class="banner-wrp-top">
                     <table class="table-striped table-bordered">
                         <tr>
@@ -1420,6 +1655,7 @@ if ($productsCount >= '0') {
                             } else {
                                 $productImageUrl = '';
                             }
+                            // $ProductId = $product->getId();
                             $img = $productImageUrl;
                             $categories = $product->getCategoryIds();
                             $catnames = [];
@@ -1440,6 +1676,8 @@ if ($productsCount >= '0') {
                             <input type ="hidden" class="brand" value="'.$cats.'">
                             <input type ="hidden" class="description" 
                             value="'.strip_tags($product->getDescription()).'">
+                            <input type ="hidden" class="product-id" 
+                            value="'.strip_tags($product->getId()).'">
                             <input type ="hidden" class="price" value="'.$product->getFinalPrice().'">
                             <input type ="hidden" class="imgurl" value="'.$img.'">
                             </div>
@@ -1457,6 +1695,9 @@ if ($productsCount >= '0') {
                         value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
                         <input type="hidden" class="form-control CampaignId" 
                         value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="campaignId">
+                         <input type="hidden" class="form-control flagcreatebtn" value="0" name="creativeeditflag">
+                         <input type="hidden" class="form-control " value="" id="prdIDCR" name="productId">
+                        
                         <div class="form-wrp">
                             <label for="titleval">Title</label>
                             <input type="text" class="form-control" id="titleval" name="title">
@@ -1470,19 +1711,19 @@ if ($productsCount >= '0') {
                             <input type="text" class="form-control" id="descrval" name="description">
                         </div>
                         <div class="form-wrp">
-                            <label for="priceval">Price</label>
+                            <label for="priceval">Price <span style="color:red">*<span class="hideinmobile">Price to be </span>shown in Banner Currency</span></label>
                             <input type="text" class="form-control" id="priceval" name="price">
                         </div>
                         <div class="form-wrp">
                             <label for="imageurl">Image Url</label>
-                            <input type="text" class="form-control" id="imageurl" name="image">
+                            <input type="text" class="form-control imageurl1" id="imageurl" name="image">
                         </div>
                         <div class="form-wrp">
                             <label for="landingpageurl">Landing Page Url</label>
-                            <input type="text" class="form-control" id="landingpageurl" name="landingpage">
+                            <input type="text" class="form-control landingpageurl1" id="landingpageurl" name="landingpage">
                         </div>
                     </form>
-                    <input type="button" class='btn btn-green dynamicbannercreate' 
+                    <input type="button" class='dynamicbannercreate' 
                     id="dynamicbannercreate" name="submit" value="Create Banner">
                     <form id='deletebanner' action="https://api.preciso.net/api/plugin/deletebanner" method="post">
                         <input type="hidden" class="form-control token" 
@@ -1507,13 +1748,15 @@ if ($productsCount >= '0') {
                 <input type="hidden" class="form-control CampaignId" 
                 value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="CampaignId">
             </form>
-            <tr>
-                <th>Banner Size</th>
-                <th>Creative Id</th>
-                <th>Banner Type</th>
-                <th>Bidder Status</th>
-                <th>&nbsp;</th>
-            </tr>
+           <tr>
+                      <th>Banner Title</th>
+                      <th class="hideinmobile">Banner Size</th>
+                      <th>Creative Id</th>
+                      <th>Banner Type</th>
+                      <th>Creative Status</th>
+                      <th>Bidding Status</th>
+                      <th>&nbsp;</th>
+                    </tr>
             <tr class="dyncrow"></tr>
         </table>
 
@@ -1530,14 +1773,14 @@ if ($productsCount >= '0') {
 
         <div class="tab-pane " id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
             <div class="payment-wrp">
-            <h3 class="priceWrp">Remaining Budget : <span class="remainBudget">0</span></h3>
             <h3 class="priceWrp">Total Budget : <span class="totalBudget">0</span></h3>
-            <br>
-            <h3 class="priceWrp">Total Payment Received : <span class="paymentRecevied">0</span></h3>
-            <h3 class="priceWrp">Total Remaining Fund Available : <span class="totalFundRemain">0</span></h3>
-            <br>
-            <h3 class="priceWrp deposit_money_rebate">Deposit Money : </h3>
-            <br>
+            <h3 class="priceWrp">Approx. Remaining Budget : <span class="remainBudget">0</span></h3>
+            <!-- <br> -->
+            <!-- h3 class="priceWrp">Total Payment Received : <span class="paymentRecevied">0</span></h3>
+            <h3 class="priceWrp">Total Remaining Fund Available : <span class="totalFundRemain">0</span></h3> -->
+            <!-- <br> -->
+            <!-- <h3 class="priceWrp deposit_money_rebate">Deposit Money : </h3> -->
+            <!-- <br> -->
             <div class="col-12" id="deposit_money_rebate"> </div><br>
             <a 
             href="https://smartbid.preciso.net/#/login?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" 
@@ -1572,9 +1815,14 @@ if ($productsCount >= '0') {
         <div class="tab-pane " id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
 
             <div class="register_wrp">
+<!--
 <div class="skypeBtn">
     <i class="skypeChat fa fa-skype" aria-hidden="true"></i>
 </div>
+-->
+
+
+
 <div id="rawa-box" style="width:376px;bottom:170px;border-radius:0px;right: 20px;">
     <div class="rawa-box-container">
         <div class="rawa-header" style="border-radius: 0px; height: 153px;">
@@ -1627,7 +1875,7 @@ if ($productsCount >= '0') {
         </div>
     </div>
 </div>
-            <h2 style="font-size: 26px;">User Settings</h2>
+            <h2 style="font-size: 26px;">Campaign Settings</h2>
             <input type="hidden" value="<?= /* @noEscape */ $shop_name; ?>" id='shop'>
             <div class="col-13 form-elem-wrap offset-right10">
                 <label for="cmpID">Campaign Id</label>
@@ -1644,7 +1892,7 @@ if ($productsCount >= '0') {
                 <input type="text" class="form-control" id="prmName" style="background: #dcdcdc;" readonly>
             </div>
             <div class="clear"></div>
-            <div class="col-13 form-elem-wrap offset-right10">
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
                 <label for="langName">Banner Language</label>
                 <input type="text" class="form-control" id="langName" style="background: #dcdcdc;" readonly>
             </div>
@@ -1659,11 +1907,11 @@ if ($productsCount >= '0') {
                 <a class="deiveURL" target="_blank" href="javascript:void(0);">Device Details</a>
             </div>
             
-            <div class="col-13 form-elem-wrap offset-right10">
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
                 <label for="currency">Currency</label>
                 <input type="text" class="form-control" id="currency" style="background: #dcdcdc;" readonly>
             </div>
-            <div class="col-13 form-elem-wrap offset-right10">
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
                 <label for="payuType">Payout Type</label>
                 <input type="text" class="form-control" id="payuType" style="background: #dcdcdc;" readonly>
             </div>
@@ -1711,6 +1959,7 @@ if ($productsCount >= '0') {
                     <label for="mntBud">Total Budget(€)</label>
                     <input type="number" class="form-control" id="mntBud" name="totalBudget">
                     <p class="totalbuderror">Please Enter Valid Value</p>
+                    <p class="totalBUDGETMore">Already total spent is <span class='totalSpentBud'>9</span> € and you can't reduce total budget to less than that value this month (next month you can do  it)</p>
                 </div>
 
                 <div class="col-13 form-elem-wrap offset-right10">
@@ -1726,7 +1975,7 @@ if ($productsCount >= '0') {
                     <label for="landPage">Landing Page</label>
                     <input type="text" class="form-control" 
                     id="landPage" name="landingPage"> 
-                    <!-- onfocusout='Javascript:validatestore();' -->
+                  
                     <p class="landignerror">Please Enter Valid Value</p>
                 </div>
                 <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
@@ -1745,9 +1994,8 @@ if ($productsCount >= '0') {
                     <input type="number"  class="form-control" id="cokvTime" name="PV">
                     <p class="pverror">Please Enter Valid Value</p>
                 </div>
-                <div class="col-13 form-elem-wrap offset-right10 text-right">
-                    <label class="col-10">&nbsp;</label>
-                    <input type="button" id="updatesettingSubmit" name="submit" value="Update Settings" required>
+                <div class="col-13 form-elem-wrap offset-right10 text-right" style="margin: 20px 0px 0px 0px;text-align: center !important;width: 100% !important">
+                      <input type="button" id="updatesettingSubmit" name="submit" value="Update Settings" required>
                 </div>
             </form>
             <!-- settings GEt form  -->
@@ -1778,18 +2026,18 @@ if ($productsCount >= '0') {
                             <h4 class="dayClk"></h4>
                         </div>
                     </div>
-                    <div class="col-5 offset-right10">
+                    <div class="col-10 offset-right10">
                         <div class="content-box">
                             <span>Conversions</span>
                             <h4 class="dayPc conversionPc_PV"></h4>
                         </div>
                     </div>
-                    <div class="col-5 offset-right10">
+                    <!-- <div class="col-5 offset-right10">
                         <div class="content-box">
                             <span>eCPA</span>
                             <h4 class="daypc_pv"></h4>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-5 offset-right10">
                         <div class="content-box">
                             <span>Media Cost</span>
@@ -1807,13 +2055,15 @@ if ($productsCount >= '0') {
                         <div class="centerHeading"><h3>Graphical View - Last 7 Days of General Performance</h3></div>
                         <div class="canvas-wrap">
                             <canvas id="myChart" style="background-color: #fff;"></canvas>
-                            <h5 class="graphAlert">
+                           <!--  <h5 class="graphAlert">
                               The Graph Impressions Scaled Down by 50 For Representation Purpose.
-                            </h5>
+                            </h5> -->
                         </div>
                         </div>
                         <div class="col-14">
-                            <div class="rightHeading"><h3>Last 7 Days Performance</h3></div>
+                            <div class="rightHeading"><h3>Last 7 Days Performance</h3>
+                              <p class="specialbutton"> <span>Full screen view<span></span></span> ⇔</p>
+                            </div>
                             <div class="col-5 offset-right10">
                             <div class="content-box">
                                 <span>Impressions</span>
@@ -1826,18 +2076,18 @@ if ($productsCount >= '0') {
                                 <h4 class="weekClk"></h4>
                             </div>
                             </div>
-                            <div class="col-5 offset-right10">
+                            <div class="col-10 offset-right10">
                             <div class="content-box">
                                 <span>Conversions</span>
                                 <h4 class="weekPc weekConversionPcPV"></h4>
                             </div>
                             </div>
-                            <div class="col-5 offset-right10">
+                           <!--  <div class="col-5 offset-right10">
                             <div class="content-box">
                                 <span>eCPA</span>
                                 <h4 class="weekPc_Pv"></h4>
                             </div>
-                            </div>
+                            </div> -->
                             <div class="col-5 offset-right10">
                             <div class="content-box">
                                 <span>Media Cost</span>
@@ -1864,6 +2114,13 @@ if ($productsCount >= '0') {
                             <input type="hidden" class="form-control CampaignId" 
                             value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="campaignId">
                         </form>
+                        <form id='updateCreativeStatus' action="https://api.preciso.net/api/plugin/updateCreativeStatus" method="post">
+                            <input type="hidden" class="form-control token" value='' name="token">
+                            <input type="hidden" class="form-control CampaignId" value='' name="campaignid">
+                            <input type="hidden" class="form-control cretive_Id" value='' name="CreativeId">
+                            <input type="hidden" class="form-control size_Code" value='' name="sizecode">
+                            <input type="hidden" class="form-control bidder_Status" value='' name="bidderstatus">
+                       </form>
                     </div>
         </div>
     </div>
@@ -1875,7 +2132,7 @@ if ($productsCount >= '0') {
     <a 
     href="https://smartbid.preciso.net/#/login?ref=shopifyhelp&amp;token=<?= /* @noEscape */ $GetUserToken;?>" 
     class="footerLink" target="_blank">Help</a> 
-    <a href="https://storage.googleapis.com/cdn.solocpm.com/Preciso_Magento/Magento_PrecisoPlugin_Help.docx">
+    <a href="https://cdn.solocpm.com/Preciso_Magento/Magento_PrecisoPlugin_Help.docx">
     <img 
     src="<?= /* @noEscape */ $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/download.png'); ?>" 
     style="width: 20px;margin-left: 5px;">
@@ -1884,6 +2141,70 @@ if ($productsCount >= '0') {
 </div>
 </section>
 </div>
+
+<form id="bannerDetails" action="https://api.preciso.net/api/plugin/getbycreativeid" method="post">
+          <input type="hidden" class="form-control token" value="" name="token">
+          <input type="hidden" class="crtVID" value="" name="CreativeId">
+</form>
+
+<div class="edit_banner_popup">
+  <span class="helper"></span>
+  <div>
+    <div class="popupCloseButton_editbanner">&times;</div>
+      <div class="banner-wrp-edit">
+        <h1>Update Banner</h1> 
+          <form id="editBanner" action="https://api.preciso.net/api/plugin/editbanner" method="post">
+                      <input type="hidden" class="form-control token" value='' name="token">
+                      <input type="hidden" class="form-control CampaignId" value='' name="campaignId">
+                      <input type="hidden" class='editcreaativeID' value='' name="creativeId">
+                      <input type="hidden" class="form-control flagbtn" value='0' name="creativeeditflag">
+                      <input type="hidden" class="form-control " value='' class="editprdIDCR" id="editprdIDCR" name="productId">
+
+                      <div class="form-wrp">
+                          <label for="titleval">Title <span style="color:red">*</span></label>
+                          <input type="text" class="form-control titleval" id="titleval" name="title">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="brandval">Brand <span style="color:red">*</span></label>
+                          <input type="text" class="form-control brandval" id="brandval" name="brand">
+                      </div>
+<!--                       <div class="form-wrp">
+                          <label for="descrval">Description</label>
+                          <textarea id="descrval" name="description" class="form-control" style="height: 70px"></textarea>
+                      </div> -->
+                      <div class="form-wrp">
+                          <label for="priceval">Price <span style="color:red">*</span></label>
+                          <input type="text" name="price" min="1" max="5" class="form-control priceval" id="priceval" onkeypress="return onlyNumbers(event)">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="imageurl">Image Url <span style="color:red">*</span></label>
+                          <input type="text" class="form-control imageurl" id="imageurl" name="image">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="landingpageurl">Landing Page Url <span style="color:red">*</span></label>
+                          <input type="text" class="form-control landingpageurl landingpageurlFocusOut" id="landingpageurl" name="landingpage">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="buttontext">Button Text <span style="color:red">*</span></label>
+                          <input type="text" class="form-control buttontext" id="buttontext" name="buttontext">
+                      </div>
+           </form>
+           <input type="button" class='dynamicbanneredit' id="dynamicbanneredit" value="Update">
+      </div>                      
+  </div>
+</div>
+
+
+<div class="customalert failedalert_login">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+         <p>Request failure!<br><span class="ng-binding">Incorrect username or password!</span></p>
+         <button class="btn btn-red">Got it!</button>
+      </div>
+   </div>
+</div>
+
 <div class="customalert failedalert">
    <div class="customalert-inner">
       <div class="customalert-inner-div">
@@ -1893,6 +2214,7 @@ if ($productsCount >= '0') {
       </div>
    </div>
 </div>
+
 <div class="customalert successalert">
    <div class="customalert-inner">
       <div class="customalert-inner-div">
@@ -1993,7 +2315,8 @@ if ($productsCount >= '0') {
                           placeholder="******" 
                           value="<?= /* @noEscape */ $rows[0]['userpass']; ?>" 
                           required="">
-                          <input type="hidden" id="custId" name="custId" value="testvalue" autocomplete="off">
+                     
+                        <input type="hidden" id="custId" name="custId" value="testvalue" autocomplete="off">
                     </div>
                     <p class="passerror" style="color:red">Please Enter Password</p>
 
@@ -2011,7 +2334,7 @@ if ($productsCount >= '0') {
             <div class="col-sm-12 text-center ng-binding" style="color: #000">
               All rights reserved | powered by MainAd  |  
               <a ui-sref="terms" 
-              href="https://www.logico3c.com/#/terms" 
+              href="https://smartbid.preciso.net/#/terms" 
               target="_blank" style="color: #000">
               Terms &amp; Conditions</a>
             </div>
@@ -2043,6 +2366,17 @@ if ($productsCount >= '0') {
         </div>
      </div>
     </div>
+
+<div class="customalert failed_login_alert">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+         <p>Request failure!<br><span class="ng-binding">Username and Password are incorrecr!</span></p>
+         <button class="btn btn-red">Got it!</button>
+      </div>
+   </div>
+</div>
+
 </div>
 <script type="text/x-magento-init">
 {
@@ -2069,5 +2403,6 @@ if ($productsCount >= '0') {
         <h4>Your Store Don't Have More Than 18 Products.</h4>
     </div>
 </div>
-<?php } ?>
+<?php }
+?>
 

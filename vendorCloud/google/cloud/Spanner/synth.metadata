@@ -1,0 +1,55 @@
+{
+  "sources": [
+    {
+      "git": {
+        "name": ".",
+        "remote": "https://github.com/googleapis/google-cloud-php",
+        "sha": "f8c9874178cc0183ec9e5213e1f298ba590eff6f"
+      }
+    },
+    {
+      "git": {
+        "name": "googleapis",
+        "remote": "https://github.com/googleapis/googleapis.git",
+        "sha": "ead32354825c8a8de1cc08bfde2bb26908f071d0",
+        "internalRef": "378237191"
+      }
+    },
+    {
+      "git": {
+        "name": "synthtool",
+        "remote": "https://github.com/googleapis/synthtool.git",
+        "sha": "2430f8d90ed8a508e8422a3a7191e656d5a6bf53"
+      }
+    }
+  ],
+  "destinations": [
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "spanner",
+        "apiVersion": "v1",
+        "language": "php",
+        "generator": "bazel"
+      }
+    },
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "spanner-admin-database",
+        "apiVersion": "v1",
+        "language": "php",
+        "generator": "bazel"
+      }
+    },
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "spanner-admin-instance",
+        "apiVersion": "v1",
+        "language": "php",
+        "generator": "bazel"
+      }
+    }
+  ]
+}
