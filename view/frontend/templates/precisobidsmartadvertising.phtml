@@ -1,0 +1,32 @@
+<?php $_precisobidsmartadvertising = $block->getCollection(); ?>
+<?php if ($_precisobidsmartadvertising->getSize()): ?>
+<div class="precisobidsmartadvertising_list_view">
+    <?php foreach ($_precisobidsmartadvertising as $precisobidsmartadvertisingItem): ?>
+        <div id="item_<?= /* @noEscape */ $precisobidsmartadvertisingItem->getId() ?>" 
+            class="precisobidsmartadvertising_list_item">
+            <h2>
+                <a href="<?= /* @noEscape */ $block->getItemUrl($precisobidsmartadvertisingItem) ?>">
+                    <?= /* @noEscape */ $block->escapeHtml($precisobidsmartadvertisingItem->getTitle()) ?>
+                </a>
+            </h2>
+
+            <div class="precisobidsmartadvertising_item_subtitle">
+                <?= /* @noEscape */ $block->formatDate($precisobidsmartadvertisingItem->getPublishedAt()) ?> |
+                <?= /* @noEscape */ $block->escapeHtml($precisobidsmartadvertisingItem->getAuthor()) ?>
+            </div>
+
+            <?php if ($imageUrl = $block->getImageUrl($precisobidsmartadvertisingItem, 100)): ?>
+               <p><img src="<?= /* @noEscape */ $imageUrl ?>" 
+                alt="<?= $block->escapeHtml($precisobidsmartadvertisingItem->getTitle()); ?>" /></p>
+            <?php endif; ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+    <?= /* @noEscape */ $block->getPager() ?>
+<?php else: ?>
+    <div class="message info empty">
+        <span>
+            <?= /* @noEscape */ __('You have no PrecisoBidSmartAdvertising.'); ?>
+        </span>
+    </div>
+<?php endif ?>

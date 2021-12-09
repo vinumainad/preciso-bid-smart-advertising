@@ -1,0 +1,35 @@
+<?php
+/**
+ * PrecisoBidSmartAdvertising template for separate item
+ *
+ */
+
+/**
+ * @var $this Preciso\PrecisoBidSmartAdvertising\Block\View
+ * @see Preciso\PrecisoBidSmartAdvertising\Block\View
+ */
+?>
+<?php $_precisobidsmartadvertisingItem = $block->getPrecisoBidSmartAdvertising(); ?>
+    <div class="precisobidsmartadvertising_item_subtitle">
+        <?= /* @noEscape */ $block->formatDate($_precisobidsmartadvertisingItem->getPublishedAt()) ?> |
+        <?= /* @noEscape */ $block->escapeHtml($_precisobidsmartadvertisingItem->getAuthor()) ?>
+    </div>
+
+<div class="precisobidsmartadvertising_item_view">
+    <?php if ($imageUrl = $block->getImageUrl($_precisobidsmartadvertisingItem, 400)): ?>
+       <p>
+        <img src="<?= /* @noEscape */ $imageUrl ?>" 
+        alt="<?= $block->escapeHtml($_precisobidsmartadvertisingItem->getTitle()) ?>" />
+       </p>
+    <?php endif; ?>
+
+    <div class="precisobidsmartadvertising_item_content">
+        <?= /* @noEscape */ $_precisobidsmartadvertisingItem->getContent() ?>
+    </div>
+
+    <div class="pager">
+        <a href="<?= /* @noEscape */ $block->getBackUrl() ?>">
+            <?= /* @noEscape */ __('Return to list') ?>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Preciso_PrecisoBidSmartAdvertising::precisobidsmartadvertising" title="Preciso" module="Preciso_PrecisoBidSmartAdvertising" sortOrder="30" resource="Preciso_PrecisoBidSmartAdvertising::precisobidsmartadvertising"/>
+        <add id="Preciso_PrecisoBidSmartAdvertising::precisobidsmartadvertising_manage" title="Preciso Bid-Smart For Merchant" module="Preciso_PrecisoBidSmartAdvertising" sortOrder="10" parent="Preciso_PrecisoBidSmartAdvertising::precisobidsmartadvertising" action="precisobidsmartadvertising/index/" resource="Preciso_PrecisoBidSmartAdvertising::manage"/>
+    </menu>
+</config>

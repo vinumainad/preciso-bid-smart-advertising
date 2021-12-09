@@ -1,0 +1,2413 @@
+<?php
+// Get shop url
+// phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
+$shop_url = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+$admin_base_url = $objectManager->create(Magento\Backend\Helper\Data::class)->getHomePageUrl();
+$admin_name = $objectManager->create(Magento\Backend\Helper\Data::class)->getAreaFrontName();
+$admin_base_url = $shop_url.''.$admin_name;//dirname($admin_base_url);
+$shop_name = $storeManager->getStore()->getName();
+$url = $objectManager->get(\Magento\Backend\Model\UrlInterface::class);
+if($shop_name=="" || $shop_name==null )
+{
+ $shop_name=="Magento Shop";   
+}
+
+try {
+    $_cacheTypeList = $objectManager->create(Magento\Framework\App\Cache\TypeListInterface::class);
+    $_cacheFrontendPool = $objectManager->create(Magento\Framework\App\Cache\Frontend\Pool::class);
+    $types = ['config','layout','block_html',
+              'collections','reflection','db_ddl',
+              'eav','config_integration','config_integration_api',
+              'full_page','translate','config_webservice'];
+    foreach ($types as $type) {
+        $_cacheTypeList->cleanType($type);
+    }
+    foreach ($_cacheFrontendPool as $cacheFrontend) {
+        $cacheFrontend->getBackend()->clean();
+    }
+} catch (Exception $e) {
+    $msg =  'Error : '.$e->getMessage();
+    return $msg;
+}
+
+// echo $url->getSecretKey();
+
+/** @var \Magento\Framework\UrlInterface $urlInterface */
+$urlInterface = \Magento\Framework\App\ObjectManager::getInstance()->get(Magento\Framework\UrlInterface::class);
+$currentUrl = $urlInterface->getCurrentUrl(); //.'?isAjax=true'
+// $ajaxurl = $block->getUrl("PrecisoBidSmartAdvertising/ajax/index").'?isAjax=true'; // Controller Url
+
+// Get products
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
+$productCollection = $objectManager->create(Magento\Catalog\Model\ResourceModel\Product\Collection::class);
+/** Apply filters here */
+$collection = $productCollection->addAttributeToSelect('*')
+            ->load();
+$product_Ids = [];
+foreach ($collection as $product) {
+    $product_Ids[] = $product->getEntityId();
+}
+$productsCount = count($product_Ids);
+
+$_resources = \Magento\Framework\App\ObjectManager::getInstance()
+    ->get(Magento\Framework\App\ResourceConnection::class);
+$connection = $_resources->getConnection();
+$isTableExist = $connection->isTableExists('Preciso_plugin_set');
+$tableName = $_resources->getTableName('Preciso_plugin_set');
+
+
+$objectManager =  \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Catalog\Model\Session::class);
+$termPage = $objectManager->getMyName();
+$GetUserToken = $objectManager->getToken();
+$GetUserCampaignId = $objectManager->getCampaignId();
+$GetUserId = $objectManager->getUserId();
+$GetUserName = $objectManager->getUsername();
+$GetUserPass = $objectManager->getUserpass();
+
+
+$blank_page = $objectManager->getBlankPage();
+
+if ($isTableExist) {   
+    $select_plugin_data = $connection->fetchAll("SELECT * FROM ".$tableName." WHERE id='1'");
+    $plugin_set = $select_plugin_data[0]['plugin_set'];
+    $user_set = $select_plugin_data[0]['username'];
+    
+    $updated_at = $select_plugin_data[0]['updated_at']; 
+    $currentDate = date("Y-m-d");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    
+    $days = 0;
+    if( $updated_at != "" ){
+
+        $diff = abs(strtotime($currentDate) - strtotime($updated_at));
+        $years = floor($diff / (365*60*60*24));
+        $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+    }
+    
+    if( $updated_at == "" && $GetUserCampaignId !="" ) {
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+    }
+    else if( $days > 0 && $GetUserCampaignId !="" ){
+  
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+
+    }
+   
+} else {
+    $table = $connection->newTable($tableName)
+            ->addColumn(
+                'id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['identity'=> true, 'unsigned'=> true, 'nullable'=> false, 'primary'=> true]
+            )
+            ->addColumn(
+                'plugin_set',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['nullable' => false],
+                'Plugin Set'
+            )
+            ->addColumn(
+                'token',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['nullable'=> false, 'default'=> ''],
+                'Token'
+            )
+            ->addColumn(
+                'campaignId',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['nullable' => false],
+                'Campaign ID'
+            )
+            ->addColumn(
+                'userId',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                ['nullable' => false],
+                'User ID'
+            )
+            ->addColumn(
+                'username',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['nullable'=> false, 'default'=> ''],
+                'User Name'
+            )
+            ->addColumn(
+                'userpass',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                ['nullable'=> false, 'default'=> ''],
+                'User Pass'
+            )
+            ->addColumn(
+                'updated_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                 ['nullable'=> false, 'default'=> ''],
+                'Updated At'
+            )
+            ->setOption('charset', 'utf8');
+    $connection->createTable($table);
+
+    $data = [
+            'token' => '',
+            'campaignId' => '0',
+            'userId' => '0',
+            'username' => '',
+            'userpass' => '',
+            'updated_at' => ''
+        ];
+    $connection->insert($tableName, $data);
+
+    $plugin_set = 0;
+}
+
+// termpage
+// $objectManager->unsToken();
+// $objectManager->unsCampaignId();
+// $objectManager->unsUserId();
+// $objectManager->unsUsername();
+// $objectManager->unsUserpass();
+
+if ($productsCount >= '0') {
+    ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/jquery-3.4.1": {
+            "CurrentPage": "jquery-3.4.1"
+        }
+    }
+}
+</script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/bootstrap.min-4.4.1": {
+            "CurrentPage": "bootstrap.min-4.4.1"
+        }
+    }
+}
+</script>
+    <?php if ($plugin_set == '0') {
+     ?>
+<!-- Registration Form html Start -->
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/regvalidation": {
+            "CurrentPage": "regvalidation",
+            "AdminBaseUrl": "<?= /* @noEscape */ $admin_base_url;?>"
+        }
+    }
+}
+</script>
+
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/registerjs": {
+            "CurrentPage": "registerjs",
+            "AdminBaseUrl": "<?= /* @noEscape */ $admin_base_url;?>"
+        }
+    }
+}
+</script>
+
+<div class="loader api-loader" ></div>
+<div class="registration_wrp">
+    <div class="l-header" style="padding-bottom: 2%;">
+      <div class="logo"></div>
+      <div class="clear"></div>
+    </div>
+    <div class="login-wrap">
+        <div class="login-box registration-box">
+            <div class="main-icon"><i class="fa fa-user" aria-hidden="true"></i></div>
+            <h3 style="color: #747d82; 
+            display: block; 
+            text-align: center; 
+            text-transform: uppercase; 
+            padding-bottom: 6px; 
+            font-size: 20px; 
+            font-weight: 500; 
+            margin-top:20px;">
+            Signup to preciso
+            </h3>
+            <form id='target' action="https://api.preciso.net/api/plugin/registration" method="post">
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label for="inputEmail">Email<span class="star">*</span></label>
+                        <input type="email" 
+                        placeholder="demo@gmail.com" 
+                        class="form-control" 
+                        id="inputEmail"  
+                        
+                        name="UserEmail" required> 
+                        <p class="emailerror">Please Enter Valid Email</p>
+                    </div>
+                    <div class="form-group col-sm-4" style="display: none;">
+                        <label for="ddlProgramName">Shop Name<span class="star">*</span></label>
+                        <input type="text" 
+                        class="form-control"
+                        id="ddlProgramName" 
+                        name="ProgramName" 
+                        placeholder="Store Name" 
+                        title="Brand name or product name being promoted" value="<?php echo $shop_name;?>">
+                        <p class="programerror" >Please Enter Valid Value</p>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label for="contactNumber">Contact Number<span class="star">*</span></label>
+                        <input type="text" 
+                        class="form-control" 
+                        id="contactNumber" 
+                        name="ContactNumber" 
+                        placeholder="Contact Number" required>
+                        <p class="contacterror">Please Enter Valid Value</p>
+                    </div>
+                     <div class="form-group col-sm-4">
+                        <label for="inputWebsiteURL">Website Domain URL<span class="star">*</span></label>
+                        <input type="text" class="form-control" 
+                        id="inputWebsiteURL" name="DomainName" 
+                        placeholder="https://xxxxxxxx.com"> 
+                        <p class="domainerror">Please Enter Valid Value</p>
+                    </div>
+                
+
+                <div class="form-group col-sm-4" style="max-width: 100%;width: 33.33%;"> 
+                <label for="inputStoreLogo">Store Logo URL</label>
+                <input type="text" class="form-control" id="inputStoreLogo" name="CompanyLogo" placeholder="https://xxxxxxxx.com/logo.png" style="width: 100%">
+                <p class="storeerror">Please Enter Valid Value</p>
+                </div>
+                             
+                   
+                   <div class="form-group col-sm-4" style="max-width: 100%;width: 33.33%;" >
+                <label for="ddlRegion">Select Campaign's Region<span class="star">*</span></label>
+                <select id="ddlRegion" class="form-control" name="RegionCode" style="width: 100%"><option selected="" value="All" class="regionOpt">Select Regions</option><option value="AF">AFGHANISTAN</option><option value="AL">ALBANIA</option><option value="DZ">ALGERIA</option><option value="AS">AMERICAN SAMOA</option><option value="AD">ANDORRA</option><option value="AO">ANGOLA</option><option value="AI">ANGUILLA</option><option value="AQ">ANTARCTICA</option><option value="AG">ANTIGUA AND BARBUDA</option><option value="AR">ARGENTINA</option><option value="AM">ARMENIA</option><option value="AW">ARUBA</option><option value="AU">AUSTRALIA</option><option value="AT">AUSTRIA</option><option value="AZ">AZERBAIJAN</option><option value="BS">BAHAMAS</option><option value="BH">BAHRAIN</option><option value="BD">BANGLADESH</option><option value="BB">BARBADOS</option><option value="BY">BELARUS</option><option value="BE">BELGIUM</option><option value="BZ">BELIZE</option><option value="BJ">BENIN</option><option value="BM">BERMUDA</option><option value="BT">BHUTAN</option><option value="BO">BOLIVIA</option><option value="BA">BOSNIA AND HERZEGOWINA</option><option value="BW">BOTSWANA</option><option value="BV">BOUVET ISLAND</option><option value="BR">BRAZIL</option><option value="IO">BRITISH INDIAN OCEAN TERRITORY</option><option value="BN">BRUNEI DARUSSALAM</option><option value="BG">BULGARIA</option><option value="BF">BURKINA FASO</option><option value="BI">BURUNDI</option><option value="KH">CAMBODIA</option><option value="CM">CAMEROON</option><option value="CA">CANADA</option><option value="CV">CAPE VERDE</option><option value="KY">CAYMAN ISLANDS</option><option value="CF">CENTRAL AFRICAN REPUBLIC</option><option value="TD">CHAD</option><option value="CL">CHILE</option><option value="CN">CHINA</option><option value="CX">CHRISTMAS ISLAND</option><option value="CC">COCOS (KEELING) ISLANDS</option><option value="CO">COLOMBIA</option><option value="KM">COMOROS</option><option value="CG">CONGO</option><option value="CD">CONGO, THE DRC</option><option value="CK">COOK ISLANDS</option><option value="CR">COSTA RICA</option><option value="CI">COTE D'IVOIRE</option><option value="HR">CROATIA (LOCAL NAME: HRVATSKA)</option><option value="CU">CUBA</option><option value="CY">CYPRUS</option><option value="CZ">CZECH REPUBLIC</option><option value="DK">DENMARK</option><option value="DJ">DJIBOUTI</option><option value="DM">DOMINICA</option><option value="DO">DOMINICAN REPUBLIC</option><option value="TP">EAST TIMOR</option><option value="EC">ECUADOR</option><option value="EG">EGYPT</option><option value="SV">EL SALVADOR</option><option value="GQ">EQUATORIAL GUINEA</option><option value="ER">ERITREA</option><option value="EE">ESTONIA</option><option value="ET">ETHIOPIA</option><option value="FK">FALKLAND ISLANDS (MALVINAS)</option><option value="FO">FAROE ISLANDS</option><option value="FJ">FIJI</option><option value="FI">FINLAND</option><option value="FR">FRANCE</option><option value="FX">FRANCE, METROPOLITAN</option><option value="GF">FRENCH GUIANA</option><option value="PF">FRENCH POLYNESIA</option><option value="TF">FRENCH SOUTHERN TERRITORIES</option><option value="GA">GABON</option><option value="GM">GAMBIA</option><option value="GE">GEORGIA</option><option value="DE">GERMANY</option><option value="GH">GHANA</option><option value="GI">GIBRALTAR</option><option value="GLB">GLOBAL</option><option value="GR">GREECE</option><option value="GL">GREENLAND</option><option value="GD">GRENADA</option><option value="GP">GUADELOUPE</option><option value="GU">GUAM</option><option value="GT">GUATEMALA</option><option value="GN">GUINEA</option><option value="GW">GUINEA-BISSAU</option><option value="GY">GUYANA</option><option value="GG">Guernsey</option><option value="HT">HAITI</option><option value="HM">HEARD AND MC DONALD ISLANDS</option><option value="HN">HONDURAS</option><option value="HK">HONG KONG</option><option value="HU">HUNGARY</option><option value="IS">ICELAND</option><option value="IN">INDIA</option><option value="ID">INDONESIA</option><option value="IR">IRAN (ISLAMIC REPUBLIC OF)</option><option value="IQ">IRAQ</option><option value="IE">IRELAND</option><option value="IL">ISRAEL</option><option value="IT">ITALY</option><option value="JM">JAMAICA</option><option value="JP">JAPAN</option><option value="JO">JORDAN</option><option value="JE">Jersey</option><option value="KZ">KAZAKHSTAN</option><option value="KE">KENYA</option><option value="KI">KIRIBATI</option><option value="KP">KOREA, D.P.R.O.</option><option value="KR">KOREA, REPUBLIC OF</option><option value="KW">KUWAIT</option><option value="KG">KYRGYZSTAN</option><option value="LA">LAOS&nbsp;</option><option value="LV">LATVIA</option><option value="LB">LEBANON</option><option value="LS">LESOTHO</option><option value="LR">LIBERIA</option><option value="LY">LIBYAN ARAB JAMAHIRIYA</option><option value="LI">LIECHTENSTEIN</option><option value="LT">LITHUANIA</option><option value="LU">LUXEMBOURG</option><option value="MO">MACAU</option><option value="MK">MACEDONIA</option><option value="MG">MADAGASCAR</option><option value="MW">MALAWI</option><option value="MY">MALAYSIA</option><option value="MV">MALDIVES</option><option value="ML">MALI</option><option value="MT">MALTA</option><option value="MH">MARSHALL ISLANDS</option><option value="MQ">MARTINIQUE</option><option value="MR">MAURITANIA</option><option value="MU">MAURITIUS</option><option value="YT">MAYOTTE</option><option value="MX">MEXICO</option><option value="FM">MICRONESIA, FEDERATED STATES OF</option><option value="MD">MOLDOVA, REPUBLIC OF</option><option value="MC">MONACO</option><option value="MN">MONGOLIA</option><option value="ME">MONTENEGRO</option><option value="MS">MONTSERRAT</option><option value="MA">MOROCCO</option><option value="MZ">MOZAMBIQUE</option><option value="MM">MYANMAR (BURMA)&nbsp;</option><option value="NA">NAMIBIA</option><option value="NR">NAURU</option><option value="NP">NEPAL</option><option value="NL">NETHERLAND</option><option value="AN">NETHERLANDS ANTILLES</option><option value="NC">NEW CALEDONIA</option><option value="NZ">NEW ZEALAND</option><option value="NI">NICARAGUA</option><option value="NE">NIGER</option><option value="NG">NIGERIA</option><option value="NU">NIUE</option><option value="NF">NORFOLK ISLAND</option><option value="MP">NORTHERN MARIANA ISLANDS</option><option value="NO">NORWAY</option><option value="OM">OMAN</option><option value="PK">PAKISTAN</option><option value="PW">PALAU</option><option value="PA">PANAMA</option><option value="PG">PAPUA NEW GUINEA</option><option value="PY">PARAGUAY</option><option value="PE">PERU</option><option value="PH">PHILIPPINES</option><option value="PN">PITCAIRN</option><option value="PL">POLAND</option><option value="PT">PORTUGAL</option><option value="PR">PUERTO RICO</option><option value="QA">QATAR</option><option value="RE">REUNION</option><option value="RO">ROMANIA</option><option value="RU">RUSSIA</option><option value="RW">RWANDA</option><option value="KN">SAINT KITTS AND NEVIS</option><option value="LC">SAINT LUCIA</option><option value="VC">SAINT VINCENT AND THE GRENADINES</option><option value="WS">SAMOA</option><option value="SM">SAN MARINO</option><option value="ST">SAO TOME AND PRINCIPE</option><option value="SA">SAUDI ARABIA</option><option value="SN">SENEGAL</option><option value="RS">SERBIA</option><option value="SC">SEYCHELLES</option><option value="SL">SIERRA LEONE</option><option value="SG">SINGAPORE</option><option value="SK">SLOVAKIA (SLOVAK REPUBLIC)</option><option value="SI">SLOVENIA</option><option value="SB">SOLOMON ISLANDS</option><option value="SO">SOMALIA</option><option value="ZA">SOUTH AFRICA</option><option value="GS">SOUTH GEORGIA AND SOUTH S.S.</option><option value="SS">SOUTH SUDAN</option><option value="ES">SPAIN</option><option value="LK">SRI LANKA</option><option value="SH">ST. HELENA</option><option value="PM">ST. PIERRE AND MIQUELON</option><option value="SD">SUDAN</option><option value="SR">SURINAME</option><option value="SJ">SVALBARD AND JAN MAYEN ISLANDS</option><option value="SZ">SWAZILAND</option><option value="SE">SWEDEN</option><option value="CH">SWITZERLAND</option><option value="SY">SYRIAN ARAB REPUBLIC</option><option value="TW">TAIWAN, PROVINCE OF CHINA</option><option value="TJ">TAJIKISTAN</option><option value="TZ">TANZANIA, UNITED REPUBLIC OF</option><option value="TH">THAILAND</option><option value="TG">TOGO</option><option value="TK">TOKELAU</option><option value="TO">TONGA</option><option value="TT">TRINIDAD AND TOBAGO</option><option value="TN">TUNISIA</option><option value="TR">TURKEY</option><option value="TM">TURKMENISTAN</option><option value="TC">TURKS AND CAICOS ISLANDS</option><option value="TV">TUVALU</option><option value="UM">U.S. MINOR ISLANDS</option><option value="UG">UGANDA</option><option value="UA">UKRAINE</option><option value="AE">UNITED ARAB EMIRATES</option><option value="UK">UNITED KINGDOM</option><option value="GB">UNITED KINGDOM, GB</option><option value="US" selected="selected">UNITED STATES</option><option value="UY">URUGUAY</option><option value="UZ">UZBEKISTAN</option><option value="VU">VANUATU</option><option value="VE">VENEZUELA</option><option value="VN">VIETNAM</option><option value="VG">VIRGIN ISLANDS (BRITISH)</option><option value="VI">VIRGIN ISLANDS (U.S.)</option><option value="WF">WALLIS AND FUTUNA ISLANDS</option><option value="EH">WESTERN SAHARA</option><option value="YE">YEMEN</option><option value="ZM">ZAMBIA</option><option value="ZW">ZIMBABWE&nbsp;</option></select>
+                <p class="regionerror">Please Select Value</p>
+            </div>
+
+            <div class="form-group col-sm-4" style="">
+                <label for="ddlCurrency">Banner Currency<span class="star">*</span></label>
+                    <select id="ddlCurrency" class="form-control" name="Currency"><option value="empty" class="currencyOpt">Select Currency</option><option value="AFN">Afghanistan Afghani</option><option value="ALL">Albania Lek</option><option value="DZD">Algeria Dinar</option><option value="AOA">Angola Kwanza</option><option value="ARS">Argentina Peso</option><option value="AMD">Armenia Dram</option><option value="AWG">Aruba Guilder</option><option value="AUD">Australia Dollar</option><option value="AZN">Azerbaijan Manat</option><option value="BSD">Bahamas Dollar</option><option value="BHD">Bahrain Dinar</option><option value="BDT">Bangladesh Taka</option><option value="BBD">Barbados Dollar</option><option value="BYN">Belarus Ruble</option><option value="BZD">Belize Dollar</option><option value="BMD">Bermuda Dollar</option><option value="BTN">Bhutan Ngultrum</option><option value="BOB">Bolivia Bolíviano</option><option value="BAM">Bosnia and Herzegovina Convertible Marka</option><option value="BWP">Botswana Pula</option><option value="BRL">Brazil Real</option><option value="BND">Brunei Darussalam Dollar</option><option value="BGN">Bulgaria Lev</option><option value="BIF">Burundi Franc</option><option value="KHR">Cambodia Riel</option><option value="CAD">Canada Dollar</option><option value="CVE">Cape Verde Escudo</option><option value="KYD">Cayman Islands Dollar</option><option value="CLP">Chile Peso</option><option value="CNY">China Yuan Renminbi</option><option value="COP">Colombia Peso</option><option value="XOF">Communauté Financière Africaine (BCEAO) Franc</option><option value="XAF">Communauté Financière Africaine (BEAC) CFA Franc BEAC</option><option value="KMF">Comorian Franc</option><option value="XPF">Comptoirs Français du Pacifique (CFP) Franc</option><option value="CDF">Congo/Kinshasa Franc</option><option value="CRC">Costa Rica Colon</option><option value="HRK">Croatia Kuna</option><option value="CUC">Cuba Convertible Peso</option><option value="CUP">Cuba Peso</option><option value="CZK">Czech Republic Koruna</option><option value="DKK">Denmark Krone</option><option value="DJF">Djibouti Franc</option><option value="DOP">Dominican Republic Peso</option><option value="XCD">East Caribbean Dollar</option><option value="EGP">Egypt Pound</option><option value="SVC">El Salvador Colon</option><option value="ERN">Eritrea Nakfa</option><option value="ETB">Ethiopia Birr</option><option value="EUR">Euro Member Countries</option><option value="FKP">Falkland Islands (Malvinas) Pound</option><option value="FJD">Fiji Dollar</option><option value="GMD">Gambia Dalasi</option><option value="GEL">Georgia Lari</option><option value="GHS">Ghana Cedi</option><option value="GIP">Gibraltar Pound</option><option value="XAU">Gold ounce</option><option value="GTQ">Guatemala Quetzal</option><option value="GGP">Guernsey Pound</option><option value="GNF">Guinea Franc</option><option value="GYD">Guyana Dollar</option><option value="HTG">Haiti Gourde</option><option value="HNL">Honduras Lempira</option><option value="HKD">Hong Kong Dollar</option><option value="HUF">Hungary Forint</option><option value="ISK">Iceland Krona</option><option value="INR">India Rupee</option><option value="IDR">Indonesia Rupiah</option><option value="XDR">International Monetary Fund (IMF) Special Drawing Rights</option><option value="IRR">Iran Rial</option><option value="IQD">Iraq Dinar</option><option value="IMP">Isle of Man Pound</option><option value="ILS">Israel Shekel</option><option value="JMD">Jamaica Dollar</option><option value="JPY">Japan Yen</option><option value="JEP">Jersey Pound</option><option value="JOD">Jordan Dinar</option><option value="KZT">Kazakhstan Tenge</option><option value="KES">Kenya Shilling</option><option value="KPW">Korea (North) Won</option><option value="KRW">Korea (South) Won</option><option value="KWD">Kuwait Dinar</option><option value="KGS">Kyrgyzstan Som</option><option value="LAK">Laos Kip</option><option value="LBP">Lebanon Pound</option><option value="LSL">Lesotho Loti</option><option value="LRD">Liberia Dollar</option><option value="LYD">Libya Dinar</option><option value="MOP">Macau Pataca</option><option value="MKD">Macedonia Denar</option><option value="MGA">Madagascar Ariary</option><option value="MWK">Malawi Kwacha</option><option value="MYR">Malaysia Ringgit</option><option value="MVR">Maldives (Maldive Islands) Rufiyaa</option><option value="MRO">Mauritania, Ouguiya</option><option value="MUR">Mauritius Rupee</option><option value="MXN">Mexico Peso</option><option value="MDL">Moldova Leu</option><option value="MNT">Mongolia Tughrik</option><option value="MAD">Morocco Dirham</option><option value="MZN">Mozambique Metical</option><option value="MMK">Myanmar (Burma) Kyat</option><option value="NAD">Namibia Dollar</option><option value="NPR">Nepal Rupee</option><option value="ANG">Netherlands Antilles Guilder</option><option value="NZD">New Zealand Dollar</option><option value="NIO">Nicaragua Cordoba</option><option value="NGN">Nigeria Naira</option><option value="NOK">Norway Krone</option><option value="OMR">Oman Rial</option><option value="PKR">Pakistan Rupee</option><option value="XPD">Palladium Ounce</option><option value="PAB">Panama Balboa</option><option value="PGK">Papua New Guinea Kina</option><option value="PYG">Paraguay Guarani</option><option value="PEN">Peru Sol</option><option value="PHP">Philippines Peso</option><option value="XPT">Platinum</option><option value="PLN">Poland Zloty</option><option value="QAR">Qatar Riyal</option><option value="RON">Romania Leu</option><option value="RUB">Russia Ruble</option><option value="RWF">Rwanda Franc</option><option value="SHP">Saint Helena Pound</option><option value="WST">Samoa Tala</option><option value="STD">Sao Tomean Dobra</option><option value="SAR">Saudi Arabia Riyal</option><option value="SPL">Seborgan Luigino</option><option value="RSD">Serbia Dinar</option><option value="SCR">Seychelles Rupee</option><option value="SLL">Sierra Leone Leone</option><option value="XAG">Silver Ounce</option><option value="SGD">Singapore Dollar</option><option value="SBD">Solomon Islands Dollar</option><option value="SOS">Somalia Shilling</option><option value="ZAR">South Africa Rand</option><option value="LKR">Sri Lanka Rupee</option><option value="SDG">Sudan Pound</option><option value="SRD">Suriname Dollar</option><option value="SEK">Sweden Krona</option><option value="CHF">Switzerland Franc</option><option value="SYP">Syria Pound</option><option value="TWD">Taiwan New Dollar</option><option value="TJS">Tajikistan Somoni</option><option value="TZS">Tanzania Shilling</option><option value="THB">Thailand Baht</option><option value="TOP">Tonga Paanga</option><option value="TTD">Trinidad and Tobago Dollar</option><option value="TND">Tunisia Dinar</option><option value="TRY">Turkey Lira</option><option value="TMT">Turkmenistan Manat</option><option value="TVD">Tuvalu Dollar</option><option value="UGX">Uganda Shilling</option><option value="UAH">Ukraine Hryvnia</option><option value="AED">United Arab Emirates Dirham</option><option value="GBP">United Kingdom Pound</option><option value="USD">United States Dollar</option><option value="UYU">Uruguay Peso</option><option value="UZS">Uzbekistan Som</option><option value="VUV">Vanuatu Vatu</option><option value="VEF">Venezuela Bolívar</option><option value="VND">Viet Nam Dong</option><option value="YER">Yemen Rial</option><option value="ZMW">Zambia Kwacha</option><option value="ZWD">Zimbabwe Dollar</option><option value="SZL">eSwatini Lilangeni</option></select>
+                <p class="currencyerror">Please Select Value</p>
+            </div>
+                    <div class="form-group col-sm-4" style="display: none;">
+                        <label for="dailylBudget">Daily Budget(€)<span class="star">*</span></label>
+                        <input type="number" class="form-control" 
+                        id="dailylBudget" 
+                         
+                        name="DailyBudget" 
+                        placeholder="100" value="2"> <!-- onfocusout='Javascript:validdailylBudget();' -->
+                        <p class="budegeterror">Please Enter Valid Value</p>
+                    </div>
+                    <div class="form-group col-sm-4" style="display: none;">
+                        <label for="ddlBudget">Total Budget(€)<span class="star">*</span></label>
+                        <input type="number" class="form-control"
+                         id="ddlBudget" 
+                         value="5"
+                         name="Budget" placeholder="3000"> <!-- onfocusout='Javascript:validddlBudget();' -->
+                        <p class="totalbudegeterror">Please Enter Valid Value</p>
+                    </div>
+                    <div class="form-group col-sm-12" style="width: 100%;">
+                        <label for="contactAddress">Contact Address</label>
+                        <textarea rows="5" cols="190" 
+                        class="form-control contactAddress"  
+                        name="ContactAddress" 
+                        id="contactAddress"></textarea>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="hidden">               
+                        <input type="hidden" class="form-control" id="inputCPM" name="MaxCPM" value="2"/>
+                        <input type="hidden" class="form-control" id="ddlCampaignType" name="CampaignType" value="CPM"/>
+                        <input type="hidden" class="form-control" id="ddlStrategy" name="Strategy" value="19"/>
+                        <input type="hidden" class="form-control" id="ddlPV" name="PV" value="2"/>
+                        <input type="hidden" class="form-control" id="ddlPC" name="PC" value="30"/>
+                        <input type="hidden" class="form-control" id="ddlfreqCap" name="FrequencyCap" value="3"/>
+                        <input type="hidden" class="form-control" id="ddlSpendDuration" name="SpendDuration" value="1"/>
+                        <input type="hidden" class="form-control" id="ddlLanguage" name="LanguageCode" value="EN"/>
+                        <input type="hidden" class="form-control" id="ChanelID" name="ChannelId" value="3"/>
+                        <input type="hidden" class="form-control" id="ddldeviceId" name="DeviceId" value="1"/>
+                        <input type="hidden" name="Network" value="PrecisoMagento">
+                        <input type="hidden" class="form-control" id="txtresetlink" name="resetLink" value="">
+                        <input type="hidden" name="store" 
+                        value="<?= /* @noEscape */ str_replace(' ', '.', $shop_url); ?>">                
+                    </div>
+                      <br>
+            <span class="alert_note">Note : After Registration, You would receive an email with login credentials in the registered email</span>
+                    <div class="submit_wrp"> <!-- disabled="disabled" -->
+                    <input type="button" id="regisnSubmit" name="submit" value="Sign Up" required>
+                    </div>
+                </div>
+            </form>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<div class="customalert failedalert">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+         <p>Request failure!<br><span class="ng-binding">Registration Failed!</span></p>
+         <button class="btn btn-red">Got it!</button>
+      </div>
+   </div>
+</div>
+<div class="customalert successalert">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+         <p>Request success!<br><span class="ng-binding">Registered Successfully!</span>
+            <br><span class="ng-binding">Login details are in your registered email address</span>
+         </p>
+         <button class="btn btn-green" type="button">Got it!</button>
+      </div>
+   </div>
+</div>
+
+<!-- Registration Form html End -->
+
+    <?php } else { 
+    ?>
+<!-- Term Page html Start -->
+<?php if ($termPage == 'term_page') { 
+$root = $_SERVER["DOCUMENT_ROOT"];
+include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+            ?>
+<div class="terms">
+    <div class="loader api-loader" ></div>
+<div class="l-header">
+   <div class="logo-3"></div>
+   <div class="clear"></div>
+</div>
+<div class="right-content" style="background-color: #fff">
+   <div class="terms-inner content-box" style="text-align: center;">
+      <h1>Terms & Conditions</h1>
+   </div>
+   <input type="hidden" id='shop' value="<?= /* @noEscape */ $shop_url?>">
+   <div class="terms-inner content-box"
+    style="background-image: url(https://apppartner.preciso.net/assets/favicon.png);
+           background-size: 65%;
+           background-position: 580px 20%;
+           background-repeat: no-repeat;">
+      <div style="background-color: rgba(255,255,255,.85);
+       max-width: 100%; padding:30px;
+        margin:0 auto; text-align: left;">
+         <h2><u>Advertiser Terms</u></h2>
+          <p>This <strong>GENERAL TERMS AND CONDITIONS</strong>
+          (collectively with any 
+          and all Insertion Order
+          and/or Order Form addendums, 
+          exhibits, premises, schedules,
+          and/or appendixes hereto, and as
+          each of the same may be amended,
+          supplemented or otherwise modified 
+          from time to time, this 
+          “<strong>Agreement</strong>”), 
+          are made by and entered into
+          between Preciso S.r.l.  a 
+          corporation having its 
+          registered office located at Piazza 
+          Alessandrini n.25, 65127, Pescara,
+          Italy (“<strong>Preciso</strong>”),
+          and the other entity signatory 
+          hereto (on its own behalf and 
+          on behalf of its Affiliates, 
+          “<strong>Advertiser</strong>”).
+          Preciso and Advertiser may be 
+          referred to herein together as 
+          the “<strong>Parties</strong>”,
+          and each may be referred to herein 
+          as a “<strong>Party</strong>”.</p>
+          <p><strong>WHEREAS</strong>, 
+          Preciso is a company expert 
+          in display advertising and 
+          retargeting, proficiently 
+          accomplished through a programmatic
+          understanding, and Preciso owns 
+          a proprietary technology used 
+          to optimise programmatic buying
+          called “<strong>Preciso</strong>”
+          (as more precisely defined below); and</p>
+          <p><strong>WHEREAS</strong>, the
+          Advertiser wants to use the
+          Services as provided in this 
+          Agreement;</p>
+          <p><strong>NOW, THEREFORE</strong>, 
+          in consideration of the mutual
+          promises set forth in this Agreement,
+          the Parties, intending to be legally
+          bound, agree as follows:</p>
+         <h1>1. Definitions.</h1>
+          <p>“<strong>Ad</strong>” means any 
+          Advertiser’s advertising that is 
+          targeted to an end user through the
+          Services.</p>
+          <p>“<strong>Affiliate</strong>” means,
+          with respect to a party, an entity 
+          that directly or indirectly controls, 
+          is controlled by or is under common 
+          control with such party.</p>
+          <p> “<strong>Data Protection Laws</strong>” means,
+          the EU General Data Protection Regulation
+          2016/679 (“<strong>GDPR</strong>”),
+          as well as any other personal data 
+          protection legislation applicable,
+          already in force or that will enter
+          into force after this DPA enters 
+          into force, including the provisions 
+          of any Data Protection Authority. 
+          Each of the respective terms “<strong>data controller</strong>”, 
+          “<strong>data processor</strong>”,
+          “<strong>data subject</strong>”, 
+          “<strong>personal data</strong>”,
+          and “<strong>processing</strong>” 
+          shall have the same meaning as in Data
+          Protection Laws, and their cognate terms 
+          shall be construed accordingly.</p>
+          <p>“<strong>Effective Date</strong>” means
+          the execution date of an Insertion
+          Order and/or any date otherwise 
+          indicated by the Parties in writing,
+          and/or in absence of the above, the 
+          starting date of the provision of the 
+          Services.</p>
+          <p>“<strong>Fees</strong>” means 
+          the amount that the Advertiser 
+          shall pay to Preciso for the 
+          Services, as stated under Section 5.</p>
+          <p>“<strong>Inventory</strong>” means
+          Publisher’s advertising spaces
+          on the Sites made available 
+          for purchase.</p>
+          <p>“<strong>Insertion Order</strong>” or
+          “<strong>Order Form</strong>” means 
+          a document executed by both Parties 
+          that specifies the type of Services to 
+          be provided to Advertiser by Preciso for 
+          campaigns, the duration of the Services, 
+          a budget, fees, and other specific details 
+          for the Services.</p>
+          <p>“<strong>Preciso</strong>” means 
+          Preciso proprietary DSP technology,
+          licensed to the Advertiser which
+          allows the Advertiser to plan
+          directly its campaigns.</p>
+          <p> “<strong>Preciso Cookie(s)</strong>” means
+          all the identifiers necessary for the 
+          performance of the Services, and all
+          data which may be collected through 
+          the Ad by Preciso, as from time to time
+          indicated in Preciso’s privacy policy, 
+          made available here 
+          <a href="https://preciso.net/privacy/">
+          https://preciso.net/privacy/
+          </a> 
+          </p>
+          <p>“<strong>Publisher</strong>” means 
+          the owners of the Sites where the 
+          Ad will be displayed with the
+          Services.</p>
+          <p>“<strong>Reasonable Endeavours</strong>” means 
+          taking such steps and performing in such a manner,
+          including, without limitation, by reference to
+          the levels of accuracy, quality, care, prudence,
+          completeness, timeliness, responsiveness, 
+          resource efficiency, productivity and proactive
+          monitoring of service performance, as a 
+          well-managed Preciso would undertake and 
+          perform where such Preciso was acting in a 
+          diligent, prudent and reasonable manner to
+          achieve a particular desired result for its
+          own benefit.</p>
+          <p>“<strong>Rules</strong>” means,
+          collectively, all now existing or 
+          hereinafter enacted or amended laws,
+          rules, regulations, self-regulations,
+          declarations, decrees, directives,
+          statutes, and/or other enactments,
+          orders, mandates or resolutions 
+          issued or enacted by any governmental
+          or regulatory entity (including, 
+          without limitation, any domestic or 
+          foreign, supra-national, state, county,
+          municipal, local, territorial or other
+          government), which includes, to the extent
+          applicable and without limitation, 
+          Directive 95/46/EC, Directive 2002/58/EC,
+          European Commission decisions and guidance,
+          each as may be transposed into domestic 
+          legislation of each European Member 
+          State or other country and as amended, 
+          replaced or superseded from time to time, 
+          including, without limitation, by Data Protection 
+          Laws and laws implementing or supplementing Data 
+          Protection Laws, and any and all applicable 
+          self-regulatory codes and principles related 
+          to privacy, the processing or protection of 
+          personal data, advertising, marketing or the
+          interception, recording or monitoring of 
+          communications.</p>
+          <p>“<strong>Services</strong>” means any 
+          service that Preciso offering to Advertiser,
+          that Advertiser agrees to receive, 
+          subject to this Agreement, as provided 
+          for in the Insertion Order(s) If 
+          specified within the Insertion Order,
+          they may include Preciso’s license.</p>
+          <p> “<strong>Site</strong>” means a
+          website, application, or other 
+          digital property on or in which
+          Preciso shall provide the Services, 
+          owned or legitimately managed by 
+          Publishers.</p>
+         <h1><a name="_Toc529199544"></a>2.   Scope and Structure of Agreement.</h1>
+         <h2><a name="_Toc529199545"></a><strong>2.1   Scope of the Services.</strong></h2>
+          <p>Preciso reserves the right, 
+          at its sole discretion, to display
+          Ad through online advertising 
+          campaigns within Preciso’s network,
+          which will include multiple traffic
+          sources, promotional models, 
+          and Sites. For the execution of 
+          the Services, Advertiser grants Preciso 
+          (i) the right to select and display Ad 
+          within the Advertiser properties, (ii) 
+          to promote, market and sell to third party
+          Advertisers and any agencies, (iii) to 
+          monitor and track the use of an Ad and 
+          to analyse any relevant information, as 
+          well as (iv) to do any ancillary and 
+          additional activity of the above. Subject 
+          to the terms and conditions of this Agreement,
+          Advertiser shall have a non-exclusive right 
+          to use the Services during the Term. If the 
+          Services include Preciso’s license, Preciso 
+          will grant the Advertiser an access to a 
+          dedicated dashboard where the Advertiser 
+          may directly plan its advertising campaigns
+          and a license to use Preciso for the time
+          indicated in the Insertion Order.</p>
+          <h2>
+          <a name="_Toc529199546"></a>
+          <strong>2.2   Agreement Structure</strong>.
+          </h2>
+          <p>This Agreement applies to 
+          and governs each Party’s participation in, 
+          and respective rights and obligations with
+          respect to, the provision of the Services.
+          The obligations of the Parties set forth 
+          in this Agreement are minimum obligations 
+          and are not intended to replace or limit any 
+          other obligations to which a Party may otherwise 
+          be subject, including, without limitation, obligations 
+          under applicable Rules. These General Terms and 
+          Conditions shall be read and construed in conjunction
+          with the Insertion Order signed between the Parties
+          and without prejudice to any subsequent amendment 
+          or modification of any particular provision contained
+          herein, shall become effective and binding as from 
+          date of signature of the Insertion Order. In the event
+          of any conflict with any specific term or agreement
+          reached between the Parties on the Insertion Order,
+          the terms or agreement specified in the Insertion
+          Order shall prevail.</p>
+          <h2>
+          <a name="_Toc529199547"></a>
+          <strong>2.3   Unilateral Amendments.</strong>
+          </h2>
+          <p>Notwithstanding anything to 
+          the contrary in this Agreement,
+          but subject to Advertiser’s 
+          rights under Section 6.4 hereof,
+          Preciso may supplement, amend, 
+          or otherwise modify the terms 
+          and conditions of this Agreement
+          (i) due to a change in (including,
+          without limitation, addition of)
+          Rule(s) and/or (ii) in order to
+          optimize the adoption, implementation,
+          and/or operation of the Services, 
+          as determined by Preciso in its 
+          reasonable discretion (each, a 
+          “<strong>Unilateral Amendment</strong>”),
+          in each case upon notice to 
+          Advertiser; provided that Preciso 
+          shall apply the terms of each such 
+          Unilateral Amendment to its corresponding 
+          agreement with each other similarly situated 
+          (e.g., in the same category(ies) and jurisdiction)
+          Advertisers.</p>
+         <p> </p>
+         <h1><a name="_Toc529199548"></a>3.   Representations, Warranties and Obligations</h1>
+          <h2>
+          <a name="_Toc529199549"></a>
+          <strong>3.1   General Representations and Warranties.</strong>
+          </h2>
+          <p>Each Party represents 
+          and warrants that: (i) it
+          has and will have all 
+          necessary rights and 
+          authority to enter into,
+          and to perform its obligations under, 
+          this Agreement; and (ii) its 
+          performance under this Agreement 
+          will not violate any applicable Rule(s) 
+          or any other agreement or terms of 
+          service to which it is a party or
+          by which it is bound.</p>
+          <h2>
+          <a name="_Toc529199550"></a>
+          <strong>3.2   Security.</strong>
+          </h2>
+          <p>Without limiting either Party’s
+          obligations under this Agreement,
+          each Party will maintain technical
+          and organisational measures to ensure,
+          appropriate to the nature of its
+          Personal Data, security of such
+          Personal Data, including, without
+          limitation, protection against
+          unauthorised or unlawful processing
+          and against accidental loss,
+          destruction or damage</p>
+         <h2>
+          <a name="_Toc529199551"></a>
+          <strong>3.3   Advertiser Representations,
+           Warranties, and Obligations.</strong></h2>
+          <p>Without limiting the
+          generality of Section 3.1 
+          hereof and without limiting 
+          any of Advertiser’s obligations 
+          under this Agreement, Advertiser 
+          represents and warrants that:</p>
+         <ol>
+            <li>all of the information 
+            Advertiser has provided and 
+            shall in the future provide to
+            Preciso is accurate and current.</li>
+            <li>has all necessary and legal 
+            rights, powers, and authority 
+            to accept and be bound, and to 
+            bound any subject on his behalf, 
+            by these Agreement and to perform the
+            acts required of Advertiser hereunder.</li>
+            <li>is in compliance with all
+            applicable laws, Rules, and
+            regulations and with Data 
+            Protection Laws. For that purpose, 
+            Advertiser shall implement all
+            necessary measures to ensure 
+            compliance.</li>
+            <li>Advertiser represents and
+            warrants to Preciso that: (i)
+            it has the right to enter into
+            this Agreement, to grant all 
+            rights granted and to perform its
+            obligations under this Agreement;
+            (ii) the Ad do not include, and 
+            does not give access via hyperlinks
+            to any property containing, materials
+            that are obscene, defamatory or 
+            contrary to any Applicable Law; (iii)
+            Ad comply at all times with Rules in
+            all jurisdictions where Ads and Sites
+            are viewed; (iv) Ad do not display, 
+            reference, link to, or endorse any content 
+            that violates this Agreement or the Rules; 
+            (v) Ad does not infringe or misappropriate 
+            the rights of any third party; (vi) Ad are 
+            compliant to any applicable advertising law, 
+            including self-regulation.</li>
+            <li>Advertiser is strictly prohibited
+            from effecting any re-arrangements 
+            or modifications of any kind to tags 
+            and content of any Preciso Cookies. 
+            Failure to comply with this obligation 
+            may result in tracking issues and relevant
+            payments due from the use of any such 
+            modified or re-arranged content shall not 
+            be guaranteed.</li>
+            <li>Advertiser will comply with 
+            all requirements for use of the
+            Services communicated by Preciso
+            to Advertiser, and acknowledges
+            that absent such compliance, 
+            Preciso may be unable to provide
+            the Services to Advertiser. 
+            Depending on the Services Advertiser 
+            chooses to receive, technical 
+            requirements may include: including
+            tags, pixels, script, or code supplied 
+            by Preciso on Advertiser's Ad. Preciso will 
+            have no liability to Advertiser for such 
+            inability to provide the Services, if such 
+            inability is a result of Advertiser’s failure 
+            to comply with this Section.</li>
+            <li>Non-solicit. Except in the case
+            of a specific request from Preciso,
+            the Company for a period of 2 (two)
+            years shall not solicit or have any
+            direct contractual relationship with
+            Publishers introduced by Preciso under 
+            this Agreement with respect to similar
+            services and/or services competing with 
+            the Services of Preciso which are the subject
+            of the Agreement.</li>
+         </ol>
+         <p> </p>
+         <h2>
+          <a name="_Toc529199552"></a>
+          <strong>3.4   If Advertiser is an Agency: Authority, 
+          Liability, and Direct Relationship.</strong></h2>
+          <p>Where Advertiser is an Agency 
+          or authorized reseller entering 
+          into this Agreement on behalf of 
+          their clients: (i) Agency or authorized 
+          reseller represents that it has the authority
+          to act on behalf of such clients with respect 
+          to all obligations and representations set forth
+          in this Agreement; (ii) upon request, 
+          Agency/authorized reseller will provide 
+          Preciso with written confirmation of the 
+          relationship between Agency/authorized reseller 
+          and its clients (this confirmation should include
+          their clients ’s acknowledgement that Agency is 
+          indeed its agent and is authorized to act on its 
+          behalf in connection with the Agreement); (iii) 
+          upon the request of Preciso, Agency will provide 
+          Preciso with written confirmation that Advertiser 
+          has paid to Agency funds sufficient to make payments 
+          pursuant to the Agreement; (iv) Agency or authorized 
+          reseller accepts responsibility for the actions of its 
+          clients and liability for all expenses incurred through
+          the provision of Services to its clients, and assumes 
+          responsibility for ensuring compliance with and breach 
+          of this Agreement by its clients; (v) except as otherwise 
+          set forth hereunder, Agencies or authorized resellers will
+          ensure the performance of their respective clients’ 
+          obligations under this Agreement and will have joint 
+          and several liability in respect of clients’ breach of 
+          this Agreement; (vi) Agency or authorized reseller 
+          clients  may request at any time that their Account 
+          be migrated to another agency or directly to them with 
+          Preciso and nothing in this Agreement will prevent Preciso
+          and a client from entering into a direct relationship; 
+          (vii) Preciso reserves the right to reasonably object to
+          any client at Preciso’s sole discretion.</p>
+         <h2><a name="_Toc529199553"></a><strong>3.5   Preciso Representations.</strong></h2>
+          <p>Preciso provides the Services
+          “as is” and “as available” and hereby 
+          disclaims all warranties with respect to
+          the Services, whether express or implied, 
+          including warranties of merchantability, and 
+          fitness for any particular purpose. Preciso does
+          not warrant that the Services will operate 
+          uninterrupted or error-free and it is possible
+          that the Services may be inaccessible, 
+          unavailable, or inoperable from time to time.
+          Preciso makes no representation or warranty
+          about the result Advertiser will obtain 
+          through using the Services including the 
+          level of Ad unit impressions or clicks on any
+          Ad unit or the timing of delivery of such
+          impressions and/or clicks under this Agreement.
+          Preciso is not responsible for the receipt of
+          queries from end users to whom the Ads where
+          displayed or the transmission of data between
+          the Ads and Preciso.</p>
+         <h2><a name="_Toc529199554"></a><strong>3.6   Contents Representations.</strong></h2>
+          <p>Preciso’s Actions. Advertiser can 
+          request to work with Preciso (including
+          within the technologies where such
+          functionality is available) to manage
+          display preferences when and to the
+          extent such controls are made 
+          available to Preciso. Advertiser 
+          acknowledges that Preciso has limited 
+          control where and how often Ads will be
+          displayed within the network of Publishers.
+          Preciso is committed to provide quality
+          inventory, however, at times Ads may be 
+          displayed next to ads of Advertiser’s competitors,
+          or on websites or applications that are 
+          undesirable to Advertiser unless Advertiser
+          excludes the website in accordance with 
+          Insertion Order. If a Advertiser raises 
+          written concern about a website that Ads are
+          being served on, Preciso will to the best of
+          efforts remove the Advertiser's Ads from 
+          serving on this inventory. Preciso will use 
+          commercially reasonable efforts not to display 
+          Ads on websites or applications that it determines
+          to be pornographic, defamatory, obscene, or illegal
+          in nature. If Advertiser notifies Preciso in 
+          writing that Ads are being displayed in this manner,
+          Preciso will use commercially reasonable efforts 
+          to prevent Ads from continuing to display on such 
+          inventory sources. Preciso retains the authority 
+          to remove any Advertiser Content that it deems 
+          to be in violation of this Agreement or Rules, 
+          in its sole discretion. Preciso reserves the 
+          right to pause or terminate campaigns at any
+          time that are no longer eligible to run in accordance with such 
+          policies or Rules.</p>
+         <h2><a name="_Toc529199555"></a><strong>3.7   Campaign Optimizations.</strong></h2>
+          <p>Preciso may optimize towards
+          Advertiser's performance or 
+          goals by programmatically using
+          Ads to create new content (such as Ads and,
+          if Advertiser agrees to receive such
+          Services, emails, or other necessary
+          marketing materials) and inserting 
+          them into Advertiser's active campaigns, 
+          or create, change, or pause campaigns on 
+          the Advertiser's behalf, subject to Advertiser's 
+          budget. Preciso will subsequently notify Advertiser 
+          if Preciso makes material changes to Ads. The Parties 
+          acknowledge and agree that within Preciso’s license, this
+          article shall be read combined with article 3.8 below.</p>
+         <h2><a name="_Toc529199556"></a><strong>3.8   Preciso.</strong></h2>
+          <p>Advertiser acknowledges and 
+          agrees that if the Advertiser
+          choose the Preciso’s license, 
+          the Advertiser will be the sole
+          responsible for the planning 
+          and managing of the advertising 
+          campaigns. Preciso’s activities will
+          be limited to standard market 
+          assistance activities, such as 
+          providing access to the dashboard, 
+          explaining its functioning and characteristics.
+          It remains understood between the Parties that
+          Preciso will not have any role in managing 
+          Preciso from a business perspective, any decision
+          and responsibility on the campaigns will 
+          be on the Advertiser.</p>
+         <p> </p>
+         <h1><a name="_Toc529199557"></a>4.   Data.</h1>
+         <h2><a name="_Toc529199558"></a><strong>4.1   Data Processing Responsibilities and Rights.</strong></h2>
+         <ol>
+            <li>Preciso is and will
+            be deemed to be acting
+            as sole data controller under
+            this Agreement with respect to
+            the Preciso Cookies, in each 
+            case if and to the extent deemed 
+            to be personal data.</li>
+         </ol>
+         <h2><a name="_Toc529199559"></a><strong>4.2   Data Representations, Warranties, and Obligations.</strong></h2>
+         <ol>
+            <li>Each Party undertakes,
+            in respect of that which lies 
+            within its competence, to comply
+            with Data Protection Laws, and each
+            Party recognizes that compliance with
+            the obligations concerning the
+            protection and safeguarding of
+            information is a matter of utmost
+            importance to the other.</li>
+            <li>The Agreement involve the 
+            use of Preciso’s technologies 
+            - where Preciso acts as Data Controller
+            – the Advertiser acknowledges and 
+            expressly agrees
+            to the presence of Preciso’s tracking
+            on the Ads according to the provision
+            of the present Agreement.</li>
+            <li>The Advertiser acknowledges and
+            expressly agrees that the 
+            services of Preciso could include
+            profiling activities by means of
+            cookies and/or, in general, 
+            identifiers with profiling purposes
+            and/or behavioral and/or
+            retargeting purposes.</li>
+         </ol>
+         <p> </p>
+         <h1><a name="_Toc529199560"></a>5.   Fees.</h1>
+         <h2><a name="_Toc529199561"></a><strong>5.1   Fee Determination.</strong></h2>
+          <p>Advertiser shall pay Preciso the Fee
+          indicated by Preciso for the Services,
+          accordingly to the prices agreed with
+          each Insertion Order.</p>
+         <h2><a name="_Toc529199562"></a><strong>5.2   General Payment Terms.</strong></h2>
+          <p>Advertiser agrees that Advertiser
+          has all necessary rights, power, 
+          and authority to authorize each 
+          such payment. For certain payment 
+          methods, the issuer of Advertiser's 
+          payment method may charge Advertiser a
+          foreign transaction fee or other charges.
+          Advertiser should check with the payment
+          method service provider for details. If 
+          Advertiser develops credit conditions (e.g.,
+          excessive credit card denials, chargebacks, 
+          return-to-maker payments due to insufficient funds, 
+          or increased risk of insolvency) or Preciso otherwise
+          designates Advertiser as a credit risk, Preciso reserves
+          the right to require prepayment. Advertiser 
+          agrees to maintain sufficient funds or credit 
+          availability in Advertiser's payment method 
+          to satisfy Advertiser's amounts due and 
+          that Preciso will have no obligation to 
+          provide the Services if sufficient funds
+          are not available at the time Advertiser's 
+          payment is submitted, and Preciso reserves 
+          the right to suspend Advertiser's campaigns 
+          due to failed payments or insufficient balance.
+          Except as may be set forth in this Agreement,
+          each Party shall be responsible for its own 
+          costs and expenses required to conduct and perform
+          its respective services and perform its other 
+          obligations hereunder.</p>
+         <h2><a name="_Toc529199563"></a><strong>5.3   Promotions.</strong></h2>
+          <p>In its sole discretion, Preciso may
+          offer promotions to Advertiser, subject
+          to any terms set out in the applicable
+          written documentation or, if applicable,
+          Insertion Order. If Advertiser accepts
+          the promotion, Advertiser understands
+          and agrees that after the promotion,
+          the campaign will automatically 
+          continue as a paid campaign, unless 
+          Advertiser pauses or completes the 
+          campaign as described in the applicable
+          Insertion Order. Advertiser is responsible
+          for all campaign costs that occur beyond
+          the parameters of the promotion described
+          in the applicable Insertion Order.</p>
+         <h2><a name="_Toc529199564"></a><strong>5.4   Campaign Measurement and Tracking.</strong></h2>
+          <p>Claims. Unless expressly agreed
+          to in writing by Preciso, the Fees
+          will be based on Preciso's measurements
+          and tracking through its own servers
+          using the number of impressions, 
+          clicks, and other indicators necessary
+          for calculating the Fees payable by 
+          Advertiser. Claims relating to invoices
+          or account charges must be raised by
+          Advertiser within 30 days of receipt
+          or will be barred.</p>
+         <h2><a name="_Toc529199565"></a><strong>5.5   Taxes.</strong></h2>
+          <p>All payments to Preciso will be made
+          in Euro, unless otherwise agreed to 
+          in an Insertion Order. Payments are
+          quoted exclusive of any taxes. 
+          Advertiser is responsible for all 
+          sales taxes, use taxes, value added taxes,
+          withholding taxes, and any other similar
+          taxes imposed by federal, state local or
+          foreign governmental entities on the 
+          transactions contemplated by this Agreement,
+          excluding taxes based solely upon Preciso’s
+          net income.</p>
+         <p> </p>
+         <h1><a name="_Toc529199566"></a>6.   Term; Termination.</h1>
+         <h2><a name="_Toc529199567"></a><strong>6.1   Term.</strong></h2>
+          <p>This Agreement shall commence upon 
+          the Effective Date and continue unless
+          and until terminated in accordance with
+          the provisions hereof or until otherwise
+          provided in the Insertion Order 
+          (such period, the “<strong>Term</strong>”).</p>
+         <h2><a name="_Toc529199568"></a><strong>6.2   Termination for Convenience.</strong></h2>
+          <p>Either Party may terminate this Agreement,
+          for any reason or no reason, effective as of
+          the last day of a calendar quarter, by
+          providing at least thirty (30) days’ 
+          notice to the other Party.</p>
+         <h2><a name="_Toc529199569"></a><strong>6.3   Termination for Cause.</strong></h2>
+          <p>Preciso may terminate this Agreement
+          immediately upon written notice to
+          Advertiser in the event that Advertiser
+          materially breaches this Agreement;
+          <u>provided</u>, <u>however</u>, that
+          if such breach is capable of cure, 
+          Advertiser will have thirty (30) days
+          (or such additional cure period, if any,
+          as Preciso may so authorize in writing)
+          from the date of such notice to cure 
+          such breach (during which time such 
+          Advertiser’s use of the Service may be
+          (but is not obligated to be) suspended).</p>
+         <h2><a name="_Toc529199570"></a><strong>6.4   Termination due to Unilateral Amendment.</strong></h2>
+          <p>Advertiser may terminate this 
+          Agreement within thirty (30) days
+          after receiving notice of a Unilateral
+          Amendment in the event that Advertiser
+          reasonably believes that, after using
+          Reasonable Endeavours (as defined below),
+          it will not be able to comply with the
+          terms and conditions of this Agreement
+          as amended by such Unilateral Amendment.</p>
+         <h2><a name="_Toc529199571"></a><strong>6.5   Termination due to Change in Rule.</strong></h2>
+          <p>Preciso may terminate this Agreement 
+          due to a change in, or addition of a, 
+          Rule by providing at least 30 days’ prior
+          notice (or such shorter period as provided
+          in the applicable notice, if Preciso 
+          reasonably determines that such change 
+          in Rule or additional Rule will apply prior
+          to the application of such 30-day period) 
+          in the event that Preciso reasonably believes
+          that, after using Reasonable Endeavours, 
+          the Services and/or the operation thereof will
+          not be able to comply with the terms and 
+          conditions of the changed or additional Rule.</p>
+         <p> </p>
+         <h1><a name="_Toc529199572"></a>7.   Intellectual Property Rights.</h1>
+         <h2><a name="_Toc529199573"></a><strong>7.1   Mutual Obligations.</strong></h2>
+          <p>As between the Parties: (i) Preciso owns and will retain all right,
+          title, and interest in and to its intellectual property,
+          including, without limitation, to the Services (in each case,
+          including, without limitation, all software, technologies,
+          concepts, methodologies, techniques, models, templates, 
+          algorithms, trade secrets, processes, information, materials,
+          source codes and know-how contained therein or related thereto,
+          all modifications, updates, enhancements and derivative works 
+          thereof, all documentation and manuals related thereto and all 
+          other aspects of such technology), and all intellectual property 
+          and proprietary rights in and to all of the foregoing; and (ii)
+          Advertiser owns and will retain all right, title and interest in 
+          and to its intellectual property, including all software and technologies 
+          related thereto, and any modifications, updates, enhancements and
+          derivative works thereof, and all intellectual property and proprietary 
+          rights in and to all of the foregoing. 
+          Each Party reserves any and all rights not expressly 
+          granted in this Agreement and disclaims all implied licenses,
+          including, without limitation, implied licenses to software, 
+          technology, trademarks, copyrights, trade secrets, patents and 
+          other intellectual property. Advertiser guarantees 
+          that no (intellectual and/or industrial property) rights of any 
+          third party are infringed by the Ad Inventory or any other 
+          data supplied by Advertiser to Preciso in connection with the Service(s).
+          Advertiser indemnifies Preciso against all claims of third parties in this 
+          regard and shall compensate Preciso on demand for damages suffered by
+          Preciso as a consequence and in connection with such an infringement.</p>
+         <h2><a name="_Toc529199574"></a><strong>7.2   Preciso.</strong></h2>
+          <p>Without limiting the generality of the foregoing,
+          Preciso retains all right, title and interest in and
+          to the Service(s), the technology used by Preciso to 
+          operate the Service(s), Preciso’s trademarks, and all 
+          enhancements made by Preciso to any of the foregoing from 
+          time to time, including but not limited to all patent, trademark,
+          copyright, trade secret and all other intellectual property 
+          rights in the foregoing. Advertiser may not use the Service(s)
+          except pursuant to the limited rights expressly granted in 
+          this Agreement and all rights not expressly granted herein are
+          reserved by Preciso. Advertiser shall not, and shall not attempt to, 
+          and will not assist or knowingly permit any third party to: (i) alter,
+          modify, adjust, copy, reproduce, delete, damage, disassemble, decompile, 
+          reverse engineer or create derivative works of the Service(s) and/or the
+          Preciso and/or tools of third party suppliers instructed by Preciso, or 
+          any portions thereof; or (ii) breach, disable, tamper or interfere with 
+          the proper operation of the Service(s) and/or the Preciso and/or tools of
+          third parties, or with any security measures designed to protect the 
+          Service(s) and/or the Preciso and/or tools of third party suppliers 
+          instructed by Preciso. Advertiser shall compensate Preciso for any 
+          damages and costs Preciso may suffer.</p>
+         <h2><a name="_Toc529199575"></a><strong>7.3   Publicity.</strong></h2>
+          <p>Neither Party may use the other Party’s name, 
+          logos or trademarks for publicity or general marketing
+          communications purposes without prior written consent;
+          provided that: (i) Preciso may use Advertiser’s name, 
+          logos, and trademarks, and may disclose Advertiser’s use of the Service,
+          (a) on Preciso website (including, without limitation, in blog posts on
+          such website), (b) on lists of Advertisers, and (c) in the Services
+          informational materials; and (ii) each of Preciso and its Affiliates
+          may disclose Advertiser’s use of the Service and the fact of 
+          Advertiser’s execution of this Agreement.</p>
+         <p> </p>
+         <h1><a name="_Toc529199576"></a>8.   Indemnification</h1>
+         <h2><a name="_Toc529199577"></a><strong>8.1   Advertiser Indemnification.</strong></h2>
+          <p>Advertiser will defend, indemnify, and hold 
+          harmless Preciso and its officers, directors, 
+          employees and subsidiaries from and against all liabilities, 
+          damages and costs (including settlement costs and reasonable attorneys’ fees) 
+          arising out of any claim by a third party regarding (i) Advertiser’s breach 
+          of this Agreement; and (ii) any violation, infringement or misappropriation 
+          of any law or third-party right (including intellectual property, property,
+          privacy or publicity rights) by Advertiser or Ads.</p>
+         <h1><a name="_Toc529199578"></a>9.   Limitation of Liability.</h1>
+         <h2><a name="_Toc529199579"></a><strong>9.1   Disclaimer of indirect damages.</strong></h2>
+          <p>Preciso will not, under any circumstances, be liable to 
+          Advertiser for any loss of profits, loss of business 
+          (whether direct or indirect) or any indirect, consequential, 
+          incidental, punitive, special, or exemplary damages related 
+          to this agreement, even if Preciso is apprised of the likelihood 
+          of such damages occurring.</p>
+         <h2><a name="_Toc529199580"></a><strong>9.2   Cap on liability.</strong></h2>
+          <p>Under no circumstances will Preciso’s collective 
+          total liability arising out this agreement exceed 
+          the total amount paid by Advertiser to Preciso under 
+          this agreement in the six months immediately preceding 
+          the first event giving rise to the claim (determined as of 
+          the date of any final judgment in an action).</p>
+         <h2><a name="_Toc529199581"></a><strong>9.3   Exclusions.</strong></h2>
+         <p>Nothing in this agreement shall exclude or limit either Party’s liability for:</p>
+         <ol>
+            <li>Fraud or fraudulent misrepresentation;</li>
+            <li>Intentional misconduct;</li>
+            <li>Payment of sums properly due and owing to the other 
+            in the course of normal performance hereof (if any);</li>
+            <li>Death or personal injury caused by negligence; or</li>
+            <li>Matters that cannot be excluded or limited by applicable rules.</li>
+         </ol>
+         <h1><a name="_Toc529199582"></a>10. Confidentiality.</h1>
+         <h2><a name="_Toc529199583"></a><strong>10.1 General.</strong></h2>
+          <p>In connection with this Agreement, each Party may disclose,
+          or may learn of or have access to, certain Confidential Information
+          owned by the other Party. “<strong>Confidential</strong> <strong>Information</strong>” 
+          means any information whether oral or written disclosed by a Party 
+          to the other Party under this Agreement that is marked or addressed 
+          as confidential or should reasonably be considered confidential or 
+          proprietary under the circumstances, including, without limitation, 
+          know-how and trade secrets, processes, information regarding products, 
+          costs, technology, software, personnel, customers, research, development,
+          know-how, financial information, customer and supplier lists, forecasts,
+          and projections, marketing and business plans and opportunities; 
+          and existence of any business discussions or negotiations, even if 
+          any such information is aggregated or anonymised. Confidential Information 
+          also includes the terms of this Agreement.</p>
+         <h2><a name="_Toc529199584"></a><strong>10.2 Exclusions.</strong></h2>
+          <p>Notwithstanding the foregoing, Confidential Information is deemed 
+          not to include information that: (i) is publicly available at the time
+          disclosed; (ii) is or becomes publicly available through no fault of 
+          the receiving Party; (iii) is rightfully communicated to the receiving 
+          Party by a person(s) or entity(ies) not bound by confidentiality obligations 
+          with respect thereto; (iv) is already in the receiving Party’s possession free
+          of any confidentiality obligations with respect thereto; (v) is independently
+          developed by a Party without use of any Confidential Information of the other
+          Party; or (vi) is approved for release or disclosure by the disclosing Party
+          without restriction.</p>
+         <h2><a name="_Toc529199585"></a><strong>10.3 Obligations.</strong></h2>
+          <p>Except as expressly permitted in this Agreement, 
+          each Party shall maintain the Confidential Information 
+          of the other Party in strict confidence and shall not disclose, 
+          publish or copy any part of such Confidential Information except 
+          as required to perform authorised obligations under this Agreement. 
+          Each Party shall take all necessary precautions in handling the 
+          Confidential Information of the other Party and agrees not to 
+          disclose any Confidential Information of the disclosing Party 
+          to third parties or to such Party’s employees or contractors, 
+          and to limit disclosures on a strict need-to-know basis; provided 
+          that each Party shall be liable for the acts or omissions of any
+          party that obtains Confidential Information through such Party. 
+          However: (i) a Party may disclose Confidential Information of the 
+          other Party pursuant to the order or requirement of a court, administrative agency, 
+          or other governmental body; provided that, if permitted, such Party gives
+          reasonable notice to the disclosing Party and uses Reasonable Endeavours 
+          to provide the disclosing Party with the opportunity to seek a protective 
+          order or the equivalent (at the disclosing Party’s expense)); and (ii) 
+          Preciso may, in its reasonable discretion, disclose Confidential Information
+          of Advertiser pursuant to a discovery or similar request by another Advertiser. 
+          Upon the expiration or termination of this Agreement, each Party will 
+          promptly return or destroy all Confidential Information of the other 
+          Party in its possession or control.</p>
+         <h1><a name="_Toc529199586"></a>11. General</h1>
+         <h2><a name="_Toc529199587"></a><strong>11.1 Independent Contractors.</strong></h2>
+          <p>Each Party is an independent contractor in 
+          relation to the other Party with respect to all 
+          matters arising under this Agreement. Nothing herein 
+          shall be deemed to establish a partnership, joint venture, 
+          association or employment relationship between the Parties. 
+          Each Party shall ensure the timely disposition of all of its 
+          respective employee matters in connection with its organisation, 
+          including, without limitation, employee benefits, insurance, 
+          withholdings, taxes, and similar employee-related matters.</p>
+         <h2><a name="_Toc529199588"></a><strong>11.2 Severability.</strong></h2>
+          <p>If any provision of this Agreement is 
+          held to be void, invalid or inoperative, 
+          the remaining provisions of this Agreement 
+          shall continue in effect and the invalid portion 
+          of any provision shall be deemed modified to the 
+          least degree necessary to remedy such invalidity while 
+          retaining the original intent of the Parties.</p>
+         <h2><a name="_Toc529199589"></a><strong>11.3 Waivers.</strong></h2>
+          <p>The failure of either Party to partially or fully 
+          exercise any rights or the waiver of either Party of 
+          any breach shall not prevent a subsequent exercise of 
+          such right or be deemed a waiver of any subsequent breach 
+          of the same or any other term of this Agreement.</p>
+         <h2><a name="_Toc529199590"></a><strong>11.4 Remedies.</strong></h2>
+          <p>The remedies under this Agreement shall be 
+          cumulative and not alternative and the election 
+          of one remedy for a breach shall not preclude pursuit
+          of other remedies unless expressly provided otherwise
+          in this Agreement.</p>
+         <h2><a name="_Toc529199591"></a><strong>11.5 Assignment.</strong></h2>
+          <p>Neither Party may assign this Agreement, whether by operation of law or otherwise,
+          to any other person or entity without the prior written 
+          consent of the other Party; provided that, without the 
+          prior written consent of the other Party: Preciso may 
+          assign this Agreement to an Affiliate or 
+          otherwise pursuant to a change of control.</p>
+         <h2><a name="_Toc529199592"></a><strong>11.6 Survival.</strong></h2>
+          <p>Notwithstanding termination hereof, 
+          any provisions of this Agreement that by 
+          their nature are intended to survive will 
+          survive termination.</p>
+         <h2><a name="_Toc529199593"></a><strong>11.7 Notice.</strong></h2>
+          <p>All notices under this Agreement must
+          be in writing (including, without limitation,
+          email) and sent to the attention of the other 
+          Party’s “contact for notices” and, if any, 
+          “additional contact” set forth on the signature 
+          page hereof. Either Party may change its contact for 
+          notices and/or additional contact by providing five (5) 
+          business days’ prior notice to the other Party. 
+          Notice will be deemed given when delivered.</p>
+         <h2><a name="_Toc529199594"></a><strong>11.8 Choice of Law; Jurisdiction.</strong></h2>
+          <p>All questions concerning the validity,
+          interpretation and performance of this Agreement 
+          shall be governed by and decided in accordance 
+          with the laws of Italy, without regard to any conflicts 
+          of laws or principles thereof. Any dispute arising under 
+          this Agreement shall be determined by the Pescara court, 
+          which shall have exclusive jurisdiction, and each of the 
+          Parties hereby consents to such exclusive jurisdiction.</p>
+         <h2><a name="_Toc529199595"></a><strong>11.9 Authority.</strong></h2>
+          <p>The person executing this Agreement for and 
+          on behalf of each Party represents and warrants 
+          to each other that he/she has been, and is on the 
+          Effective Date, duly authorised by all necessary and 
+          appropriate action to execute this Agreement.</p>
+         <h2><a name="_Toc529199596"></a><strong>11.10   Entire Agreement.</strong></h2>
+          <p>This Agreement sets forth the entire agreement between the Parties 
+          on this subject matter contained herein and supersedes all prior 
+          negotiations, understandings and agreements between the 
+          Parties concerning this subject matter. Except as expressly 
+          set forth herein (including, without limitation, with regard 
+          to Unilateral Amendments, as set forth in Section 2.3 hereof), 
+          no amendment or modification of this Agreement shall be 
+          made except by a writing signed by both Parties.</p>
+         <p> </p>
+         <p> </p>
+         <form id='terms' action="https://api.preciso.net/api/plugin/terms" method="post">
+         <input type="hidden" name="agreed" value="true" id='agreed'>
+         <input type="hidden" name="token" value="token" id='token'>
+         <input type="button" class="btn btn-green" value="I agree" id='regisnSubmit'>
+         </form>
+      </div>
+   </div>
+   <div class="clear"></div>
+</div>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/termsjs": {
+            "CurrentPage": "termsjs",
+            "AdminBaseUrl": "<?= /* @noEscape */ $admin_base_url;?>"
+        }
+    }
+}
+</script>
+        <?php } 
+
+else if( $blank_page ==true ){
+
+	?>
+	 <div class="customalert1 successalert">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+           <p><br><span class="ng-binding">Feed Update Triggered but Login is Restricted!</span></p>
+        </div>
+     </div>
+    </div>
+	<?php
+  
+  // echo $tableName;
+
+    $select_plugin_data = $connection->fetchAll("SELECT * FROM ".$tableName." WHERE id='1'");
+    $plugin_set = $select_plugin_data[0]['plugin_set'];
+    
+    $updated_at = $select_plugin_data[0]['updated_at']; 
+    $currentDate = date("Y-m-d");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    
+    $days = 0;
+    if( $updated_at != "" ){
+
+        $diff = abs(strtotime($currentDate) - strtotime($updated_at));
+        $years = floor($diff / (365*60*60*24));
+        $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+    }
+    
+    if( $updated_at == "" ) {
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+    }
+    else if( $days > 0  ){
+  
+         $insert_date = "UPDATE ".$tableName." SET 
+                updated_at='$currentDate'
+                WHERE id='1'";
+         $connection->query($insert_date);
+         include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+            
+
+    }
+
+?>
+     
+<?php  $objectManager->setBlankPage(''); }
+        else { ?>
+<!-- Term Page html End -->
+            <?php if ($GetUserToken !='' && $GetUserCampaignId !=''
+            && $GetUserId !='' && $GetUserName !=''
+            && $GetUserPass !='') { ?>
+<!-- Dashboard Page html Start -->
+<div class="dashboard_wrp">
+<div class="loader api-loader" >
+    <p style="position: relative;top: 53%;font-weight: bold;text-align: center;">Note : Fetching and syncing in progress and can take several minutes. Please do not close the window.</p>
+</div>
+<div class="header">
+      <div class="leftHeader">
+         <div class="header-wrp">
+            <img src='<?= /* @noEscape */
+            $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/logo-preciso.png'); ?>'>
+         </div>
+      </div>
+      <div class="rightHeader">
+         <div class="logButton">
+            <span class="biddingstatus"></span><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
+            <a href="javascript:void(0);" class="remainingBalance messageDisplayrefresh" 
+            style="color:green;">Fund/Budget Balance : 0</a>
+            <a href="javascript:void(0);" class="messageHiderefresh"></a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
+            <!-- https://smartbid.preciso.net/#/login
+            ?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?> -->
+            <a href="https://smartbid.preciso.net/#/login?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" class="messageDisplay" 
+            target="_blank">Add Funds</a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
+            <!-- <a href="https://smartbid.preciso.net/#/login
+            ?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="messageHide">Add Funds</a> -->
+            <!-- <a href="javascript:void(0);" class="destroyCookie">Logout</a> -->
+            <a href="https://smartbid.preciso.net/#/login?ref=shopify&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="pageRedr" target="_blank">Login to Preciso</a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
+            <a href="javascript:void(0);" class="pageRefresh messageDisplayrefreshicon" >
+              <img src="<?= /* @noEscape */
+                $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/refresh.png'); ?>">
+            </a>
+            <a href="javascript:void(0);" class="messageHiderefreshicon"></a>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+<div class="customalert failedalert">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Campaign Settings Not Updated!</span></p>
+             <button class="btn btn-red">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert successalert">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Campaign Settings Updated Successfully!</span></p>
+           <button class="btn udatesettingssuccess">Got it!</button>
+        </div>
+     </div>
+    </div>
+    <div class="customalert failedpausebanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Banners in Pending Approval Status, Can't be Activated till it is Reviewed & Manually Approved by Preciso Operations Team;  Trying to Edit Image URL/Landing Page URL will put your banner to Pending Approval Status!</span></p>
+             <button class="btn btn-red closepausedbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+
+   <div class="customalert failedpauseotherbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Banners in Pending Approval Status, Can't be Activated till it is Reviewed & Manually Approved by Preciso Operations Team!</span></p>
+             <button class="btn btn-red closepausedotherbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+   <div class="customalert failedpauseohundredbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Forced Pause Banners can't be Activated/Paused, This must have been bought to this state due to lack of performance, Contact Preciso Support !</span></p>
+             <button class="btn btn-red closepauseohundredbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+       <div class="customalert failedcmapaignpaused">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+             <span class="ng-binding">Campaign Bidding Status is Pause in Settings(Bidding Status) field; Change that to Active before Activating Banner Bidding Status individually!</span></p>
+             <button class="btn btn-red closecmapaignpaused">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert statusupdatebanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Status Successfully Updated!</span></p>
+           <button class="btn btn-greenalt statusupdatesuccess ">Got it!</button>
+        </div>
+     </div>
+    </div> 
+
+    <div class="customalert failedalertbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Unable to Delete the Banner!</span></p>
+             <button class="btn btn-red">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert successalertbanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Deleted Successfully!</span></p>
+           <button class="btn btn-greenalt bannerdeletesuccess ">Got it!</button>
+        </div>
+     </div>
+    </div>   
+
+
+    <div class="customalert successcreatebanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Created Successfully!</span></p>
+           <button class="btn btn-greenalt successcreatebtnbanner ">Got it!</button>
+        </div>
+     </div>
+    </div>  
+
+
+    <div class="customalert successupdatebanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Updated Successfully!</span></p>
+           <button class="btn btn-greenalt successupdatebtnbanner ">Got it!</button>
+        </div>
+     </div>
+    </div>     
+
+        <div class="customalert failedcreatebanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Banner Already Exist!</span></p>
+             <button class="btn btn-red closefailbanner">Got it!</button>
+          </div>
+       </div>
+    </div>
+<!--<div class="skypeBtn">
+    <i class="skypeChat fa fa-skype" aria-hidden="true"></i>
+</div>
+-->
+
+<div id="rawa-box" style="width:376px;bottom:170px;border-radius:0px;right: 20px;">
+    <div class="rawa-box-container">
+        <div class="rawa-header" style="border-radius: 0px; height: 153px;">
+            <div id="rawa-close">
+                <svg>
+                    <g transform="translate(-340.000000,-32.000000)">
+                        <polygon points="350.656537 44 346 39.343463 
+                        341.343463 44 340 42.656537 344.656537 38 340 
+                        33.343463 341.343463 32 346 36.656537 
+                        350.656537 32 352 33.343463 347.343463 38 352 42.656537">
+                          
+                        </polygon>
+                    </g>
+                </svg>
+            </div>
+            <div class="rawa-greeting">
+                <h2 class="rawa-title">Hi there</h2>
+                <div class="rawa-description">Welcome Preciso Support</div>
+                <div class="rawa-note" style=";background:transparent;">
+                    We typically reply within minutes</div>
+            </div>
+            <div class="rawa-personal"></div>
+        </div>
+        <div class="rawa-body" style=";background-color: ;">
+            <div class="rawa-chats">
+                <div class="rawa-chat" style="margin-left: 70px">
+                    <div class="rawa-avatar" >
+
+                    </div>Hello! Preciso here from support team.</div>
+            </div>
+        </div>
+    </div>
+    <div class="rawa-footer">
+        <textarea id="rawa-response-message" 
+        placeholder="Send a message…" 
+        spellcheck="false">
+        </textarea>
+        <grammarly-extension 
+        style="position: absolute; top: 0px; 
+        left: 0px; pointer-events: none; z-index: auto;"
+        class="_1KJtL"></grammarly-extension>
+        <div class="rawa-actions">
+            <div id="rawa-reply" class="rawa-action">
+                <a class='' target="_blank" 
+                href="skype:live:.cid.70c62fc565719ed4?chat">
+                  <i class="fa fa-chevron-circle-right submitskype" 
+                  aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Tabs Start -->
+<section id="tabs">
+<div class="section-wrp">
+        <div class="headinggWrp">
+      <span style="display: none;">Welcome <?= /* @noEscape */ $shop_name;?></span>
+    <h6 class="section-title h1">  
+      Preciso Programmatic Dashboard</h6>
+  </div>
+    <div class="row">
+    <div class="col-xs-12" style="width: 100%;">
+    <nav>
+        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+            <a class="nav-item show nav-link col-14 active" id="nav-profile-tab" 
+            data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" 
+            aria-selected="false">Banner</a>
+            <a class="nav-item show nav-link col-14" id="nav-contact-tab" 
+            data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" 
+            aria-selected="false">Payment</a>
+            <a class="nav-item show nav-link col-14 " id="nav-about-tab" 
+            data-toggle="tab" href="#nav-about" role="tab" 
+            aria-controls="nav-about" aria-selected="false">Settings</a> <!-- Campaign -->
+            <a class="nav-item show nav-link col-14 " id="nav-home-tab" 
+            data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Report</a>
+        </div>
+    </nav>
+    <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+    <div class="tab-pane active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="bannerStaticwrp">
+            
+            <a href="javascript:void(0);" 
+            class="bannerdynamicCreate trigger_popup_fricc" 
+            style='font-weight: 500;font-size: 14px;'>Create a Static Product Banner</a>
+              <span class="seprate" style='font-weight: 500;font-size: 14px;'> | </span>
+            <a href="https://smartbid.preciso.net/#/login
+            ?ref=createstatic&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="bannerstaticCreate" 
+            target="_blank" style='font-weight: 500;font-size: 14px;'>Upload a Static Banner</a>
+          <span>(Creatives are reviewed during Monday-Friday 6AM to 6PM CET timings!)</span>
+            
+
+            <div class="hover_bkgr_fricc">
+                <span class="helper"></span>
+                <div>
+
+                    <div class="popupCloseButton">&times;</div>
+                    <p style="font-size: 16px;margin-bottom: 2%;text-transform: capitalize;">Select the Product to see the Product Details below:</p>
+                    <div class="banner-wrp-top">
+                    <table class="table-striped table-bordered">
+                        <tr>
+                            <th>Products</th>
+                        </tr>
+                        <?php /* @noEscape */
+                        foreach ($collection as $product) {
+                            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                            $prdoducts = $objectManager->get(
+                                Magento\Catalog\Api\ProductRepositoryInterface::class
+                            )->getById($product->getEntityId());
+                            $store = $objectManager->get(Magento\Store\Model\StoreManagerInterface::class)->getStore();
+                            if ($prdoducts->getImage()) {
+                                $productImageUrl = $store->getBaseUrl(
+                                    \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
+                                ).'catalog/product'.$prdoducts->getImage();
+                            } else {
+                                $productImageUrl = '';
+                            }
+                            // $ProductId = $product->getId();
+                            $img = $productImageUrl;
+                            $categories = $product->getCategoryIds();
+                            $catnames = [];
+                            foreach ($categories as $category) {
+                                $cat = $objectManager->create(Magento\Catalog\Model\Category::class)->load($category);
+                                $catnames[] = $cat->getName();
+                            }
+                            $cats = implode(',', $catnames);
+                            echo '<tr class="data-show">
+                            <td>
+                            <div class="productImg">
+                            <img src="'.$img.'">
+                            </div>
+                            <div class="productTitle">
+                            <h3 data-price>'.$product->getName().'</h3>
+                            <input type ="hidden" class="handle" value="'.$product->getProductUrl().'">
+                            <input type ="hidden" class="title" value="'.$product->getName().'">
+                            <input type ="hidden" class="brand" value="'.$cats.'">
+                            <input type ="hidden" class="description" 
+                            value="'.strip_tags($product->getDescription()).'">
+                            <input type ="hidden" class="product-id" 
+                            value="'.strip_tags($product->getId()).'">
+                            <input type ="hidden" class="price" value="'.$product->getFinalPrice().'">
+                            <input type ="hidden" class="imgurl" value="'.$img.'">
+                            </div>
+                            </td>
+                            </tr> ';
+                        }
+                        ?>
+                    </table>
+                    </div>
+
+                    <div class="banner-wrp-bottom">
+                    <input type="hidden" value="<?= /* @noEscape */ $shop_name;?>" id='shopname'>
+                    <form id='createbanner' action="https://api.preciso.net/api/plugin/createbanner" method="post">
+                        <input type="hidden" class="form-control token" 
+                        value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                        <input type="hidden" class="form-control CampaignId" 
+                        value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="campaignId">
+                         <input type="hidden" class="form-control flagcreatebtn" value="0" name="creativeeditflag">
+                         <input type="hidden" class="form-control " value="" id="prdIDCR" name="productId">
+                        
+                        <div class="form-wrp">
+                            <label for="titleval">Title</label>
+                            <input type="text" class="form-control" id="titleval" name="title">
+                        </div>
+                        <div class="form-wrp">
+                            <label for="brandval">Brand</label>
+                            <input type="text" class="form-control" id="brandval" name="brand">
+                        </div>
+                        <div class="form-wrp">
+                            <label for="descrval">Description</label>
+                            <input type="text" class="form-control" id="descrval" name="description">
+                        </div>
+                        <div class="form-wrp">
+                            <label for="priceval">Price <span style="color:red">*<span class="hideinmobile">Price to be </span>shown in Banner Currency</span></label>
+                            <input type="text" class="form-control" id="priceval" name="price">
+                        </div>
+                        <div class="form-wrp">
+                            <label for="imageurl">Image Url</label>
+                            <input type="text" class="form-control imageurl1" id="imageurl" name="image">
+                        </div>
+                        <div class="form-wrp">
+                            <label for="landingpageurl">Landing Page Url</label>
+                            <input type="text" class="form-control landingpageurl1" id="landingpageurl" name="landingpage">
+                        </div>
+                    </form>
+                    <input type="button" class='dynamicbannercreate' 
+                    id="dynamicbannercreate" name="submit" value="Create Banner">
+                    <form id='deletebanner' action="https://api.preciso.net/api/plugin/deletebanner" method="post">
+                        <input type="hidden" class="form-control token" 
+                        value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                        <input type="hidden" class="form-control CampaignId" 
+                        value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="campaignid">
+                        <input type="hidden" class='sizeCCode 'value='' name="sizecode">
+                        <input type="hidden" class='creaativeID' value='' name="creativeid">
+                    </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <table class="table-striped table-bordered" id="tablebanner">
+            <form id='banner' action="https://api.preciso.net/api/plugin/getauditbanner" method="post">
+                <input type="hidden" class="form-control userid" 
+                value='<?= /* @noEscape */ $GetUserId;?>' name="UserId">
+                <input type="hidden" class="form-control token" 
+                value='<?= /* @noEscape */ $GetUserToken;?>' name="Token">
+                <input type="hidden" class="form-control CampaignId" 
+                value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="CampaignId">
+            </form>
+           <tr>
+                      <th>Banner Title</th>
+                      <th class="hideinmobile">Banner Size</th>
+                      <th>Creative Id</th>
+                      <th>Banner Type</th>
+                      <th>Creative Status</th>
+                      <th>Bidding Status</th>
+                      <th>&nbsp;</th>
+                    </tr>
+            <tr class="dyncrow"></tr>
+        </table>
+
+        <div class="bannerInfo">
+            <a 
+            href="https://smartbid.preciso.net/#/login
+            ?ref=creativeinformation&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="bannerURl" 
+            target="_blank" 
+            style="font-size: 14px;font-weight: 500;">Creative Information - Details</a>
+        </div>
+        
+        </div>
+
+        <div class="tab-pane " id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+            <div class="payment-wrp">
+            <h3 class="priceWrp">Total Budget : <span class="totalBudget">0</span></h3>
+            <h3 class="priceWrp">Approx. Remaining Budget : <span class="remainBudget">0</span></h3>
+            <!-- <br> -->
+            <!-- h3 class="priceWrp">Total Payment Received : <span class="paymentRecevied">0</span></h3>
+            <h3 class="priceWrp">Total Remaining Fund Available : <span class="totalFundRemain">0</span></h3> -->
+            <!-- <br> -->
+            <!-- <h3 class="priceWrp deposit_money_rebate">Deposit Money : </h3> -->
+            <!-- <br> -->
+            <div class="col-12" id="deposit_money_rebate"> </div><br>
+            <a 
+            href="https://smartbid.preciso.net/#/login?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?>" 
+            class="paymentBut customAddfunds" 
+            target="_blank">Add Funds</a>
+            <a href="javascript:void(0);" 
+            class="refreshBut refreshIconbtn" title="Payment Refresh">
+              <img 
+              src="<?= /* @noEscape */
+                $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/refreshnew.png');
+                ?>"
+              >
+            </a>
+            <h2 class="paymentDetailsHead">Last max(10) payments received </h2>
+            <table id="mytable" class="table-striped table-bordered">
+                <tr>
+                    <th>Paid Date</th>
+                    <th>Paid Amount</th>
+                    <th>Payment Type</th>
+                </tr>
+                <tr class="paydyncrow"></tr>
+            </table>
+            <form id='paymentsettings' action="https://api.preciso.net/api/plugin/paymentdetails" method="post">
+                <input type="hidden" class="form-control token" 
+                value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                <input type="hidden" class="form-control CampaignId" 
+                value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="CampaignId">
+            </form>
+            </div>
+        </div>
+
+        <div class="tab-pane " id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+
+            <div class="register_wrp">
+<!--
+<div class="skypeBtn">
+    <i class="skypeChat fa fa-skype" aria-hidden="true"></i>
+</div>
+-->
+
+
+
+<div id="rawa-box" style="width:376px;bottom:170px;border-radius:0px;right: 20px;">
+    <div class="rawa-box-container">
+        <div class="rawa-header" style="border-radius: 0px; height: 153px;">
+            <div id="rawa-close">
+                <svg>
+                    <g transform="translate(-340.000000,-32.000000)">
+                        <polygon points="350.656537 44 346 39.343463 
+                        341.343463 44 340 42.656537 344.656537 38 340 
+                        33.343463 341.343463 32 346 36.656537 
+                        350.656537 32 352 33.343463 347.343463 38 352 42.656537">
+                          
+                        </polygon>
+                    </g>
+                </svg>
+            </div>
+            <div class="rawa-greeting">
+                <h2 class="rawa-title">Hi there</h2>
+                <div class="rawa-description">Welcome Preciso Support</div>
+                <div class="rawa-note" style=";background:transparent;">
+                    We typically reply within minutes</div>
+            </div>
+            <div class="rawa-personal"></div>
+        </div>
+        <div class="rawa-body" style=";background-color: ;">
+            <div class="rawa-chats">
+                <div class="rawa-chat" style="margin-left: 70px">
+                    <div class="rawa-avatar" >
+
+                    </div>Hello! Preciso here from support team.</div>
+            </div>
+        </div>
+    </div>
+    <div class="rawa-footer">
+        <textarea id="rawa-response-message" 
+        placeholder="Send a message…" 
+        spellcheck="false">
+        </textarea>
+        <grammarly-extension 
+        style="position: absolute; top: 0px; 
+        left: 0px; pointer-events: none; z-index: auto;"
+        class="_1KJtL"></grammarly-extension>
+        <div class="rawa-actions">
+            <div id="rawa-reply" class="rawa-action">
+                <a class='' target="_blank" 
+                href="skype:live:.cid.70c62fc565719ed4?chat">
+                  <i class="fa fa-chevron-circle-right submitskype" 
+                  aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+            <h2 style="font-size: 26px;">Campaign Settings</h2>
+            <input type="hidden" value="<?= /* @noEscape */ $shop_name; ?>" id='shop'>
+            <div class="col-13 form-elem-wrap offset-right10">
+                <label for="cmpID">Campaign Id</label>
+                <input type="text" class="form-control cmpID" 
+                id="cmpID" name="campaignId" 
+                style="background: #dcdcdc;" readonly>
+            </div>
+            <div class="col-13 form-elem-wrap offset-right10">
+                <label for="cmpName">Campaign Name</label>
+                <input type="text" class="form-control" id="cmpName" style="background: #dcdcdc;" readonly>
+            </div>
+            <div class="col-13 form-elem-wrap offset-right10">
+                <label for="prmName">Program Name</label>
+                <input type="text" class="form-control" id="prmName" style="background: #dcdcdc;" readonly>
+            </div>
+            <div class="clear"></div>
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                <label for="langName">Banner Language</label>
+                <input type="text" class="form-control" id="langName" style="background: #dcdcdc;" readonly>
+            </div>
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                <label for="regName" style="display: block;">Choose Additional Regions</label>
+                <input type="text" class="form-control deatilsShow" id="regName" readonly>
+                <a class='regionURL' target="_blank" href="javascript:void(0);">Region Details</a>
+            </div>
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                <label for="device" style="display: block;">Choose Additional Devices</label>
+                <input type="text" class="form-control deatilsShow" id="device" readonly>
+                <a class="deiveURL" target="_blank" href="javascript:void(0);">Device Details</a>
+            </div>
+            
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                <label for="currency">Currency</label>
+                <input type="text" class="form-control" id="currency" style="background: #dcdcdc;" readonly>
+            </div>
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                <label for="payuType">Payout Type</label>
+                <input type="text" class="form-control" id="payuType" style="background: #dcdcdc;" readonly>
+            </div>
+            <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                <label for="campSat">Campaign Status</label>
+                <input type="text" class="form-control" id="campSat" readonly>
+            </div>
+            <div class="clear"></div>
+            <form id='updateSettings' 
+            action="https://api.preciso.net/api/plugin/updatecampaignsettings" 
+            method="post">
+                <input type="hidden" class="form-control token" 
+                value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                <input type="hidden" class="form-control cmpID" id="cmpID" 
+                value="<?= /* @noEscape */ $GetUserCampaignId;?>" name="campaignId" >
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="chanelNm">Channel Name</label>
+                    <select id="chanelNm" class="form-control" name="channelId">
+                        <option value="empty" class="channelOpt">Select Channel</option>
+                    </select>
+                </div>
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="stragName">Strategy Name</label>
+                    <select id="stragName" class="form-control" name="Strategy">
+                        <option selected value="empty" class="strategyOpt">Select Strategy</option>
+                    </select>
+                </div>
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="camptpy">Campaign Type</label>
+                    <select id="camptpy" class="form-control" name="campaignTypeId">
+                        <option value="empty" class="campOpt">Select Campaign</option>
+                        <option value="1" >Static</option>
+                        <option value="2" >Dynamic</option>
+                    </select>
+                    <!-- <input type="text" class="form-control" id="camptpy" > -->
+                </div>
+                <div class="clear"></div>
+                
+                <div class="col-13 form-elem-wrap offset-right10">
+                    <label for="daiBud">Daily Budget(€)</label>
+                    <input type="number" class="form-control" id="daiBud" name="dailyBudget" >
+                    <p class="dailybuderror">Please Enter Valid Value</p>
+                </div>
+                <div class="col-13 form-elem-wrap offset-right10">
+                    <label for="mntBud">Total Budget(€)</label>
+                    <input type="number" class="form-control" id="mntBud" name="totalBudget">
+                    <p class="totalbuderror">Please Enter Valid Value</p>
+                    <p class="totalBUDGETMore">Already total spent is <span class='totalSpentBud'>9</span> € and you can't reduce total budget to less than that value this month (next month you can do  it)</p>
+                </div>
+
+                <div class="col-13 form-elem-wrap offset-right10">
+                    <label for="bidStatus">Bidding Status</label>
+                    <select id="bidStatus" class="form-control" name="bidderStatus">
+                        <!-- <option selected value="empty">Select Campaign</option> -->
+                        <option  value="Active">Active</option>
+                        <option  value="Pause">Pause</option>
+                    </select>
+                </div>
+                <!-- <div class="clear"></div> -->
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="landPage">Landing Page</label>
+                    <input type="text" class="form-control" 
+                    id="landPage" name="landingPage"> 
+                  
+                    <p class="landignerror">Please Enter Valid Value</p>
+                </div>
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="freqCap">Frequency Cap</label>
+                    <input type="number" class="form-control" id="freqCap" name="FrequencyCap">
+                    <p class="freqerror">Please Enter Valid Value</p>
+                </div>
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="cokieTime">Post click cookie time(Min 1 Day)</label>
+                    <input type="number" class="form-control" id="cokieTime" name="PC">
+                    <p class="pcerror">Please Enter Valid Value</p>
+                </div>
+                <div class="clear"></div>
+                <div class="col-13 form-elem-wrap offset-right10" style="display: none;">
+                    <label for="cokvTime">Post view cookie time(Min 1 Day)</label>
+                    <input type="number"  class="form-control" id="cokvTime" name="PV">
+                    <p class="pverror">Please Enter Valid Value</p>
+                </div>
+                <div class="col-13 form-elem-wrap offset-right10 text-right" style="margin: 20px 0px 0px 0px;text-align: center !important;width: 100% !important">
+                      <input type="button" id="updatesettingSubmit" name="submit" value="Update Settings" required>
+                </div>
+            </form>
+            <!-- settings GEt form  -->
+            <form id='getsettings' action="https://api.preciso.net/api/plugin/getcampaignsettings" method="post">
+                <input type="hidden" class="form-control userid" 
+                value='<?= /* @noEscape */ $GetUserId;?>' name="userId">
+                <input type="hidden" class="form-control token" 
+                value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                <input type="hidden" class="form-control CampaignId" 
+                value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="campaignId">
+            </form>
+            <div class="clear"></div>
+            </div>
+        </div>
+
+        <div class="tab-pane " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="col-14">
+                <div class="leftHeading"><h3>Today Performance</h3></div>
+                    <div class="col-5 offset-right10">
+                        <div class="content-box">
+                            <span>Impressions</span>
+                            <h4 class="dayImp"></h4>
+                        </div>
+                    </div>
+                    <div class="col-5 offset-right10">
+                        <div class="content-box">
+                            <span>Clicks</span>
+                            <h4 class="dayClk"></h4>
+                        </div>
+                    </div>
+                    <div class="col-10 offset-right10">
+                        <div class="content-box">
+                            <span>Conversions</span>
+                            <h4 class="dayPc conversionPc_PV"></h4>
+                        </div>
+                    </div>
+                    <!-- <div class="col-5 offset-right10">
+                        <div class="content-box">
+                            <span>eCPA</span>
+                            <h4 class="daypc_pv"></h4>
+                        </div>
+                    </div> -->
+                    <div class="col-5 offset-right10">
+                        <div class="content-box">
+                            <span>Media Cost</span>
+                            <h4 class="dayCost"></h4>
+                        </div>
+                    </div>
+                    <div class="col-5 offset-right10">
+                        <div class="content-box">
+                            <span>eCPM</span>
+                            <h4 class="daycpm"></h4>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="centerHeading"><h3>Graphical View - Last 7 Days of General Performance</h3></div>
+                        <div class="canvas-wrap">
+                            <canvas id="myChart" style="background-color: #fff;"></canvas>
+                           <!--  <h5 class="graphAlert">
+                              The Graph Impressions Scaled Down by 50 For Representation Purpose.
+                            </h5> -->
+                        </div>
+                        </div>
+                        <div class="col-14">
+                            <div class="rightHeading"><h3>Last 7 Days Performance</h3>
+                              <p class="specialbutton"> <span>Full screen view<span></span></span> ⇔</p>
+                            </div>
+                            <div class="col-5 offset-right10">
+                            <div class="content-box">
+                                <span>Impressions</span>
+                                <h4 class="weekImp"></h4>
+                            </div>
+                            </div>
+                            <div class="col-5 offset-right10">
+                            <div class="content-box">
+                                <span>Clicks</span>
+                                <h4 class="weekClk"></h4>
+                            </div>
+                            </div>
+                            <div class="col-10 offset-right10">
+                            <div class="content-box">
+                                <span>Conversions</span>
+                                <h4 class="weekPc weekConversionPcPV"></h4>
+                            </div>
+                            </div>
+                           <!--  <div class="col-5 offset-right10">
+                            <div class="content-box">
+                                <span>eCPA</span>
+                                <h4 class="weekPc_Pv"></h4>
+                            </div>
+                            </div> -->
+                            <div class="col-5 offset-right10">
+                            <div class="content-box">
+                                <span>Media Cost</span>
+                                <h4 class="weekmedia"></h4>
+                            </div>
+                            </div>
+                            <div class="col-5 offset-right10">
+                            <div class="content-box">
+                                <span>eCPM</span> 
+                                <h4 class="weekCpm"></h4>
+                            </div>
+                            </div>
+                        </div>
+                        <br clear="all">
+                        <form id='dailyreport' action="https://api.preciso.net/api/plugin/dailyreport" method="post">
+                            <input type="hidden" class="form-control token" 
+                            value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                            <input type="hidden" class="form-control CampaignId" 
+                            value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="CampaignId">
+                        </form>
+                        <form id='remainBalance' action="https://api.preciso.net/api/plugin/getSpend" method="post">
+                            <input type="hidden" class="form-control token" 
+                            value='<?= /* @noEscape */ $GetUserToken;?>' name="token">
+                            <input type="hidden" class="form-control CampaignId" 
+                            value='<?= /* @noEscape */ $GetUserCampaignId;?>' name="campaignId">
+                        </form>
+                        <form id='updateCreativeStatus' action="https://api.preciso.net/api/plugin/updateCreativeStatus" method="post">
+                            <input type="hidden" class="form-control token" value='' name="token">
+                            <input type="hidden" class="form-control CampaignId" value='' name="campaignid">
+                            <input type="hidden" class="form-control cretive_Id" value='' name="CreativeId">
+                            <input type="hidden" class="form-control size_Code" value='' name="sizecode">
+                            <input type="hidden" class="form-control bidder_Status" value='' name="bidderstatus">
+                       </form>
+                    </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+    <div class="clear"></div>
+    <div class="footer-Wrp" >
+    <a 
+    href="https://smartbid.preciso.net/#/login?ref=shopifyhelp&amp;token=<?= /* @noEscape */ $GetUserToken;?>" 
+    class="footerLink" target="_blank">Help</a> 
+    <a href="https://cdn.solocpm.com/Preciso_Magento/Magento_PrecisoPlugin_Help.docx">
+    <img 
+    src="<?= /* @noEscape */ $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/download.png'); ?>" 
+    style="width: 20px;margin-left: 5px;">
+    </a>
+    </div>
+</div>
+</section>
+</div>
+
+<form id="bannerDetails" action="https://api.preciso.net/api/plugin/getbycreativeid" method="post">
+          <input type="hidden" class="form-control token" value="" name="token">
+          <input type="hidden" class="crtVID" value="" name="CreativeId">
+</form>
+
+<div class="edit_banner_popup">
+  <span class="helper"></span>
+  <div>
+    <div class="popupCloseButton_editbanner">&times;</div>
+      <div class="banner-wrp-edit">
+        <h1>Update Banner</h1> 
+          <form id="editBanner" action="https://api.preciso.net/api/plugin/editbanner" method="post">
+                      <input type="hidden" class="form-control token" value='' name="token">
+                      <input type="hidden" class="form-control CampaignId" value='' name="campaignId">
+                      <input type="hidden" class='editcreaativeID' value='' name="creativeId">
+                      <input type="hidden" class="form-control flagbtn" value='0' name="creativeeditflag">
+                      <input type="hidden" class="form-control " value='' class="editprdIDCR" id="editprdIDCR" name="productId">
+
+                      <div class="form-wrp">
+                          <label for="titleval">Title <span style="color:red">*</span></label>
+                          <input type="text" class="form-control titleval" id="titleval" name="title">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="brandval">Brand <span style="color:red">*</span></label>
+                          <input type="text" class="form-control brandval" id="brandval" name="brand">
+                      </div>
+<!--                       <div class="form-wrp">
+                          <label for="descrval">Description</label>
+                          <textarea id="descrval" name="description" class="form-control" style="height: 70px"></textarea>
+                      </div> -->
+                      <div class="form-wrp">
+                          <label for="priceval">Price <span style="color:red">*</span></label>
+                          <input type="text" name="price" min="1" max="5" class="form-control priceval" id="priceval" onkeypress="return onlyNumbers(event)">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="imageurl">Image Url <span style="color:red">*</span></label>
+                          <input type="text" class="form-control imageurl" id="imageurl" name="image">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="landingpageurl">Landing Page Url <span style="color:red">*</span></label>
+                          <input type="text" class="form-control landingpageurl landingpageurlFocusOut" id="landingpageurl" name="landingpage">
+                      </div>
+                      <div class="form-wrp">
+                          <label for="buttontext">Button Text <span style="color:red">*</span></label>
+                          <input type="text" class="form-control buttontext" id="buttontext" name="buttontext">
+                      </div>
+           </form>
+           <input type="button" class='dynamicbanneredit' id="dynamicbanneredit" value="Update">
+      </div>                      
+  </div>
+</div>
+
+
+<div class="customalert failedalert_login">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+         <p>Request failure!<br><span class="ng-binding">Incorrect username or password!</span></p>
+         <button class="btn btn-red">Got it!</button>
+      </div>
+   </div>
+</div>
+
+<div class="customalert failedalert">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+         <p>Request failure!<br><span class="ng-binding">Campaign Settings Not Updated!</span></p>
+         <button class="btn btn-red">Got it!</button>
+      </div>
+   </div>
+</div>
+
+<div class="customalert successalert">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+         <p>Request success!<br><span class="ng-binding">Campaign Settings Updated Successfully!</span></p>
+         <button class="btn btn-green cutommodelBtn">Got it!</button>
+      </div>
+   </div>
+</div>
+
+<div class="customalert failedalertbanner">
+       <div class="customalert-inner">
+          <div class="customalert-inner-div">
+             <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+             <p>Request failure!<br><span class="ng-binding">Unable to Delete the Banner!</span></p>
+             <button class="btn btn-red">Got it!</button>
+          </div>
+       </div>
+    </div>
+
+    <div class="customalert successalertbanner">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Banner Deleted Successfully!</span></p>
+           <button class="btn btn-greenalt bannerdeletesuccess ">Got it!</button>
+        </div>
+     </div>
+    </div> 
+<!-- Tabs End -->
+<!-- Chart Js Start -->
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/ajax": {
+            "CurrentPage": "ajax",
+            "AdminBaseUrl": "<?= /* @noEscape */ $admin_base_url;?>"
+        }
+    }
+}
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function(){ jQuery('.loader').show(); });
+</script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/dashboardjs": {
+            "CurrentPage": "loginjs",
+            "AdminBaseUrl": "<?= /* @noEscape */ $admin_base_url;?>"
+        }
+    }
+}
+</script>
+<!-- Chart Js End -->
+<!-- Dashboard Page html End -->
+<?php } else { ?>
+<!-- Login Page html Start -->
+                <?php
+                // $select_sql = "SELECT * FROM ".$tableName." WHERE id='1'";
+                $rows       = $connection->fetchAll("SELECT * FROM ".$tableName." WHERE id='1'");
+                ?>
+<div class="loader api-loader" style="display: block" ></div>
+<div class="login-wrp">
+    <div class="l-header logicocustomlogin">
+        <div class="logo"></div>
+        <div class="clear"></div>
+    </div>
+    <div class="login-wrap">
+        <div class="login-box custom_loginbox">
+            <div class="main-icon"><i class="fa fa-user" aria-hidden="true"></i></div>
+            <div class="login-container">
+                <form id='target' action="https://api.preciso.net/api/plugin/login" method="post">
+                    <input type="hidden" 
+                    name="store" 
+                    id="customstore" 
+                    value="<?= /* @noEscape */ str_replace(' ', '.', $shop_url); ?>">
+                    <!-- <input type="hidden" id="storeUserId" value="<?php //echo $userId; ?>"> -->
+                    <!-- value="<?php // echo $shop_url; ?>brd-shopplugin.myshopify.com" -->
+                    <div class="form-elem-wrap login-username">
+                        <input type="text" 
+                        class="form-control ng-pristine ng-untouched ng-empty 
+                        ng-invalid ng-invalid-required custom_username" 
+                        ng-model="username" 
+                        id="myusername" 
+                        name="Username" 
+                        value="<?= /* @noEscape */ $rows['0']['username']; ?>" 
+                        placeholder="User Name" required="">
+                    </div>
+                    <p class="usererror" style="color:red">Please Enter User Name</p>
+
+                    <div class="form-elem-wrap login-password">
+                          <input type="password" 
+                          class="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" 
+                          ng-model="password" 
+                          name="Password" 
+                          id="mypassword" 
+                          placeholder="******" 
+                          value="<?= /* @noEscape */ $rows[0]['userpass']; ?>" 
+                          required="">
+                     
+                        <input type="hidden" id="custId" name="custId" value="testvalue" autocomplete="off">
+                    </div>
+                    <p class="passerror" style="color:red">Please Enter Password</p>
+
+                    <div class="form-elem-wrap text-center" style="margin-top:10px; margin-bottom: 10px;">
+                          <input type="button" id="loginSubmit" name="submit" value="Login">       
+                    </div>
+
+                 </form>
+            </div>
+          <!--login-container end-->
+        </div>
+        <!--login-box end -->
+        <div class="login-footter">
+            <div class="col-sm-12 text-center ng-binding" style="color: #000">Copyrights © Preciso</div>
+            <div class="col-sm-12 text-center ng-binding" style="color: #000">
+              All rights reserved | powered by Preciso  |  
+              <a ui-sref="terms" 
+              href="https://smartbid.preciso.net/#/terms" 
+              target="_blank" style="color: #000">
+              Terms &amp; Conditions</a>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="customalert failedalert">
+        <div class="customalert-inner">
+            <div class="customalert-inner-div">
+                 <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+                 <p>Request failure!
+                  <br>
+                  <span class="ng-binding">Unable to complete the request!</span>
+                  <br>
+                  <span class="ng-binding">Incorrect Username / Password</span>
+                </p>
+                 <button class="btn btn-red">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="customalert successalert">
+     <div class="customalert-inner">
+        <div class="customalert-inner-div">
+           <div class="customalertheader green-box"><i class="fa fa-thumbs-up" aria-hidden="true"></i></div>
+           <p>Request success!<br><span class="ng-binding">Registration Successfully!</span>
+            <br><span class="ng-binding">Campaign Created!</span></p>
+           <button class="btn btn-green">Got it!</button>
+        </div>
+     </div>
+    </div>
+
+<div class="customalert failed_login_alert">
+   <div class="customalert-inner">
+      <div class="customalert-inner-div">
+         <div class="customalertheader red-box"><i class="fa fa-thumbs-down" aria-hidden="true"></i></div>
+         <p>Request failure!<br><span class="ng-binding">Username and Password are incorrect!</span></p>
+         <button class="btn btn-red">Got it!</button>
+      </div>
+   </div>
+</div>
+
+</div>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/loginjs": {
+            "CurrentPage": "loginjs",
+            "AdminBaseUrl": "<?= /* @noEscape */ $admin_base_url;?>"
+        }
+    }
+}
+</script>
+<!-- Login Page html End -->
+<?php } ?>
+
+        <?php } ?>
+
+<?php } ?>
+
+<?php } else { ?>
+<div class="appError">
+    <div class="error_Wrp">
+        <i class="fa fa-times-circle"></i>
+        <h1>This Application Not Supported! </h1>
+        <h4>Your Store Don't Have More Than 18 Products.</h4>
+    </div>
+</div>
+<?php }
+?>
+

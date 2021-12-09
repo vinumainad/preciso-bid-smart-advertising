@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<referenceBlock name="page.title">
+        <action method="setPageTitle">
+            <argument name="title" xsi:type="string">Preciso Bid-Smart For Merchant</argument>
+        </action>
+    </referenceBlock>
+    <head>
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/bootstrap.min.css" />
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/font-awesome.css" />
+        <!-- <css src="https://logico3c.com/assets/css/common.css" /> -->
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/custom.css" />
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/style.css" />
+
+        <link src="Preciso_PrecisoBidSmartAdvertising::js/jquery-3.4.1.js"/>
+        
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/Chart.min.css" />
+        
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/dashboardstyle.css" />
+        <css src="Preciso_PrecisoBidSmartAdvertising::css/shopifyreset.css" />
+    </head>
+    <body>
+        <referenceContainer name="content">
+        	<block class="Magento\Backend\Block\Template" template="Preciso_PrecisoBidSmartAdvertising::preciso.phtml"/>
+            <!-- <block class="Preciso\PrecisoBidSmartAdvertising\Block\Adminhtml\PrecisoBidSmartAdvertising" name="admin.precisobidsmartadvertising.grid"/> -->
+        </referenceContainer>
+    </body>
+</page>

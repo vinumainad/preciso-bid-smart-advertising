@@ -1,0 +1,19 @@
+{
+  "name": "preciso/preciso-bid-smart-for-merchant",
+  "description": "A Magento  module for Ad advertisment",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "license": [
+    "GPL-3.0-only"
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "magento/framework": ">=102.0.0"
+  },
+  "autoload": {
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "Preciso\\PrecisoBidSmartAdvertising\\": ""
+    }
+  }
+}

@@ -1,0 +1,253 @@
+<?php
+$_resources = \Magento\Framework\App\ObjectManager::getInstance()
+                    ->get(Magento\Framework\App\ResourceConnection::class);
+$connection= $_resources->getConnection();
+$tableName = $_resources->getTableName('Preciso_plugin_set');
+// $select_sql = "SELECT * FROM ".$tableName; //." WHERE id='1'";
+$select_plugin_data = $connection->fetchAll("SELECT * FROM ".$tableName);
+$plugin_set = $select_plugin_data[0]['plugin_set'];
+$token = $select_plugin_data[0]['token'];
+$campaignId = $select_plugin_data[0]['campaignId'];
+$userId = $select_plugin_data[0]['userId'];
+$username = $select_plugin_data[0]['username'];
+$userpass = $select_plugin_data[0]['userpass'];
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$request = $objectManager->get(Magento\Framework\App\Action\Context::class)->getRequest();
+
+// echo $request->getFullActionName() . '<br>';
+
+if ($request->getFullActionName() == 'catalog_product_view') {
+//you are on the product page
+// $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $currentProduct = $objectManager->get(Magento\Framework\Registry::class)
+    ->registry('current_product'); //get current product information
+    $categoryIdArray =  $currentProduct->getCategoryIds();
+    $categoryName = [];
+    foreach ($categoryIdArray as $categoryId) {
+        $category = $objectManager->create(Magento\Catalog\Model\Category::class)->load($categoryId);
+        $categoryName[] = $category->getName();
+    }
+    $categoryName = implode('|', $categoryName);
+    $prdoducts = $objectManager->get(Magento\Catalog\Api\ProductRepositoryInterface::class)
+    ->getById($currentProduct->getId());
+    $store = $objectManager->get(Magento\Store\Model\StoreManagerInterface::class)->getStore();
+    if ($prdoducts->getImage()) {
+        $productImageUrl = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA)
+        .'catalog/product'.$prdoducts->getImage();
+    } else {
+        $productImageUrl = '';
+    }
+    $storeManager = $objectManager->get(Magento\Store\Model\StoreManagerInterface::class);
+    $currencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
+    $currency = $objectManager->create(Magento\Directory\Model\CurrencyFactory::class)->create()->load($currencyCode);
+    $stockItem = $objectManager->get(\Magento\CatalogInventory\Model\Stock\StockItemRepository::class);
+
+    $productId = $currentProduct->getId(); // YOUR PRODUCT ID
+    $productStock = $stockItem->get($productId);
+// echo "<pre>";
+// print_r($productStock->getData());
+// echo "</pre>";
+    ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/customcodes": {
+            "campaignId": "<?= /* @noEscape */ $campaignId;?>",
+            "CurrentPage": "ProductViewPage",
+            "CurrentProductId": "<?= /* @noEscape */ $currentProduct->getId();?>",
+            "CurrentProductName": "<?= /* @noEscape */ $currentProduct->getName();?>",
+            "CurrentProductSalePrice": "<?= /* @noEscape */ $currentProduct->getFinalPrice();?>",
+            "CurrentProductRegularprice": "<?= /* @noEscape */ $currentProduct->getFinalPrice();?>",
+            "CurrentProductImageUrl": "<?= /* @noEscape */ $productImageUrl;?>",
+            "CurrentProductCat": "<?= /* @noEscape */ $categoryName;?>",
+            "CurrentProductDescription": "<?= /* @noEscape */ $currentProduct->getDescription()?>",
+            "CurrentProductShopCurrency": "<?= /* @noEscape */ $currency->getCurrencySymbol();?>",
+            "CurrentProductSKU": "<?= /* @noEscape */ $currentProduct->getSku();?>",
+            "CurrentProductQuantity": "<?= /* @noEscape */ $productStock->getQty();?>"
+        }
+    }
+}
+</script>
+    <?php
+}
+
+if ($request->getFullActionName() == 'catalog_category_view') {
+//you are on the category page
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $category = $objectManager->get(Magento\Framework\Registry::class)
+    ->registry('current_category');//get current category
+    $categoryFactory = $objectManager->get(\Magento\Catalog\Model\CategoryFactory::class);
+    $stockItem = $objectManager->get(\Magento\CatalogInventory\Model\Stock\StockItemRepository::class);
+    // echo $category->getId();
+    $categoryId = $category->getId(); // YOUR CATEGORY ID
+    $categoryName = $category->getName(); // YOUR CATEGORY Name
+    $category = $categoryFactory->create()->load($categoryId);
+
+    $categoryProducts = $category->getProductCollection()
+                                 ->addAttributeToSelect('*');
+    $Ids = [];
+    foreach ($categoryProducts as $product) {
+        $productId = $product->getId(); // YOUR PRODUCT ID
+        $productStock = $stockItem->get($productId);
+        // echo "<pre>";
+        // print_r($productStock->getData());
+        // echo "</pre>";
+        $Ids[] = $product->getId();
+        // echo 'ID: '.$product->getId().'<br />';
+        // echo 'Name: '.$product->getName().'<br />';
+        // echo 'Sku: '.$product->getSku().'<br />';
+        // echo 'Quantity: '.$productStock->getQty().'<br />';
+        // echo 'Price: '.$product->getPrice().'<br />';
+        // echo "<hr/>";
+    }
+    ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/customcodes": {
+            "campaignId": "<?= /* @noEscape */ $campaignId;?>",
+            "CurrentPage": "CatPage",
+            "pdtCategoryList": "<?= /* @noEscape */ $categoryName;?>",
+            "pdtId": "<?= /* @noEscape */ implode('|', $Ids);?>"
+        }
+    }
+}
+</script>
+    <?php
+}
+
+if ($request->getFullActionName() == 'cms_index_index') {
+//you are on the home page
+    ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/customcodes": {
+            "campaignId": "<?= /* @noEscape */ $campaignId;?>",
+            "CurrentPage": "Home"
+        }
+    }
+}
+</script>
+    <?php
+}
+
+// if ($request->getFullActionName() == 'cms_page_view') {
+// //you are on the cms page
+// }
+
+if ($request->getFullActionName() == 'checkout_cart_index') {
+//you are on the cms page
+    $cart = $objectManager->get(\Magento\Checkout\Model\Cart::class);
+
+    $quote = $cart->getQuote();
+
+// retrieve quote items collection
+    $itemsCollection = $quote->getItemsCollection();
+
+// get array of all items what can be display directly
+    $itemsVisible = $quote->getAllVisibleItems();
+
+// retrieve quote items array
+    $items = $quote->getAllItems();
+
+    $Ids = [];
+    $Names = [];
+    $Sku = [];
+    foreach ($items as $item) {
+        // echo 'Quantity: '.$item->getQty().'<br />';
+        // echo 'Price: '.$item->getPrice().'<br />';
+        $Ids[] = $item->getProductId();
+        $Names[] = trim($item->getName());
+        $Sku[] = trim($item->getSku());
+    }
+
+// Get total items and total quantity in cart
+
+    $totalItems = $quote->getItemsCount();
+    $totalQuantity = $quote->getItemsQty();
+
+//Get subtotal and grand total price of cart
+    $flatratePrice = $objectManager->get(Magento\Framework\App\Config\ScopeConfigInterface::class)
+    ->getValue('carriers/flatrate/price');
+    $subTotal = $quote->getSubtotal();
+    $grandTotal = $quote->getGrandTotal();
+    $finalPrice = $subTotal + ($flatratePrice * $totalQuantity);
+ 
+//Get billing and shipping addresses
+ 
+    $billingAddress = $quote->getBillingAddress();
+    $shippingAddress = $quote->getShippingAddress();
+    $shippingAddress->getBaseShippingAmount();
+    $shippingAddress->getBaseShippingDiscountAmount();
+    $shippingAddress->getBaseShippingHiddenTaxAmount();
+    $shippingAddress->getBaseShippingInclTax();
+    $shippingAddress->getBaseShippingTaxAmount();
+
+    $shippingAddress->getShippingAmount();
+    $shippingAddress->getShippingDiscountAmount();
+    $shippingAddress->getShippingHiddenTaxAmount();
+    $shippingAddress->getShippingInclTax();
+    $shippingAddress->getShippingTaxAmount();
+    $GroupedAllShippingRates = $shippingAddress->getGroupedAllShippingRates();
+    ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/customcodes": {
+            "campaignId": "<?= /* @noEscape */ $campaignId;?>",
+            "CurrentPage": "Cart",
+            "cartIds": "<?= /* @noEscape */ implode('|', $Ids);?>",
+            "titles": "<?= /* @noEscape */ implode('|', $Names);?>",
+            "cartSKU": "<?= /* @noEscape */ implode('|', $Sku);?>",
+            "totalamount": "<?= /* @noEscape */ $finalPrice;?>"
+        }
+    }
+}
+</script>
+    <?php
+}
+
+if ($request->getFullActionName() == 'checkout_onepage_success') {
+//you are on the cms page
+    $orderDatamodel = $objectManager->get(Magento\Sales\Model\Order::class)->getCollection()->getLastItem();
+    $orderId   =   $orderDatamodel->getId();
+    $order = $objectManager->create(\Magento\Sales\Model\Order::class)->load($orderId);
+    $orderItems = $order->getAllItems();
+    $Ids=[];
+    $Sku=[];
+    foreach ($orderItems as $item) {
+        $Ids[] = $item->getId();
+        $Sku[] = $item->getSku();
+    }
+
+    $finalPrice = $order->getGrandTotal();
+    $orderdate = $order->getCreatedAt();
+    $orderStatus = $order->getStatusLabel();
+    $ordercustomer = $order->getCustomerEmail();
+    $currencyCode = $order->getOrderCurrencyCode();
+    $currency = $objectManager->create(Magento\Directory\Model\CurrencyFactory::class)->create()->load($currencyCode);
+    $currencySymbol = $currency->getCurrencySymbol();
+    ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/customcodes": {
+            "campaignId": "<?= /* @noEscape */ $campaignId;?>",
+            "CurrentPage": "OrderSuccess",
+            "proID": "<?= /* @noEscape */ implode('|', $Ids);?>",
+            "SKU": "<?= /* @noEscape */ implode('|', $Sku);?>",
+            "orderid": "<?= /* @noEscape */ $orderId;?>",
+            "price": "<?= /* @noEscape */ $finalPrice;?>",            
+            "orderdate": "<?= /* @noEscape */ $orderdate;?>",
+            "orderstatus": "<?= /* @noEscape */ $orderStatus;?>",
+            "ordercustomer": "<?= /* @noEscape */ $ordercustomer;?>",
+            "ordercurrency": "<?= /* @noEscape */ $currencySymbol;?>"
+        }
+    }
+}
+</script>
+    <?php
+}
+?>
