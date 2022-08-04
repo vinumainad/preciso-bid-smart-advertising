@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<product id="Default Store View">
+  <details/>
+  <details id="1">
+    <id>1</id>
+    <quantity>40</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product1.html</landing_page>
+    <title>product1</title>
+    <brand/>
+    <category/>
+    <handle>https://appsmagneto.mainadv.com/product1.html</handle>
+    <price>40</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/h/a/half-sleeves-t-shirt-500x500.jpg</images>
+  </details>
+  <details id="2">
+    <id>2</id>
+    <quantity>50</quantity>
+    <inventory_policy>tracking</inventory_policy>
+    <landing_page>https://appsmagneto.mainadv.com/product2.html</landing_page>
+    <title>product2</title>
+    <brand/>
+    <category/>
+    <handle>https://appsmagneto.mainadv.com/product2.html</handle>
+    <price>40</price>
+    <images>https://appsmagneto.mainadv.com/pub/media/catalog/product/s/h/shoe3.jpg</images>
+  </details>
+</product>

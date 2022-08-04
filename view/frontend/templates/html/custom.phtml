@@ -69,6 +69,15 @@ if ($request->getFullActionName() == 'catalog_product_view') {
     }
 }
 </script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/mainmin": {
+
+        }
+    }
+}
+</script>
     <?php
 }
 
@@ -114,6 +123,15 @@ if ($request->getFullActionName() == 'catalog_category_view') {
     }
 }
 </script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/mainmin": {
+
+        }
+    }
+}
+</script>
     <?php
 }
 
@@ -126,6 +144,15 @@ if ($request->getFullActionName() == 'cms_index_index') {
         "Preciso_PrecisoBidSmartAdvertising/js/customcodes": {
             "campaignId": "<?= /* @noEscape */ $campaignId;?>",
             "CurrentPage": "Home"
+        }
+    }
+}
+</script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/mainmin": {
+
         }
     }
 }
@@ -206,6 +233,15 @@ if ($request->getFullActionName() == 'checkout_cart_index') {
     }
 }
 </script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/mainmin": {
+
+        }
+    }
+}
+</script>
     <?php
 }
 
@@ -243,7 +279,17 @@ if ($request->getFullActionName() == 'checkout_onepage_success') {
             "orderdate": "<?= /* @noEscape */ $orderdate;?>",
             "orderstatus": "<?= /* @noEscape */ $orderStatus;?>",
             "ordercustomer": "<?= /* @noEscape */ $ordercustomer;?>",
-            "ordercurrency": "<?= /* @noEscape */ $currencySymbol;?>"
+            "ordercurrency": "<?= /* @noEscape */ $currencyCode;?>",
+            "checkoutamount": "<?= /* @noEscape */ $finalPrice;?>"
+        }
+    }
+}
+</script>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Preciso_PrecisoBidSmartAdvertising/js/mainmin": {
+
         }
     }
 }

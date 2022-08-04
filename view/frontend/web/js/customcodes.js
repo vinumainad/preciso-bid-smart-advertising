@@ -1,6 +1,8 @@
+let rtgsettings = {};
 define([
     "jquery",
-    "jquery/ui"
+    "jquery/ui",
+    // "https://appshopify.mainad.com/shopify-js/main-min.js"
 ], function($){
     "use strict";
  
@@ -8,23 +10,26 @@ define([
         var $element = $(element);
         var campaignId = config.campaignId;
         var CurrentPage = config.CurrentPage;
-        $(document).ready(function(){	
+
+		// console.log(campaignId);
+        // $(document).ready(function(){
 			if( CurrentPage == 'Home' ) {		
 				var url = window.location.href;
 				var res = url.split('/');
 				var pdt_url = res['2'];	
-				var rtgsettings ={
+				rtgsettings ={
 					'pdt_url': pdt_url,
 					'pagetype': 'home',
 					'key': 'SPY',
 					'token': campaignId,
 					'layer': 'iframe'
 				};
-				(function(d) {
-				var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
-				s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//apppartner.mainad.com/shopify-js/main-min.js';
-				var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
-				}(document));
+				// (function(d) {
+				// var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
+				// s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//appshopify.mainad.com/shopify-js/main-min.js';
+				// var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
+				// }(document));
+				// console.log(rtgsettings);
 			}
 
 			if( CurrentPage == 'ProductViewPage' ) {
@@ -39,7 +44,7 @@ define([
 				var shopCurr =config.CurrentProductShopCurrency;
 				var sku = config.CurrentProductSKU;
 				var ProInve = config.CurrentProductQuantity;
-				var rtgsettings ={
+				rtgsettings ={
 					'pdt_id': proId,
 					'pdt_sku': sku,
 					'pdt_name': proTitle,
@@ -57,11 +62,11 @@ define([
 					'token': campaignId,
 					'layer': 'iframe'
 				  };
-				(function(d) {
-					var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
-					s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//apppartner.mainad.com/shopify-js/main-min.js';
-					var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
-				}(document));
+				// (function(d) {
+				// 	var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
+				// 	s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//appshopify.mainad.com/shopify-js/main-min.js';
+				// 	var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
+				// }(document));
 			}
 
 			if( CurrentPage == 'Cart' ) {
@@ -71,7 +76,7 @@ define([
 			    var cartsku = config.cartSKU; 
 			    var ty_orderamt = config.totalamount;
 			    var urlSite = window.location.href;
-			    var rtgsettings ={
+			    rtgsettings ={
 			        'pdt_id': cartitems,
 			        'pdt_sku':cartsku,
 			        'pdt_category_list': cartcolltitle,
@@ -84,18 +89,18 @@ define([
 			        'token': campaignId,
 			        'layer': 'iframe'
 			    };
-			    (function(d) {
-					var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
-					s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//apppartner.mainad.com/shopify-js/main-min.js';
-					var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
-				}(document));
+			 //    (function(d) {
+				// 	var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
+				// 	s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//appshopify.mainad.com/shopify-js/main-min.js';
+				// 	var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
+				// }(document));
 			}
 
 			if( CurrentPage == 'CatPage' ) {
 				var url = window.location.href;
 				var pdt_category_list = config.pdtCategoryList;
 				var pdt_id = config.pdtId;
-				var rtgsettings ={
+				rtgsettings ={
 	                'pdt_url': url,
 	                'pdt_category_list': pdt_category_list,
 	                'pdt_id': pdt_id,
@@ -104,15 +109,15 @@ define([
 	                'token': campaignId,
 	                'layer': 'iframe'
 	              };
-				(function(d) {
-					var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
-					s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//apppartner.mainad.com/shopify-js/main-min.js';
-					var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
-				}(document));
+				// (function(d) {
+				// 	var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
+				// 	s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//appshopify.mainad.com/shopify-js/main-min.js';
+				// 	var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
+				// }(document));
 			}
 
 			if( CurrentPage == 'OrderSuccess' ) {
-				var proID = config.cartid; 
+				var proID = config.proID;
 				var SKU = config.productsku; 
 				var price = config.checkoutamount; 
 				var orderid = config.orderid; 
@@ -122,38 +127,40 @@ define([
 				var ordercustomer = config.ordercustomer; 
 				var urlSite = window.location.href;
 
-				var rtgsettings ={
+				rtgsettings ={
 					'pdt_id': proID,
-					'pdt_sku': SKU,
-					'pdt_category_list': '$pdt_category_list$',
-					'ty_orderid':orderid, 
-					'ty_orderamt':price,
-					'ty_orderdate':orderdate,
-					'ty_orderstatus':orderstatus,
-					'ty_googleclickid':'$ty_googleclickid$', 
-					'ty_appmetadata':'$ty_appmetadata$',
-					'ty_rawdeviceid':'$ty_rawdeviceid$',
-					'ty_osname':'$ty_osname$',
-					'ty_devicemodel':'$ty_devicemodel$',
-					'ty_cusid':ordercustomer,
-					'ty_currency':ordercurrency,
-					'ty_custype':'$ty_custype$',
-					'ty_cuscoupon':'$ty_ cuscoupon$',
+					'pdt_currency':ordercurrency,
 					'pagetype': 'checkout',
+					'ty_orderid':orderid,
+					'ty_orderamt':price,
 					'key': 'SPY',
-					'token': 'test_app',
+					'token': campaignId,
 					'layer': 'iframe'
+					// 'pdt_sku': SKU,
+					// 'pdt_category_list': '$pdt_category_list$',
+					// 'ty_orderdate':orderdate,
+					// 'ty_orderstatus':orderstatus,
+					// 'ty_googleclickid':'$ty_googleclickid$',
+					// 'ty_appmetadata':'$ty_appmetadata$',
+					// 'ty_rawdeviceid':'$ty_rawdeviceid$',
+					// 'ty_osname':'$ty_osname$',
+					// 'ty_devicemodel':'$ty_devicemodel$',
+					// 'ty_cusid':ordercustomer,
+					// 'ty_custype':'$ty_custype$',
+					// 'ty_cuscoupon':'$ty_ cuscoupon$',
 				};
-				(function(d) {
-					var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
-					s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//apppartner.mainad.com/shopify-js/main-min.js';
-					var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
-				}(document));
+				console.log(rtgsettings,"sapan112");
+				// (function(d) {
+				// 	var s = d.createElement('script'); s.async = true;s.id='madv2014rtg';s.type='text/javascript';
+				// 	s.src = (d.location.protocol == 'https:' ? 'https:' : 'http:') + '//appshopify.mainad.com/shopify-js/main-min.js';
+				// 	var a = d.getElementsByTagName('script')[0]; a.parentNode.insertBefore(s, a);
+				// }(document));
 			}
 
-        });
+        // });
  
  
     };
     return main;
+    // main();
 });

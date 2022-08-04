@@ -4,6 +4,10 @@ $root = $_SERVER["DOCUMENT_ROOT"];
 putenv("GOOGLE_APPLICATION_CREDENTIALS=".$root.
     "/vendor/preciso/preciso-bid-smart-for-merchant/view/java-290610-d670b2eca70e.json");
 
+
+
+include_once $root.
+    "/vendor/preciso/preciso-bid-smart-for-merchant/view/xml_export_functons.php";
 include_once $root.
     "/vendor/preciso/preciso-bid-smart-for-merchant/vendorCloud/autoload.php";
 
