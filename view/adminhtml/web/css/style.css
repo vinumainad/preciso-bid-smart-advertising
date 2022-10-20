@@ -59,7 +59,7 @@ input#regisnSubmit:hover{
   width: 100% !important;
   height: 95px;
   float: left;
-  background-image: url(../images/logico.png) !important;
+  background-image: url(../images/logo_small.png) !important;
   background-repeat: no-repeat;
   background-position: center center;
 }
@@ -88,10 +88,11 @@ input#regisnSubmit:hover{
 }
 
 .login-box .main-icon {
-  background-image: url(../images/kiaro.png);
+  background-image: url(../images/preciso_ico.png);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  background-size: 70%;
 }
 
 .main-icon {
@@ -408,10 +409,11 @@ form#target {
 }
 
 .login-box .main-icon {
-  background-image: url(../images/kiaro.png);
+  background-image: url(../images/preciso_ico.png);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  background-size: 70%;
 }
 
 .main-icon {
@@ -487,7 +489,7 @@ form#target {
   height: 160px;
   margin-bottom: 50px;
   float: left;
-  background-image: url(../images/logico.png);
+  background-image: url(../images/logo_small.png);
   background-repeat: no-repeat;
   background-position: center center;
 }

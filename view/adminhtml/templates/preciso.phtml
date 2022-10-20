@@ -388,7 +388,7 @@ if ($productsCount >= '0') {
 <!-- Term Page html Start -->
 <?php if ($termPage == 'term_page') { 
 $root = $_SERVER["DOCUMENT_ROOT"];
-include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
+//include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xml_gen.php");
             ?>
 <div class="terms">
     <div class="loader api-loader" ></div>
@@ -401,9 +401,9 @@ include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xm
       <h1>Terms & Conditions</h1>
    </div>
    <input type="hidden" id='shop' value="<?= /* @noEscape */ $shop_url?>">
-   <div class="terms-inner content-box"
-    style="background-image: url(https://apppartner.preciso.net/assets/favicon.png);
-           background-size: 65%;
+   <div class="terms-inner"
+    style="background-image: url(https://apppartner.preciso.net/assets/preciso_ico_big.png);
+           background-size: 450px;
            background-position: 580px 20%;
            background-repeat: no-repeat;">
       <div style="background-color: rgba(255,255,255,.85);
@@ -1321,7 +1321,7 @@ include_once($root."/vendor/preciso/preciso-bid-smart-for-merchant/view/store_xm
 </script>
         <?php } 
 
-else if( $blank_page ==true ){
+else if( $blank_page == true ){
 
 	?>
 	 <div class="customalert1 successalert">
@@ -1387,7 +1387,7 @@ else if( $blank_page ==true ){
       <div class="leftHeader">
          <div class="header-wrp">
             <img src='<?= /* @noEscape */
-            $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/logo-preciso.png'); ?>'>
+            $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/logo_small.png'); ?>'>
          </div>
       </div>
       <div class="rightHeader">
@@ -2326,8 +2326,7 @@ else if( $blank_page ==true ){
                     <p class="passerror" style="color:red">Please Enter Password</p>
 
                     <div class="form-elem-wrap text-center" style="margin-top:10px; margin-bottom: 10px;">
-                          <input type="button" id="loginSubmit" name="submit" value="Login">       
-                    </div>
+                         <input type="button" id="loginSubmit" name="submit" value="Login"> 
 
                  </form>
             </div>

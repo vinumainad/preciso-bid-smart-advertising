@@ -62,7 +62,7 @@ input#regisnSubmit {
     width: 100% !important;
     height: 95px;
     float: left;
-    background-image: url(../images/logico.png) !important;
+    background-image: url(../images/logo_small.png) !important;
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -87,10 +87,11 @@ input#regisnSubmit {
     padding: 52px 30px 10px 30px!important;
 }
 .login-box .main-icon {
-    background-image: url(../images/kiaro.png);
+    background-image: url(../images/preciso_ico.png);
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
+    background-size: 70%;
 }
 .main-icon {
     position: absolute;
@@ -734,6 +735,9 @@ button.btn-greenalt.successcreatebtnbanner, button.btn-greenalt.successcreatebtn
 
 .header, .header img {
     height: 40px !important;
+}
+.header img {
+   margin-left:5px;
 }
 .header {
     min-height: 42px !important;

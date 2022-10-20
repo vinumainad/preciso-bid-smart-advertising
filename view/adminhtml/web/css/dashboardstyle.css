@@ -2881,14 +2881,14 @@ h6,
     width: 50%;
     height: 60px;
     float: left;
-    background-image: url(../images/logo.png);
+    background-image: url(../images/logo_small.png);
     background-repeat: no-repeat;
 }
 .l-header .logo-2{
     width: 50%;
     height: 60px;
     float: left;
-    background-image: url(../images/logo.svg) !important;
+    background-image: url(../images/logo_small.png) !important;
     background-repeat: no-repeat;
     margin-left: 10px;
 }
@@ -2899,7 +2899,7 @@ h6,
     width: 50%;
     height: 60px;
     float: left;
-    background-image: url(../images/logo-preciso.png) !important;
+    background-image: url(../images/logo_small.png) !important;
     background-repeat: no-repeat;
     margin-left: 10px;
 }
