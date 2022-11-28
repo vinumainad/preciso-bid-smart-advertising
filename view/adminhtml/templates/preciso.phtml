@@ -206,7 +206,7 @@ if ($productsCount >= '0') {
     }
 }
 </script>
-    <?php if ($plugin_set == '0') {
+    <?php if ($plugin_set != '0') {
      ?>
 <!-- Registration Form html Start -->
 <script type="text/x-magento-init">
@@ -233,7 +233,7 @@ if ($productsCount >= '0') {
 
 <div class="loader api-loader" ></div>
 <div class="registration_wrp">
-    <div class="l-header" style="padding-bottom: 2%;">
+    <div class="l-header" style="padding-bottom: 18px;">
       <div class="logo"></div>
       <div class="clear"></div>
     </div>
@@ -245,9 +245,9 @@ if ($productsCount >= '0') {
             text-align: center; 
             text-transform: uppercase; 
             padding-bottom: 6px; 
-            font-size: 20px; 
+            font-size: 17px; 
             font-weight: 500; 
-            margin-top:20px;">
+            margin-top:0;">
             Signup to preciso
             </h3>
             <form id='target' action="https://api.preciso.net/api/plugin/registration" method="post">
@@ -350,10 +350,28 @@ if ($productsCount >= '0') {
                         value="<?= /* @noEscape */ str_replace(' ', '.', $shop_url); ?>">                
                     </div>
                       <br>
-            <span class="alert_note">Note : After Registration, You would receive an email with login credentials in the registered email</span>
+           <!--  <span class="alert_note">Note : After Registration, You would receive an email with login credentials in the registered email</span> -->
                     <div class="submit_wrp"> <!-- disabled="disabled" -->
                     <input type="button" id="regisnSubmit" name="submit" value="Sign Up" required>
                     </div>
+
+                     <div class="alert_note">
+            <table>
+              <tbody><tr>
+                <td class="td_left">Notes :</td>
+                <td><ul>
+                  <li> 
+                    After Registration, You would receive an email with login credentials in the registered email.
+                 </li>
+                 <li> 
+                  Within 1-2 hours your dynamic banner will be available with the products in your Store! You can preview this  Banner  under Banner Tab Section. Also, you will have help from our side to set up or run your campaign in case you face any difficulty during the process!
+                 </li>
+               </ul>
+             </td>
+               </tr>
+             </tbody>
+           </table>
+           </div>
                 </div>
             </form>
             <div class="clear"></div>
@@ -1387,14 +1405,13 @@ else if( $blank_page == true ){
       <div class="leftHeader">
          <div class="header-wrp">
             <img src='<?= /* @noEscape */
-            $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/logo_small.png'); ?>'>
+            $block->getViewFileUrl('Preciso_PrecisoBidSmartAdvertising::images/logo_small_white.png'); ?>'>
          </div>
       </div>
       <div class="rightHeader">
          <div class="logButton">
             <span class="biddingstatus"></span><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
-            <a href="javascript:void(0);" class="remainingBalance messageDisplayrefresh" 
-            style="color:green;">Fund/Budget Balance : 0</a>
+            <a href="javascript:void(0);" class="remainingBalance messageDisplayrefresh">Balance : 0</a>
             <a href="javascript:void(0);" class="messageHiderefresh"></a><span style="color: #fff;font-weight: 600;position: relative;top: -2px; padding: 0 8px;">|</span>
             <!-- https://smartbid.preciso.net/#/login
             ?ref=shopifypayment&token=<?= /* @noEscape */ $GetUserToken;?> -->

@@ -18,6 +18,7 @@ body.toplevel_page_logico-show {
 
 .registration_wrp {
   padding: 50px;
+  padding-top:5px;
 }
 
 .registration_wrp h2 {
@@ -533,7 +534,8 @@ form {
 
 /* header CSS */
 .header {
-  background-color: #022a3a;
+  background-color: #2661DE;
+  
   min-height: 60px;
 }
 
@@ -601,6 +603,62 @@ div#deposit_money_rebate {
   color: #1b507f;
   font-size: 30px;
   font-weight: 500;
+}
+
+.registration-box
+{
+ border: 1px solid #EAEEF1;
+ box-shadow: 1px 2px 3px #ccc;
+}
+
+.alert_note table td, .alert_note table, .alert_note table tr {
+    border-bottom: 0px !important;
+    font-size: 12px;
+    color: #1b507f;
+    vertical-align: top !important;
+    border:none;
+    text-align: left;
+}
+
+.alert_note li {
+    list-style: disc;
+    text-indent: 0px;
+    padding-bottom: 5px;
+}
+.alert_note table td.td_left {
+    width: 60px;
+}
+
+.registration_wrp .l-header .logo
+{
+height: 53px;
+background-size: 100px;
+margin-bottom:12px;
+}
+
+.registration_wrp .main-icon
+{
+  height: 65px;
+  width:65px;
+  top:-33px;
+  left:50%;
+  transform:translate(-50%,0);
+  margin:0;
+  padding:0;
+
+}
+
+.registration_wrp .form-control {
+    height: 30px;
+}
+.registration_wrp form
+{
+  padding: 5px 25px;
+  margin-top: 5px;
+}
+.registration_wrp form#target
+{
+  margin-top:5px;
 }
 
 /*div#nav-tabContent {

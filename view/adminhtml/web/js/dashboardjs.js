@@ -2,51 +2,51 @@ define([
     "jquery",
     "Preciso_login",
     "jquery/ui"
-], function($) {
+    ], function($) {
 
-    function main(config, element) {
+        function main(config, element) {
 
-        function validatestore() {
-            var url = document.getElementById("landPage").value;
-            var pattern = /^(?:(?:https):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i;
-            if (pattern.test(url)) {
-                jQuery('.landignerror').hide();
-                return true;
+            function validatestore() {
+                var url = document.getElementById("landPage").value;
+                var pattern = /^(?:(?:https):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+                if (pattern.test(url)) {
+                    jQuery('.landignerror').hide();
+                    return true;
+                }
+                jQuery('.landignerror').show();
+                return false;
             }
-            jQuery('.landignerror').show();
-            return false;
-        }
-
-        jQuery(document).ready(function() {
-
-            jQuery('.skypeBtn').click(function() {
-                jQuery('#rawa-box').css('opacity', '1');
-                jQuery('#rawa-box').css('visibility', 'visible');
-
-            });
-            jQuery('#rawa-close ').click(function() {
-                jQuery('#rawa-box').css('opacity', '0');
-                jQuery('#rawa-box').css('visibility', 'hidden');
-            });
 
             jQuery(document).ready(function() {
-                jQuery('body').on("click", ".specialbutton", function() {
-                    jQuery('.tab-pane').toggleClass('enhanced');
-                    if (jQuery('.tab-pane').hasClass('enhanced')) {
-                        jQuery('.dashboard_wrp').css({
-                            "display": "none"
-                        });
-                        jQuery('.headinggWrp h6.section-title.h1').css({
-                            "display": "none"
-                        });
-                        jQuery('.footer-Wrp').css({
-                            "background-color": "#fff",
-                            "padding": "0px 0px"
-                        });
-                        jQuery('.section-wrp').css({
-                            "background-color": "#fff",
-                            "padding": "0px 0px"
-                        });
+
+                jQuery('.skypeBtn').click(function() {
+                    jQuery('#rawa-box').css('opacity', '1');
+                    jQuery('#rawa-box').css('visibility', 'visible');
+
+                });
+                jQuery('#rawa-close ').click(function() {
+                    jQuery('#rawa-box').css('opacity', '0');
+                    jQuery('#rawa-box').css('visibility', 'hidden');
+                });
+
+                jQuery(document).ready(function() {
+                    jQuery('body').on("click", ".specialbutton", function() {
+                        jQuery('.tab-pane').toggleClass('enhanced');
+                        if (jQuery('.tab-pane').hasClass('enhanced')) {
+                            jQuery('.dashboard_wrp').css({
+                                "display": "none"
+                            });
+                            jQuery('.headinggWrp h6.section-title.h1').css({
+                                "display": "none"
+                            });
+                            jQuery('.footer-Wrp').css({
+                                "background-color": "#fff",
+                                "padding": "0px 0px"
+                            });
+                            jQuery('.section-wrp').css({
+                                "background-color": "#fff",
+                                "padding": "0px 0px"
+                            });
                         // jQuery("section#tabs").css({"padding":" 0px 0px !important", "background": "#fff !important"});
                         jQuery("section#tabs").attr("style", "padding: 0px 0px !important; background :#fff !important;");
                         jQuery(".section-wrp").attr("style", "background : #fff !important; padding: 0px 0px !important;");
@@ -71,84 +71,84 @@ define([
                     }
                 });
 
-            });
-
-
-
-            jQuery('#nav-tab a[data-toggle="tab"]').on('click', function(e) {
-                jQuery('#nav-tab a[data-toggle="tab"]').each(function() {
-                    jQuery(this).removeClass("active");
                 });
-                jQuery(this).addClass('active');
-                localStorage.setItem('activeTab', jQuery(e.target).attr('href'));
-            });
-            var activeTab = localStorage.getItem('activeTab');
 
-            if (activeTab) {
-                setTimeout(
-                    function() {
+
+
+                jQuery('#nav-tab a[data-toggle="tab"]').on('click', function(e) {
+                    jQuery('#nav-tab a[data-toggle="tab"]').each(function() {
+                        jQuery(this).removeClass("active");
+                    });
+                    jQuery(this).addClass('active');
+                    localStorage.setItem('activeTab', jQuery(e.target).attr('href'));
+                });
+                var activeTab = localStorage.getItem('activeTab');
+
+                if (activeTab) {
+                    setTimeout(
+                        function() {
                         // alert('#nav-tab a[href="' + activeTab + '"]');
                         jQuery('#tabs a[href="' + activeTab + '"]').trigger('click');
                     }, 2000);
-            }
-
-            jQuery(".messageDisplayrefresh").hover(function() {
-                jQuery("a.messageHiderefresh").html('<p>Balance refreshes in every 5 minutes.</p>');
-                jQuery(".messageHiderefresh").toggle();
-            });
-
-            jQuery(".messageDisplayrefreshicon").hover(function() {
-                jQuery("a.messageHiderefreshicon").html('<p>Refresh.</p>');
-                jQuery(".messageHiderefreshicon").toggle();
-            });
-
-        });
-
-        function eraseCookie(name) {
-            createCookie(name, "", -1);
-        }
-
-        function isUrlExists(url, cb) {
-            jQuery.ajax({
-                url: url,
-                dataType: 'text',
-                type: 'GET',
-                complete: function(xhr) {
-                    if (typeof cb === 'function')
-                        cb.apply(this, [xhr.status]);
                 }
+
+                jQuery(".messageDisplayrefresh").hover(function() {
+                    jQuery("a.messageHiderefresh").html('<p>Balance refreshes in every 5 minutes.</p>');
+                    jQuery(".messageHiderefresh").toggle();
+                });
+
+                jQuery(".messageDisplayrefreshicon").hover(function() {
+                    jQuery("a.messageHiderefreshicon").html('<p>Refresh.</p>');
+                    jQuery(".messageHiderefreshicon").toggle();
+                });
+
             });
+
+function eraseCookie(name) {
+    createCookie(name, "", -1);
+}
+
+function isUrlExists(url, cb) {
+    jQuery.ajax({
+        url: url,
+        dataType: 'text',
+        type: 'GET',
+        complete: function(xhr) {
+            if (typeof cb === 'function')
+                cb.apply(this, [xhr.status]);
         }
+    });
+}
 
 
-        function readCookie(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
 
-        function createCookie(name, value, days) {
-            if (days) {
-                var date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                var expires = "; expires=" + date.toGMTString();
-            }
-            else var expires = "";
-            document.cookie = name + "=" + value + expires + "; path=/";
-        }
+function createCookie(name, value, days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
 
-        function thousands_separators(num) {
-            var num_parts = num.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return num_parts.join(".");
-        }
+function thousands_separators(num) {
+    var num_parts = num.toString().split(".");
+    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return num_parts.join(".");
+}
 
-        function sortDropDownListByText() {
+function sortDropDownListByText() {
             // Loop for each select element on the page.
             jQuery("select").each(function() {
 
@@ -379,10 +379,10 @@ define([
                                 else {}
                             });
                             if (biddingStatus == 'Active') {
-                                jQuery('.biddingstatus').html('<span style="font-size: 18px;color:green;margin-right:10px;">Bidding: Active!</span>');
+                                jQuery('.biddingstatus').html('<span style="font-size: 18px;color:#07fc13;margin-right:10px;">Bidding: Active!</span>');
                             }
                             else {
-                                jQuery('.biddingstatus').html('<span style="font-size: 18px;color:red;margin-right:10px;">Bidding: Pause!</span>');
+                                jQuery('.biddingstatus').html('<span style="font-size: 18px;color:#f95b4d;margin-right:10px;">Bidding: Pause!</span>');
                             }
                             var strategyName = data.campaignDetails[0].strategyName;
                             jQuery('#stragName option').each(function(index) {
@@ -427,15 +427,15 @@ define([
                         }
                     }
                 });
-            }, 1000);
+}, 1000);
 
-            var form = jQuery("#banner");
+var form = jQuery("#banner");
 
-            $.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                data: form.serialize(),
-                success: function(data) {
+$.ajax({
+    type: form.attr('method'),
+    url: form.attr('action'),
+    data: form.serialize(),
+    success: function(data) {
                     // console.log(data);
                     if (data.status.statusCode == 'F_200') {
 
@@ -489,12 +489,12 @@ define([
             });
 
 
-            jQuery(document).on('click', '.deletebanner', function() {
-                jQuery('.api-loader').show();
-                var creativeCode = jQuery(this).attr('creativeid');
-                var sizeCODE = jQuery(this).attr('sizecode');
-                jQuery('.creaativeID').val(creativeCode);
-                jQuery('.sizeCCode').val(sizeCODE);
+jQuery(document).on('click', '.deletebanner', function() {
+    jQuery('.api-loader').show();
+    var creativeCode = jQuery(this).attr('creativeid');
+    var sizeCODE = jQuery(this).attr('sizecode');
+    jQuery('.creaativeID').val(creativeCode);
+    jQuery('.sizeCCode').val(sizeCODE);
                 //console.log(creativeCode+sizeCODE);
 
                 var formcr = jQuery("#deletebanner");
@@ -521,22 +521,22 @@ define([
             });
 
 
-            jQuery('.bannerdeletesuccess').click(function() {
-                jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
-                var form = jQuery("#banner");
-                jQuery.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: form.serialize(),
-                    success: function(data) {
+jQuery('.bannerdeletesuccess').click(function() {
+    jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
+    var form = jQuery("#banner");
+    jQuery.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize(),
+        success: function(data) {
                         // console.log(data);
                         if (data.status.statusCode == 'F_200') {}
-                        if (data.status.statusCode == 'S_200') {
-                            var token = jQuery('.token').val();
-                            var bannerPrev = data.bannerPreview;
-                            var arrayLen = bannerPrev.length;
-                            var i;
-                            for (i = 0; i < arrayLen; i++) {
+                            if (data.status.statusCode == 'S_200') {
+                                var token = jQuery('.token').val();
+                                var bannerPrev = data.bannerPreview;
+                                var arrayLen = bannerPrev.length;
+                                var i;
+                                for (i = 0; i < arrayLen; i++) {
                                 // alert(data.bannerPreview[i].sizeCode);
                                 var bannerSize = data.bannerPreview[i].sizeCode;
                                 var bannerType = data.bannerPreview[i].campaignBannerType;
@@ -580,11 +580,11 @@ define([
                         }
                     }
                 });
-            });
+});
 
-            jQuery(document).on("click", ".pausebanner", function() {
-                var creative_id = jQuery(this).attr('creativeid');
-                var size_code = jQuery(this).attr('sizecode');
+jQuery(document).on("click", ".pausebanner", function() {
+    var creative_id = jQuery(this).attr('creativeid');
+    var size_code = jQuery(this).attr('sizecode');
                 // console.log(size_code);
                 var bidder_status = jQuery(this).attr('bidderstatus');
                 jQuery('.cretive_Id').val(creative_id);
@@ -601,24 +601,24 @@ define([
                     success: function(data) {
                         // console.log(data.rtgBanner);
                         if (data.status.statusCode == 'F_200') {}
-                        if (data.status.statusCode == 'S_200') {
-                            jQuery('.statusupdatebanner').show();
+                            if (data.status.statusCode == 'S_200') {
+                                jQuery('.statusupdatebanner').show();
 
-                            jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
-                            var form = jQuery("#banner");
-                            jQuery.ajax({
-                                type: form.attr('method'),
-                                url: form.attr('action'),
-                                data: form.serialize(),
-                                success: function(data) {
+                                jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
+                                var form = jQuery("#banner");
+                                jQuery.ajax({
+                                    type: form.attr('method'),
+                                    url: form.attr('action'),
+                                    data: form.serialize(),
+                                    success: function(data) {
                                     //console.log(data);
                                     if (data.status.statusCode == 'F_200') {}
-                                    if (data.status.statusCode == 'S_200') {
-                                        var token = jQuery('.token').val();
-                                        var bannerPrev = data.bannerPreview;
-                                        var arrayLen = bannerPrev.length;
-                                        var i;
-                                        for (i = 0; i < arrayLen; i++) {
+                                        if (data.status.statusCode == 'S_200') {
+                                            var token = jQuery('.token').val();
+                                            var bannerPrev = data.bannerPreview;
+                                            var arrayLen = bannerPrev.length;
+                                            var i;
+                                            for (i = 0; i < arrayLen; i++) {
                                             // alert(data.bannerPreview[i].sizeCode);
                                             var bannerSize = data.bannerPreview[i].sizeCode;
                                             var bannerType = data.bannerPreview[i].campaignBannerType;
@@ -661,16 +661,16 @@ define([
                             });
 
 
-                        }
-                    }
-                });
+}
+}
+});
 
-                jQuery(document).on("click", ".statusupdatesuccess", function() {
-                    jQuery(".statusupdatebanner").hide();
-                });
-            });
+jQuery(document).on("click", ".statusupdatesuccess", function() {
+    jQuery(".statusupdatebanner").hide();
+});
+});
 
-            jQuery(document).on('click', '.editbanner', function() {
+jQuery(document).on('click', '.editbanner', function() {
                 // console.log("ss");
                 var creativeCode = jQuery(this).attr('creativeid');
                 jQuery('.editcreaativeID').val(creativeCode);
@@ -709,85 +709,85 @@ define([
             });
 
 
-            jQuery('#dynamicbanneredit').click(function() {
-                var varTitle = jQuery('.titleval').val();
-                var varBrand = jQuery('.brandval').val();
-                var varprice = jQuery('.priceval').val();
-                var varimage = jQuery('.imageurl').val();
-                var varlandingpage = jQuery('.landingpageurl').val();
-                var varbuttonTxt = jQuery('.buttontext').val();
+jQuery('#dynamicbanneredit').click(function() {
+    var varTitle = jQuery('.titleval').val();
+    var varBrand = jQuery('.brandval').val();
+    var varprice = jQuery('.priceval').val();
+    var varimage = jQuery('.imageurl').val();
+    var varlandingpage = jQuery('.landingpageurl').val();
+    var varbuttonTxt = jQuery('.buttontext').val();
 
-                if (varTitle == '' || varBrand == '' || varprice == '' || varimage == '' || varlandingpage == '' || varbuttonTxt == '') {
+    if (varTitle == '' || varBrand == '' || varprice == '' || varimage == '' || varlandingpage == '' || varbuttonTxt == '') {
 
-                    if (varTitle == '') {
-                        jQuery('.titleval').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.titleval').css('background-color', '#fff');
-                    }
+        if (varTitle == '') {
+            jQuery('.titleval').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.titleval').css('background-color', '#fff');
+        }
 
-                    if (varBrand == '') {
-                        jQuery('.brandval').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.brandval').css('background-color', '#fff');
-                    }
+        if (varBrand == '') {
+            jQuery('.brandval').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.brandval').css('background-color', '#fff');
+        }
 
-                    if (varprice == '') {
-                        jQuery('.priceval').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.priceval').css('background-color', '#fff');
-                    }
+        if (varprice == '') {
+            jQuery('.priceval').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.priceval').css('background-color', '#fff');
+        }
 
-                    if (varbuttonTxt == '') {
-                        jQuery('.buttontext').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.buttontext').css('background-color', '#fff');
-                    }
+        if (varbuttonTxt == '') {
+            jQuery('.buttontext').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.buttontext').css('background-color', '#fff');
+        }
 
-                }
-                else {
+    }
+    else {
 
-                    if (varTitle == '') {
-                        jQuery('.titleval').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.titleval').css('background-color', '#fff');
-                    }
+        if (varTitle == '') {
+            jQuery('.titleval').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.titleval').css('background-color', '#fff');
+        }
 
-                    if (varBrand == '') {
-                        jQuery('.brandval').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.brandval').css('background-color', '#fff');
-                    }
+        if (varBrand == '') {
+            jQuery('.brandval').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.brandval').css('background-color', '#fff');
+        }
 
-                    if (varprice == '') {
-                        jQuery('.priceval').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.priceval').css('background-color', '#fff');
-                    }
+        if (varprice == '') {
+            jQuery('.priceval').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.priceval').css('background-color', '#fff');
+        }
 
-                    if (varbuttonTxt == '') {
-                        jQuery('.buttontext').css('background-color', '#ff000040');
-                    }
-                    else {
-                        jQuery('.buttontext').css('background-color', '#fff');
-                    }
+        if (varbuttonTxt == '') {
+            jQuery('.buttontext').css('background-color', '#ff000040');
+        }
+        else {
+            jQuery('.buttontext').css('background-color', '#fff');
+        }
 
-                    if (varimage != '') {
-                        isUrlExists(varimage, function(status) {
-                            if (status === 200) {
-                                jQuery('.imageurl').css('background-color', '#fff');
-                                var formcr = jQuery("#editBanner");
-                                jQuery.ajax({
-                                    type: formcr.attr('method'),
-                                    url: formcr.attr('action'),
-                                    data: formcr.serialize(),
-                                    success: function(data) {
+        if (varimage != '') {
+            isUrlExists(varimage, function(status) {
+                if (status === 200) {
+                    jQuery('.imageurl').css('background-color', '#fff');
+                    var formcr = jQuery("#editBanner");
+                    jQuery.ajax({
+                        type: formcr.attr('method'),
+                        url: formcr.attr('action'),
+                        data: formcr.serialize(),
+                        success: function(data) {
                                         //console.log(data);
                                         if (data.status.statusCode == 'F_200') {
                                             // alert('unsucessful');
@@ -799,27 +799,27 @@ define([
                                         }
                                     }
                                 });
-                            }
-                            else if (status === 404) {
-                                jQuery('.imageurl').css('background-color', '#ff000040');
-                            }
-                        });
-                    }
-
+                }
+                else if (status === 404) {
+                    jQuery('.imageurl').css('background-color', '#ff000040');
                 }
             });
+        }
+
+    }
+});
 
 
 
 
-            jQuery('.successupdatebtnbanner').click(function() {
-                jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
-                var form = jQuery("#banner");
-                jQuery.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: form.serialize(),
-                    success: function(data) {
+jQuery('.successupdatebtnbanner').click(function() {
+    jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
+    var form = jQuery("#banner");
+    jQuery.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize(),
+        success: function(data) {
                         // console.log(data);
                         if (data.status.statusCode == 'F_200') {
 
@@ -872,103 +872,132 @@ define([
                     }
                 });
 
-            });
+});
 
 
-            var form = jQuery("#paymentsettings");
+var form = jQuery("#paymentsettings");
+jQuery.ajax({
+    type: form.attr('method'),
+    url: form.attr('action'),
+    data: form.serialize(),
+    success: function(data) {
+        if (data.status.statusCode == 'F_200') {
+            jQuery(".destroyCookie").trigger("click");
+        }
+        if (data.status.statusCode == 'S_200') {
+
+            var paymentCount = data.paymentDetails;
+            var payarrayLen = paymentCount.length;
+            jQuery('.remainBudget').html(data.remainingBudget + ' €');
+            jQuery('.totalBudget').html(data.totalBudget + ' €');
+            jQuery('.paymentRecevied').html(data.totalPaymentReceived + ' €');
+            jQuery('.totalFundRemain').html(data.totalRemainingFundAvailable + ' €');
+            var i;
+            for (i = 0; i < payarrayLen; i++) {
+                jQuery('<tr><td>' + data.paymentDetails[i].PaidDate + '</td><td>' + data.paymentDetails[i].PaidAmount + ' €</td><td>' + data.paymentDetails[i].PaymentType + '</td></tr>').insertAfter(jQuery('.paydyncrow'));
+                if (data.totalBudget > data.totalPaymentReceived) {
+                    totalSpend = data.totalPaymentReceived - data.remainingBudget;
+                }
+                else {
+                    totalSpend = data.totalBudget - data.remainingBudget;
+                }
+
+                jQuery('.totalSpentBud').html(totalSpend);
+            }
+
             jQuery.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                data: form.serialize(),
+                type: 'GET',
+                url: 'https://api.preciso.net/api/plugin/getrebate?userId=' + jQuery('.userid').val() + '&token=' + jQuery('.token').val(),
                 success: function(data) {
-                    if (data.status.statusCode == 'F_200') {
-                        jQuery(".destroyCookie").trigger("click");
-                    }
                     if (data.status.statusCode == 'S_200') {
-
-                        var paymentCount = data.paymentDetails;
-                        var payarrayLen = paymentCount.length;
-                        jQuery('.remainBudget').html(data.remainingBudget + ' €');
-                        jQuery('.totalBudget').html(data.totalBudget + ' €');
-                        jQuery('.paymentRecevied').html(data.totalPaymentReceived + ' €');
-                        jQuery('.totalFundRemain').html(data.totalRemainingFundAvailable + ' €');
-                        var i;
-                        for (i = 0; i < payarrayLen; i++) {
-                            jQuery('<tr><td>' + data.paymentDetails[i].PaidDate + '</td><td>' + data.paymentDetails[i].PaidAmount + ' €</td><td>' + data.paymentDetails[i].PaymentType + '</td></tr>').insertAfter(jQuery('.paydyncrow'));
-                            if (data.totalBudget > data.totalPaymentReceived) {
-                                totalSpend = data.totalPaymentReceived - data.remainingBudget;
-                            }
-                            else {
-                                totalSpend = data.totalBudget - data.remainingBudget;
-                            }
-
-                            jQuery('.totalSpentBud').html(totalSpend);
-                        }
-
-                        jQuery.ajax({
-                            type: 'GET',
-                            url: 'https://api.preciso.net/api/plugin/getrebate?userId=' + jQuery('.userid').val() + '&token=' + jQuery('.token').val(),
-                            success: function(data) {
-                                if (data.status.statusCode == 'S_200') {
-                                    var rebateDetails = data.rebateDetails;
-                                    var count_rebateDetails = rebateDetails.length;
-                                    var rebateHTML = '';
-                                    jQuery.each(rebateDetails, function(key, value) {
-                                        var rebate = value.rebate;
-                                        var rebate_res = rebate.split(".");
-                                        rebateHTML += '<div class="col-3 offset-right10 "><div class="content-box mr-b0"><span>Deposit  >= ' + value.slabFrom + ' &euro;</span><br><span>' + rebate_res[0] + '% discount</span></div></div>';
-                                    });
-                                    if (count_rebateDetails > 0) {
-                                        jQuery('h3.deposit_money_rebate').show();
-                                        jQuery('#deposit_money_rebate').show().html(rebateHTML);
-                                    }
-                                }
-                            }
+                        var rebateDetails = data.rebateDetails;
+                        var count_rebateDetails = rebateDetails.length;
+                        var rebateHTML = '';
+                        jQuery.each(rebateDetails, function(key, value) {
+                            var rebate = value.rebate;
+                            var rebate_res = rebate.split(".");
+                            rebateHTML += '<div class="col-3 offset-right10 "><div class="content-box mr-b0"><span>Deposit  >= ' + value.slabFrom + ' &euro;</span><br><span>' + rebate_res[0] + '% discount</span></div></div>';
                         });
-                    }
-                }
-            });
-
-            var remainBal = jQuery("#remainBalance");
-            jQuery.ajax({
-                type: remainBal.attr('method'),
-                url: remainBal.attr('action'),
-                data: remainBal.serialize(),
-                success: function(data) {
-                    if (data.status.statusCode == 'F_200') {
-                        jQuery(".destroyCookie").trigger("click");
-                    }
-                    if (data.status.statusCode == 'S_200') {
-                        jQuery('.remainingBalance').html('Fund/Budget Balance : ' + data.remainingBudget.remainingBudgetBalance + '€');
-                        // jQuery('.messageHide').html('(' + data.remainingBudget.message + ')');
-                    }
-                }
-            });
-
-            setInterval(function() {
-                var remainBal = jQuery("#remainBalance");
-                jQuery.ajax({
-                    type: remainBal.attr('method'),
-                    url: remainBal.attr('action'),
-                    data: remainBal.serialize(),
-                    success: function(data) {
-                        if (data.status.statusCode == 'F_200') {
-                            jQuery(".destroyCookie").trigger("click");
+                        if (count_rebateDetails > 0) {
+                            jQuery('h3.deposit_money_rebate').show();
+                            jQuery('#deposit_money_rebate').show().html(rebateHTML);
                         }
-                        if (data.status.statusCode == 'S_200') {
-                            jQuery('.remainingBalance').html('Fund/Budget Balance : ' + data.remainingBudget.remainingBudgetBalance + '€');
-                            // jQuery('.messageHide').html('(' + data.remainingBudget.message + ')');
+                    }
+                }
+            });
+        }
+    }
+});
+
+var remainBal = jQuery("#remainBalance");
+jQuery.ajax({
+    type: remainBal.attr('method'),
+    url: remainBal.attr('action'),
+    data: remainBal.serialize(),
+    success: function(data) {
+        if (data.status.statusCode == 'F_200') {
+            jQuery(".destroyCookie").trigger("click");
+        }
+        if (data.status.statusCode == 'S_200') {
+            var colorcode = data.remainingBudget.colourCode;
+            colorcode = colorcode.toLowerCase();
+
+            var newcolor =  colorcode;
+            if(colorcode=="green")
+            {
+                newcolor = "#07fc13";
+            }
+            if(colorcode=="red")
+            {
+                newcolor = "#f95b4d";
+            }
+            jQuery('.remainingBalance').html('Balance :' + data.remainingBudget.remainingBudgetBalance + '€');
+            jQuery('.remainingBalance').css('color',newcolor);
+            jQuery('.messageHide').html('('+data.remainingBudget.message+')');
+
+        }
+    }
+});
+
+setInterval(function() {
+    var remainBal = jQuery("#remainBalance");
+    jQuery.ajax({
+        type: remainBal.attr('method'),
+        url: remainBal.attr('action'),
+        data: remainBal.serialize(),
+        success: function(data) {
+            if (data.status.statusCode == 'F_200') {
+                jQuery(".destroyCookie").trigger("click");
+            }
+            if (data.status.statusCode == 'S_200') {
+                 var colorcode = data.remainingBudget.colourCode;
+            colorcode = colorcode.toLowerCase();
+
+            var newcolor =  colorcode;
+            if(colorcode=="green")
+            {
+                newcolor = "#07fc13";
+            }
+            if(colorcode=="red")
+            {
+                newcolor = "#f95b4d";
+            }
+            jQuery('.remainingBalance').html('Balance :' + data.remainingBudget.remainingBudgetBalance + '€');
+            jQuery('.remainingBalance').css('color',newcolor);
+            jQuery('.messageHide').html('('+data.remainingBudget.message+')');
+         
+                
                         }
                     }
                 });
-            }, 300000);
+}, 300000);
 
-            var dailyReport = jQuery("#dailyreport");
-            jQuery.ajax({
-                type: dailyReport.attr('method'),
-                url: dailyReport.attr('action'),
-                data: dailyReport.serialize(),
-                success: function(data) {
+var dailyReport = jQuery("#dailyreport");
+jQuery.ajax({
+    type: dailyReport.attr('method'),
+    url: dailyReport.attr('action'),
+    data: dailyReport.serialize(),
+    success: function(data) {
 
                     //console.log(data);
                     if (data.status.statusCode == 'F_200') {
@@ -1087,37 +1116,37 @@ define([
                                 data: {
                                     labels: datesArr,
                                     datasets: [{
-                                            label: "Click",
-                                            data: clicksArr,
-                                            borderColor: [
-                                                '#022a3a',
-                                            ],
-                                            borderWidth: 2
-                                        },
-                                        {
-                                            label: "Impression",
-                                            data: impressionArr,
-                                            borderColor: [
-                                                '#07c18b',
-                                            ],
-                                            borderWidth: 2
-                                        },
-                                        {
-                                            label: "Conversions",
-                                            data: convesrionSumPCPV,
-                                            borderColor: [
-                                                '#41a8df',
-                                            ],
-                                            borderWidth: 2
-                                        },
-                                        {
-                                            label: "Cost",
-                                            data: costArr,
-                                            borderColor: [
-                                                '#57c10a',
-                                            ],
-                                            borderWidth: 2
-                                        }
+                                        label: "Click",
+                                        data: clicksArr,
+                                        borderColor: [
+                                        '#022a3a',
+                                        ],
+                                        borderWidth: 2
+                                    },
+                                    {
+                                        label: "Impression",
+                                        data: impressionArr,
+                                        borderColor: [
+                                        '#07c18b',
+                                        ],
+                                        borderWidth: 2
+                                    },
+                                    {
+                                        label: "Conversions",
+                                        data: convesrionSumPCPV,
+                                        borderColor: [
+                                        '#41a8df',
+                                        ],
+                                        borderWidth: 2
+                                    },
+                                    {
+                                        label: "Cost",
+                                        data: costArr,
+                                        borderColor: [
+                                        '#57c10a',
+                                        ],
+                                        borderWidth: 2
+                                    }
                                     ]
                                 },
 
@@ -1136,83 +1165,83 @@ define([
                     }
                 }
             });
-            var sendCampId = sessionStorage.getItem("campaignId");
+var sendCampId = sessionStorage.getItem("campaignId");
 
-            jQuery(".messageDisplay").hover(function() {
-                var remainBal = jQuery("#remainBalance");
-                jQuery.ajax({
-                    type: remainBal.attr('method'),
-                    url: remainBal.attr('action'),
-                    data: remainBal.serialize(),
-                    success: function(data) {
-                        if (data.status.statusCode == 'F_200') {
-                            jQuery(".destroyCookie").trigger("click");
-                        }
-                        if (data.status.statusCode == 'S_200') {
-                            if (data.remainingBudget.showTopUpMessage == true) {
+jQuery(".messageDisplay").hover(function() {
+    var remainBal = jQuery("#remainBalance");
+    jQuery.ajax({
+        type: remainBal.attr('method'),
+        url: remainBal.attr('action'),
+        data: remainBal.serialize(),
+        success: function(data) {
+            if (data.status.statusCode == 'F_200') {
+                jQuery(".destroyCookie").trigger("click");
+            }
+            if (data.status.statusCode == 'S_200') {
+                if (data.remainingBudget.showTopUpMessage == true) {
                                 // jQuery(".messageHide").toggle();
                             }
                         }
                     }
                 });
 
-            });
+});
 
 
-            jQuery(document).on("click", ".bannerpaused", function() {
-                jQuery(".failedpausebanner").show();
-            });
+jQuery(document).on("click", ".bannerpaused", function() {
+    jQuery(".failedpausebanner").show();
+});
 
-            jQuery(document).on("click", ".closepausedbanner", function() {
-                jQuery(".failedpausebanner").hide();
-            });
+jQuery(document).on("click", ".closepausedbanner", function() {
+    jQuery(".failedpausebanner").hide();
+});
 
-            jQuery(document).on("click", ".bannerotherpaused", function() {
-                jQuery(".failedpauseotherbanner").show();
-            });
+jQuery(document).on("click", ".bannerotherpaused", function() {
+    jQuery(".failedpauseotherbanner").show();
+});
 
-            jQuery(document).on("click", ".closepausedotherbanner", function() {
-                jQuery(".failedpauseotherbanner").hide();
-            });
+jQuery(document).on("click", ".closepausedotherbanner", function() {
+    jQuery(".failedpauseotherbanner").hide();
+});
 
-            jQuery(document).on("click", ".btnpaused_hundred", function() {
-                jQuery(".failedpauseohundredbanner").show();
-            });
+jQuery(document).on("click", ".btnpaused_hundred", function() {
+    jQuery(".failedpauseohundredbanner").show();
+});
 
-            jQuery(document).on("click", ".closepauseohundredbanner", function() {
-                jQuery(".failedpauseohundredbanner").hide();
-            });
+jQuery(document).on("click", ".closepauseohundredbanner", function() {
+    jQuery(".failedpauseohundredbanner").hide();
+});
 
-            jQuery(document).on("click", ".btncampaignpaused", function() {
-                jQuery(".failedcmapaignpaused").show();
-            });
+jQuery(document).on("click", ".btncampaignpaused", function() {
+    jQuery(".failedcmapaignpaused").show();
+});
 
-            jQuery(document).on("click", ".closecmapaignpaused", function() {
-                jQuery(".failedcmapaignpaused").hide();
-            });
+jQuery(document).on("click", ".closecmapaignpaused", function() {
+    jQuery(".failedcmapaignpaused").hide();
+});
 
-            jQuery('.refreshBut').click(function() {
+jQuery('.refreshBut').click(function() {
 
-                jQuery("#mytable").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
-                var form = jQuery("#paymentsettings");
-                jQuery.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: form.serialize(),
-                    success: function(data) {
-                        if (data.status.statusCode == 'F_200') {
-                            jQuery(".destroyCookie").trigger("click");
-                        }
-                        if (data.status.statusCode == 'S_200') {
-                            var paymentCount = data.paymentDetails;
-                            var payarrayLen = paymentCount.length;
-                            var i;
-                            for (i = 0; i < payarrayLen; i++) {
-                                jQuery('.remainBudget').html(data.remainingBudget + ' €');
-                                jQuery('.totalBudget').html(data.totalBudget + ' €');
-                                jQuery('.paymentRecevied').html(data.totalPaymentReceived + ' €');
-                                jQuery('.totalFundRemain').html(data.totalRemainingFundAvailable + ' €');
-                                jQuery('<tr><td>' + data.paymentDetails[i].PaidDate + '</td><td>' + data.paymentDetails[i].PaidAmount + ' €</td><td>' + data.paymentDetails[i].PaymentType + '</td></tr>').insertAfter(jQuery('.paydyncrow'));
+    jQuery("#mytable").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
+    var form = jQuery("#paymentsettings");
+    jQuery.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize(),
+        success: function(data) {
+            if (data.status.statusCode == 'F_200') {
+                jQuery(".destroyCookie").trigger("click");
+            }
+            if (data.status.statusCode == 'S_200') {
+                var paymentCount = data.paymentDetails;
+                var payarrayLen = paymentCount.length;
+                var i;
+                for (i = 0; i < payarrayLen; i++) {
+                    jQuery('.remainBudget').html(data.remainingBudget + ' €');
+                    jQuery('.totalBudget').html(data.totalBudget + ' €');
+                    jQuery('.paymentRecevied').html(data.totalPaymentReceived + ' €');
+                    jQuery('.totalFundRemain').html(data.totalRemainingFundAvailable + ' €');
+                    jQuery('<tr><td>' + data.paymentDetails[i].PaidDate + '</td><td>' + data.paymentDetails[i].PaidAmount + ' €</td><td>' + data.paymentDetails[i].PaymentType + '</td></tr>').insertAfter(jQuery('.paydyncrow'));
                                 // jQuery('.remainBudget').html(data.remainingBudget+' €');
                                 if (data.totalBudget > data.totalPaymentReceived) {
                                     totalSpend = data.totalPaymentReceived - data.remainingBudget;
@@ -1225,12 +1254,12 @@ define([
                         }
                     }
                 });
-            });
+});
 
-            jQuery(document).on("click", ".editbanner", function() {
-                jQuery('.edit_banner_popup').show();
-                jQuery('.flagbtn').val(0);
-            });
+jQuery(document).on("click", ".editbanner", function() {
+    jQuery('.edit_banner_popup').show();
+    jQuery('.flagbtn').val(0);
+});
             // jQuery('.hover_bkgr_fricc').click(function(){
             //     jQuery('.hover_bkgr_fricc').hide();
             // });
@@ -1373,10 +1402,10 @@ define([
                     }
                 }
             });
-            jQuery('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
-                localStorage.setItem('activeTab', jQuery(e.target).attr('href'));
-            });
-            var activeTab = localStorage.getItem('activeTab');
+jQuery('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+    localStorage.setItem('activeTab', jQuery(e.target).attr('href'));
+});
+var activeTab = localStorage.getItem('activeTab');
             // console.log(activeTab);
             if (activeTab) {
                 setTimeout(
@@ -1444,130 +1473,130 @@ define([
 
             jQuery('#dynamicbannercreate').click(function(event) {
                 event.preventDefault();
-        var varTitle = jQuery('#createbanner #titleval').val();
-        var varBrand = jQuery('#createbanner #brandval').val();
-        var varprice = jQuery('#createbanner #priceval').val();
-        var varimage = jQuery('#createbanner #imageurl').val();
-        var varlandingpage = jQuery('#createbanner #landingpageurl').val();
+                var varTitle = jQuery('#createbanner #titleval').val();
+                var varBrand = jQuery('#createbanner #brandval').val();
+                var varprice = jQuery('#createbanner #priceval').val();
+                var varimage = jQuery('#createbanner #imageurl').val();
+                var varlandingpage = jQuery('#createbanner #landingpageurl').val();
 
-        if (varTitle == '' || varBrand == '' || varprice == '' || varimage == '' || varlandingpage == '') {
+                if (varTitle == '' || varBrand == '' || varprice == '' || varimage == '' || varlandingpage == '') {
 
-            if (varTitle == '') {
-                jQuery('#titleval').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#titleval').css('background-color', '#fff');
-            }
-
-            if (varimage == '') {
-                jQuery('#imageurl').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#imageurl').css('background-color', '#fff');
-            }
-
-            if (varBrand == '') {
-                jQuery('#brandval').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#brandval').css('background-color', '#fff');
-            }
-
-            if (varprice == '') {
-                jQuery('#priceval').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#priceval').css('background-color', '#fff');
-            }
-            if (varlandingpage == '') {
-                jQuery('#landingpageurl').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#landingpageurl').css('background-color', '#fff');
-            }
-
-
-        }
-        else {
-            if (varTitle == '') {
-                jQuery('#titleval').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#titleval').css('background-color', '#fff');
-            }
-
-            if (varimage == '') {
-                jQuery('#imageurl').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#imageurl').css('background-color', '#fff');
-            }
-
-            if (varBrand == '') {
-                jQuery('#brandval').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#brandval').css('background-color', '#fff');
-            }
-
-            if (varprice == '') {
-               jQuery('#priceval').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#priceval').css('background-color', '#fff');
-            }
-            if (varlandingpage == '') {
-                jQuery('#landingpageurl').css('background-color', '#ff000040');
-            }
-            else {
-                jQuery('#landingpageurl').css('background-color', '#fff');
-            }
-
-
-            if (varimage != '') {
-                isUrlExists(varimage, function(status) {
-                    if (status === 200) {
-
-                        var formcr = jQuery("#createbanner");
-                        jQuery('.api-loader').css('display', 'block');
-                        jQuery.ajax({
-                            type: formcr.attr('method'),
-                            url: formcr.attr('action'),
-                            data: formcr.serialize(),
-                            success: function(data) {
-
-                                if (data.status.statusCode == 'F_200') {
-                                    jQuery('.api-loader').css('display', 'none');
-                                    jQuery('.failedcreatebanner').show();
-                                }
-                                if (data.status.statusCode == 'S_200') {
-                                    jQuery('.api-loader').css('display', 'none');
-                                    jQuery('.hover_bkgr_fricc').hide();
-                                    jQuery('.successcreatebanner').show();
-                                }
-                            }
-                        });
-
+                    if (varTitle == '') {
+                        jQuery('#titleval').css('background-color', '#ff000040');
                     }
-                    else if (status === 404) {
+                    else {
+                        jQuery('#titleval').css('background-color', '#fff');
+                    }
+
+                    if (varimage == '') {
                         jQuery('#imageurl').css('background-color', '#ff000040');
                     }
+                    else {
+                        jQuery('#imageurl').css('background-color', '#fff');
+                    }
 
-                });
+                    if (varBrand == '') {
+                        jQuery('#brandval').css('background-color', '#ff000040');
+                    }
+                    else {
+                        jQuery('#brandval').css('background-color', '#fff');
+                    }
 
+                    if (varprice == '') {
+                        jQuery('#priceval').css('background-color', '#ff000040');
+                    }
+                    else {
+                        jQuery('#priceval').css('background-color', '#fff');
+                    }
+                    if (varlandingpage == '') {
+                        jQuery('#landingpageurl').css('background-color', '#ff000040');
+                    }
+                    else {
+                        jQuery('#landingpageurl').css('background-color', '#fff');
+                    }
+
+
+                }
+                else {
+                    if (varTitle == '') {
+                        jQuery('#titleval').css('background-color', '#ff000040');
+                    }
+                    else {
+                        jQuery('#titleval').css('background-color', '#fff');
+                    }
+
+                    if (varimage == '') {
+                        jQuery('#imageurl').css('background-color', '#ff000040');
+                    }
+                    else {
+                        jQuery('#imageurl').css('background-color', '#fff');
+                    }
+
+                    if (varBrand == '') {
+                        jQuery('#brandval').css('background-color', '#ff000040');
+                    }
+                    else {
+                        jQuery('#brandval').css('background-color', '#fff');
+                    }
+
+                    if (varprice == '') {
+                     jQuery('#priceval').css('background-color', '#ff000040');
+                 }
+                 else {
+                    jQuery('#priceval').css('background-color', '#fff');
+                }
+                if (varlandingpage == '') {
+                    jQuery('#landingpageurl').css('background-color', '#ff000040');
+                }
+                else {
+                    jQuery('#landingpageurl').css('background-color', '#fff');
+                }
+
+
+                if (varimage != '') {
+                    isUrlExists(varimage, function(status) {
+                        if (status === 200) {
+
+                            var formcr = jQuery("#createbanner");
+                            jQuery('.api-loader').css('display', 'block');
+                            jQuery.ajax({
+                                type: formcr.attr('method'),
+                                url: formcr.attr('action'),
+                                data: formcr.serialize(),
+                                success: function(data) {
+
+                                    if (data.status.statusCode == 'F_200') {
+                                        jQuery('.api-loader').css('display', 'none');
+                                        jQuery('.failedcreatebanner').show();
+                                    }
+                                    if (data.status.statusCode == 'S_200') {
+                                        jQuery('.api-loader').css('display', 'none');
+                                        jQuery('.hover_bkgr_fricc').hide();
+                                        jQuery('.successcreatebanner').show();
+                                    }
+                                }
+                            });
+
+                        }
+                        else if (status === 404) {
+                            jQuery('#imageurl').css('background-color', '#ff000040');
+                        }
+
+                    });
+
+                }
             }
-        }
-            });
         });
+});
 
-        jQuery('.successcreatebtnbanner').click(function() {
-            jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
-            var form = jQuery("#banner");
-            jQuery.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                data: form.serialize(),
-                success: function(data) {
+jQuery('.successcreatebtnbanner').click(function() {
+    jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
+    var form = jQuery("#banner");
+    jQuery.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize(),
+        success: function(data) {
                     // console.log(data);
                     if (data.status.statusCode == 'F_200') {
 
@@ -1620,10 +1649,10 @@ define([
                 }
             });
 
-        });
+});
 
-        jQuery('.udatesettingssuccess').click(function() {
-            var formSet = jQuery("#getsettings");
+jQuery('.udatesettingssuccess').click(function() {
+    var formSet = jQuery("#getsettings");
             //console.log(formSet.serialize());
             jQuery.ajax({
                 type: formSet.attr('method'),
@@ -1688,10 +1717,10 @@ define([
                             else {}
                         });
                         if (biddingStatus == 'Active') {
-                            jQuery('.biddingstatus').html('<span style="font-size: 18px;color:green;margin-right:10px;">Bidding: Active!</span>');
+                            jQuery('.biddingstatus').html('<span style="font-size: 18px;color:#07fc13;margin-right:10px;">Bidding: Active!</span>');
                         }
                         else {
-                            jQuery('.biddingstatus').html('<span style="font-size: 18px;color:red;margin-right:10px;">Bidding: Pause!</span>');
+                            jQuery('.biddingstatus').html('<span style="font-size: 18px;color:#f95b4d;margin-right:10px;">Bidding: Pause!</span>');
                         }
                         var strategyName = data.campaignDetails[0].strategyName;
                         jQuery('#stragName option').each(function(index) {
@@ -1740,21 +1769,21 @@ define([
             });
 
 
-            jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
-            var form = jQuery("#banner");
-            jQuery.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                data: form.serialize(),
-                success: function(data) {
+jQuery("#tablebanner").find("tr:not(:nth-child(1)):not(:nth-child(2))").remove();
+var form = jQuery("#banner");
+jQuery.ajax({
+    type: form.attr('method'),
+    url: form.attr('action'),
+    data: form.serialize(),
+    success: function(data) {
                     //console.log(data);
                     if (data.status.statusCode == 'F_200') {}
-                    if (data.status.statusCode == 'S_200') {
-                        var token = jQuery('.token').val();
-                        var bannerPrev = data.bannerPreview;
-                        var arrayLen = bannerPrev.length;
-                        var i;
-                        for (i = 0; i < arrayLen; i++) {
+                        if (data.status.statusCode == 'S_200') {
+                            var token = jQuery('.token').val();
+                            var bannerPrev = data.bannerPreview;
+                            var arrayLen = bannerPrev.length;
+                            var i;
+                            for (i = 0; i < arrayLen; i++) {
                             // alert(data.bannerPreview[i].sizeCode);
                             var bannerSize = data.bannerPreview[i].sizeCode;
                             var bannerType = data.bannerPreview[i].campaignBannerType;
@@ -1795,24 +1824,24 @@ define([
                     }
                 }
             });
-        });
+});
 
-        jQuery(document).ready(function() {
-            jQuery('body').on("click", ".bannerPreview", function() {
-                var bannercode = jQuery(this).attr("data-pre");
-                jQuery(this).parent().find(".bannnerIframe").html(bannercode);
-                jQuery(this).parent().find(".bannnerIframeWrap").addClass('active');
+jQuery(document).ready(function() {
+    jQuery('body').on("click", ".bannerPreview", function() {
+        var bannercode = jQuery(this).attr("data-pre");
+        jQuery(this).parent().find(".bannnerIframe").html(bannercode);
+        jQuery(this).parent().find(".bannnerIframeWrap").addClass('active');
 
-            });
-            jQuery('body').on("click", ".bannerClose", function() {
-                jQuery(".bannnerIframeWrap").removeClass('active');
-                jQuery(this).parent().find(".bannnerIframe").html("");
-            });
-            setTimeout(
-                function() {
-                    jQuery('.loader').hide();
-                }, 8000);
-        });
-    };
-    return main;
+    });
+    jQuery('body').on("click", ".bannerClose", function() {
+        jQuery(".bannnerIframeWrap").removeClass('active');
+        jQuery(this).parent().find(".bannnerIframe").html("");
+    });
+    setTimeout(
+        function() {
+            jQuery('.loader').hide();
+        }, 8000);
+});
+};
+return main;
 });
