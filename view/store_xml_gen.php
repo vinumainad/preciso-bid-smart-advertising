@@ -1,35 +1,21 @@
 <?php
 $root = $_SERVER["DOCUMENT_ROOT"];
 
-putenv("GOOGLE_APPLICATION_CREDENTIALS=".$root.
-    "/vendor/preciso/preciso-bid-smart-for-merchant/view/java-290610-d670b2eca70e.json");
-
-
-
-include_once $root.
-    "/vendor/preciso/preciso-bid-smart-for-merchant/view/xml_export_functons.php";
-include_once $root.
-    "/vendor/preciso/preciso-bid-smart-for-merchant/vendorCloud/autoload.php";
-
-use Google\Cloud\Storage\StorageClient;
-
-$projectId = "java-290610";
-
-function upload_files_cloud($source, $objectName, $bucketName)
-{
-    $projectId = "java-290610";
-    $storage = new StorageClient([
-        "projectId" => $projectId,
-    ]);
-
-    $file = file_get_contents($source);
-    $bucket = $storage->bucket($bucketName);
-    $object = $bucket->upload($file, [
-        "name" => "Magento_plugin/feed/".$objectName,
-    ]);
-    // printf('Uploaded %s to gs://%s/%s' . PHP_EOL, basename($source), $bucketName, $objectName);
+//Function to post json to feed generator url
+function post_to_url( $url, $data ) {
+    $post = curl_init();
+    $headers = array(
+        'Content-Type:application/json',
+    );
+    curl_setopt( $post, CURLOPT_HTTPHEADER, $headers );
+    curl_setopt( $post, CURLOPT_USERPWD, 'remote_user:P@55w06D0fR3m0t3Us3r' );
+    curl_setopt( $post, CURLOPT_URL, $url );
+    curl_setopt( $post, CURLOPT_POSTFIELDS, $data );
+    curl_setopt( $post, CURLOPT_RETURNTRANSFER, 1 );
+    $result = curl_exec( $post );
+    curl_close( $post );
+    return $result;
 }
-
 
 $objectManager1 = \Magento\Framework\App\ObjectManager::getInstance();
 $storeManager1 = $objectManager1->get(
@@ -178,40 +164,7 @@ if (count($product_Ids) > 0) {
             $handle = $productData->getProductUrl();
 
             $productland = $productData->getProductUrl();
-            $result = $dom->createElement("details");
-            $root->appendChild($result);
-            $result->setAttribute("id", $productData->getEntityId());
-            $result->appendChild(
-                $dom->createElement("id", $productData->getEntityId())
-            );
-            $result->appendChild(
-                $dom->createElement("quantity", $inventory_quantity)
-            );
-            // $result->appendChild(
-            //     $dom->createElement("category", $cat_arr)
-            // );
-            $result->appendChild(
-                $dom->createElement("inventory_policy", $inventory_policy)
-            );
-            $result->appendChild(
-                $dom->createElement("landing_page", $productland)
-            );
-            $result->appendChild(
-                $dom->createElement("title", $productData->getName())
-            );
-            $result->appendChild($dom->createElement("brand", $brand_name));
-            $result->appendChild($dom->createElement("category", $cat_name));
-
-            $result->appendChild($dom->createElement("handle", $handle));
-            if ($cmPrice != null) {
-                $result->appendChild(
-                    $dom->createElement("compare_at_price", $cmPrice)
-                );
-            }
-            $result->appendChild(
-                $dom->createElement("price", $productData->getFinalPrice())
-            );
-            $result->appendChild($dom->createElement("images", $img));
+            
             $prod["id"] = $productData->getEntityId();
             $prod["quantity"] = $inventory_quantity;
             $prod["inventory_policy"] = $inventory_policy;
@@ -220,47 +173,31 @@ if (count($product_Ids) > 0) {
             $prod["brand"] = $brand_name;
             $prod["category"] = $cat_name;
             $prod["handle"] = $handle;
-
             $prod["compare_at_price"] = $cmPrice;
             $prod["price"] = $productData->getFinalPrice();
             $prod["images"] = $img;
             $product[] = $prod;
         }
     }
-    $xmldata = $dom->saveXML();
-    $dom->save(
-        "/var/www/html/vendor/preciso/preciso-bid-smart-for-merchant/view/xml-file/feed_" .
-            $cmpId .
-            ".xml"
-    ) or die("XML Create Error");
-
-    //------------------------------------------
-    // upload file to google cloud
-    $storage = new StorageClient([
-    'projectId' => $projectId
-    ]);
-    $source =
-        "/var/www/html/vendor/preciso/preciso-bid-smart-for-merchant/view/xml-file/feed_" .
-        $cmpId .
-        ".xml";
-
-    // $source = '../xml/feed_'.$cmpId.'.xml';
-    // $source = '../xml/feed_test_12366.xml';
-    $bucketName = "global-files-store-us";
-    $objectName = "feed_" . $cmpId . ".xml";
-    upload_files_cloud($source, $objectName, $bucketName);
-
+   
     //upload json
     $array = $product;
-    $json = json_encode($array);
+   
+    $json_data_arr = array();
+    $json_data_arr['shop'] = $shop_name;
+    $json_data_arr['cmpid'] = $cmpId;
+    $json_data_arr['product_data'] = $product;
+    $json = json_encode( $json_data_arr );
 
-    $bytes = file_put_contents('/var/www/html/vendor/preciso/preciso-bid-smart-for-merchant/view/json-file/feed_'.$cmpId.'.json', $json);
+    echo $curl_response = post_to_url( 'https://wpfeedupload.preciso.net/feed_upload_magento.php', $json );
 
-    $source = '/var/www/html/vendor/preciso/preciso-bid-smart-for-merchant/view/json-file/feed_'.$cmpId.'.json';
-    // print_r($source);
-    $bucketName = 'global-files-store-us';
-    $objectName = 'feed_'.$cmpId.'.json';
-    upload_files_cloud($source, $objectName, $bucketName);
+    // $bytes = file_put_contents('/var/www/html/vendor/preciso/preciso-bid-smart-for-merchant/view/json-file/feed_'.$cmpId.'.json', $json);
+
+    // $source = '/var/www/html/vendor/preciso/preciso-bid-smart-for-merchant/view/json-file/feed_'.$cmpId.'.json';
+    // // print_r($source);
+    // $bucketName = 'global-files-store-us';
+    // $objectName = 'feed_'.$cmpId.'.json';
+    // upload_files_cloud($source, $objectName, $bucketName);
 }
 ?>
                          
