@@ -42,19 +42,19 @@ class InstallSchema implements InstallSchemaInterface
             'author',
             \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             255,
-            ['nullable' => true,'default' => null],
+            ['nullable' => true],
             'Author'
         )->addColumn(
             'content',
             \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             '2M',
-            ['nullable' => true,'default' => null],
+            ['nullable' => true],
             'Content'
         )->addColumn(
             'image',
             \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             null,
-            ['nullable' => true,'default' => null],
+            ['nullable' => true],
             'PrecisoBidSmartAdvertising image media path'
         )->addColumn(
             'created_at',
@@ -66,7 +66,7 @@ class InstallSchema implements InstallSchemaInterface
             'published_at',
             \Magento\Framework\DB\Ddl\Table::TYPE_DATE,
             null,
-            ['nullable' => true,'default' => null],
+            ['nullable' => true],
             'World publish date'
         )->addIndex(
             $installer->getIdxName(
