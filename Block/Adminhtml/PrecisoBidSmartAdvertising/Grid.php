@@ -30,8 +30,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Backend\Helper\Data $backendHelper,
         \Preciso\PrecisoBidSmartAdvertising\Model\PrecisoBidSmartAdvertising
         $precisobidsmartadvertising,
-        \Preciso\PrecisoBidSmartAdvertising\Model\ResourceModel
-        \PrecisoBidSmartAdvertising\CollectionFactory $collectionFactory,
+        \Preciso\PrecisoBidSmartAdvertising\Model\ResourceModel\PrecisoBidSmartAdvertising\CollectionFactory $collectionFactory,
         array $data = []
     ) {
         $this->_collectionFactory = $collectionFactory;
