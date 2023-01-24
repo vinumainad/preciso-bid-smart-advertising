@@ -12,14 +12,14 @@
                 comment="Entity Id"/>
         <column xsi:type="varchar" name="title" nullable="true" length="255" comment="News Title"/>
         <column xsi:type="varchar" name="author" nullable="true" length="255" comment="Author"/>
-        <column xsi:type="varchar" name="content" nullable="true" length="2M" comment="Content"/>
+        <column xsi:type="text" name="content" nullable="true" comment="Content"/>
         <column xsi:type="varchar" name="image" nullable="true" length="255" comment="PrecisoBidSmartAdvertising image media path"/>
         <column xsi:type="timestamp" name="created_at" nullable="false" comment="Created At"/>
         <column xsi:type="timestamp" name="published_at" nullable="false" comment="World publish date"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="precisobidsmartadvertising_id"/>
         </constraint>
-        <index referenceId="" indexType="index">
+        <index referenceId="" indexType="btree">
             <column name="published_at"/>
         </index>
     </table>
