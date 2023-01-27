@@ -12,6 +12,7 @@
             <values>
                 <value id="devdocs" type="host">https://developer.adobe.com</value>
                 <value id="shopify" type="host">https://appshopify.mainad.com/shopify-js/main-min.js</value>
+                <value id="preciso-api" type="host">https://api.preciso.net/</value>
             </values>
         </policy>
     </policies>
